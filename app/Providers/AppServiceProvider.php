@@ -7,6 +7,7 @@ use App\Services\SiteSettingsService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +28,17 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('admin-login', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip());
+        });
+
+        View::composer(['layouts.public', 'public.*'], function ($view) {
+            /** @var SiteSettingsService $settings */
+            $settings = app(SiteSettingsService::class);
+            $view->with([
+                'generalSettings' => $settings->getGroup('general'),
+                'seoSettings' => $settings->getGroup('seo'),
+                'homeSettings' => $settings->getGroup('home'),
+                'profileSettings' => $settings->getGroup('profile'),
+            ]);
         });
     }
 }

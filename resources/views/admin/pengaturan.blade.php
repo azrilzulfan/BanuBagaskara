@@ -108,10 +108,10 @@
     'googleSearchConsoleTag' => 'google-site-verification=SAMPLE_CODE_BLB_2026',
   ];
 
-  $initialUmum = array_merge($defaultUmum, is_array($general) ? $general : []);
-  $initialBeranda = array_merge($defaultBeranda, is_array($home) ? $home : []);
-  $initialProfil = array_merge($defaultProfil, is_array($profile) ? $profile : []);
-  $initialSeo = array_merge($defaultSeo, is_array($seo) ? $seo : []);
+  $initialUmum = array_replace_recursive($defaultUmum, is_array($general) ? $general : []);
+  $initialBeranda = array_replace_recursive($defaultBeranda, is_array($home) ? $home : []);
+  $initialProfil = array_replace_recursive($defaultProfil, is_array($profile) ? $profile : []);
+  $initialSeo = array_replace_recursive($defaultSeo, is_array($seo) ? $seo : []);
 @endphp
 
 @section('content')

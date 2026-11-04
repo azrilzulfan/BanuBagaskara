@@ -3,23 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@yield('title', 'Banu Lesmana Bagaskara | Beranda Resmi')</title>
-    <meta name="description" content="@yield('meta_description', 'Website resmi Banu Lesmana Bagaskara, S.M., Anggota DPRD Kota Bogor Terpilih 2024–2029 (Dapil 4 Tanah Sareal, PDI Perjuangan). Bogor Lebih Baik: Maju dan Nyaman untuk Semua.')" />
+    <title>@yield('title', $seoSettings['metaTitle'] ?? $generalSettings['siteTitle'] ?? 'Banu Lesmana Bagaskara | Beranda Resmi')</title>
+    <meta name="description" content="@yield('meta_description', $seoSettings['metaDescription'] ?? 'Website resmi Banu Lesmana Bagaskara, S.M., Anggota DPRD Kota Bogor Terpilih 2024–2029 (Dapil 4 Tanah Sareal, PDI Perjuangan). Bogor Lebih Baik: Maju dan Nyaman untuk Semua.')" />
+
+    @if (!empty($seoSettings['keywords']))
+      <meta name="keywords" content="{{ $seoSettings['keywords'] }}" />
+    @endif
+    <meta name="robots" content="{{ ($seoSettings['enableIndexing'] ?? true) ? 'index, follow' : 'noindex, nofollow' }}" />
+    @if (!empty($seoSettings['googleSearchConsoleTag']))
+      <meta name="google-site-verification" content="{{ str_replace('google-site-verification=', '', $seoSettings['googleSearchConsoleTag']) }}" />
+    @endif
 
     <!-- OpenGraph / Social Meta Tags -->
     <meta property="og:type" content="@yield('og_type', 'website')" />
-    <meta property="og:title" content="@yield('title', 'Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024–2029')" />
-    <meta property="og:description" content="@yield('meta_description')" />
-    <meta property="og:image" content="@yield('og_image', asset('assets/banu/hero_banu.jpg'))" />
+    <meta property="og:title" content="@yield('title', $seoSettings['metaTitle'] ?? $generalSettings['siteTitle'] ?? 'Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024–2029')" />
+    <meta property="og:description" content="@yield('meta_description', $seoSettings['metaDescription'] ?? 'Website resmi Banu Lesmana Bagaskara, S.M.')" />
+    <meta property="og:image" content="@yield('og_image', asset($seoSettings['ogImage'] ?? 'assets/banu/hero_banu.jpg'))" />
     <meta property="og:url" content="{{ url()->current() }}" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="@yield('title', 'Banu Lesmana Bagaskara, S.M.')" />
-    <meta name="twitter:description" content="@yield('meta_description')" />
-    <meta name="twitter:image" content="@yield('og_image', asset('assets/banu/hero_banu.jpg'))" />
+    <meta name="twitter:title" content="@yield('title', $seoSettings['metaTitle'] ?? 'Banu Lesmana Bagaskara, S.M.')" />
+    <meta name="twitter:description" content="@yield('meta_description', $seoSettings['metaDescription'] ?? 'Website resmi Banu Lesmana Bagaskara, S.M.')" />
+    <meta name="twitter:image" content="@yield('og_image', asset($seoSettings['ogImage'] ?? 'assets/banu/hero_banu.jpg'))" />
 
-    <link rel="canonical" href="{{ url()->current() }}" />
+    <link rel="canonical" href="@yield('canonical', $seoSettings['canonicalUrl'] ?? url()->current())" />
 
     <!-- Font: Plus Jakarta Sans & Tailwind v4 via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -130,7 +138,10 @@
           <div id="aspirasi" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-10">
             <!-- Left: Slogan & Formal Entity -->
             <div class="lg:col-span-5 flex flex-col justify-between">
-              <h3 class="text-2xl sm:text-3xl text-white font-bold leading-tight tracking-tight mb-4">Bogor Lebih Baik:<br />Maju &amp; Nyaman untuk Semua</h3>
+              <h3 class="text-2xl sm:text-3xl text-white font-bold leading-tight tracking-tight mb-4">
+                {{ $generalSettings['slogan'] ?? 'Bogor Lebih Baik' }}:<br />
+                {{ $generalSettings['visionSlogan'] ?? 'Maju & Nyaman untuk Semua' }}
+              </h3>
               <div class="flex items-center gap-3 text-white">
                 <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs">BLB</div>
                 <div class="flex flex-col leading-tight">

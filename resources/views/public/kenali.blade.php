@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Profil & Rekam Jejak | Banu Lesmana Bagaskara, S.M.')
-@section('meta_description', 'Profil resmi, riwayat pendidikan S1 Manajemen, pengalaman organisasi, 12 isu strategis, dan 6 program fokus pengabdian warga Kota Bogor bersama Banu Lesmana Bagaskara, S.M.')
+@section('title', $seoSettings['metaTitle'] ?? 'Profil & Rekam Jejak | Banu Lesmana Bagaskara, S.M.')
+@section('meta_description', $seoSettings['metaDescription'] ?? 'Profil resmi, riwayat pendidikan S1 Manajemen, pengalaman organisasi, 12 isu strategis, dan 6 program fokus pengabdian warga Kota Bogor bersama Banu Lesmana Bagaskara, S.M.')
 
 @section('content')
   <!-- ========================================== -->
@@ -61,14 +61,24 @@
           <span>Profil &amp; Biografi Resmi</span>
         </div>
 
+        @php
+          $profileTitle = $profileSettings['hero']['title'] ?? 'Banu Lesmana Bagaskara, S.M.';
+          if (str_contains($profileTitle, '<span')) {
+              $renderedProfileTitle = $profileTitle;
+          } elseif ($profileTitle === 'Banu Lesmana Bagaskara, S.M.' || $profileTitle === 'Kenali Banu Lesmana Bagaskara, S.M.') {
+              $renderedProfileTitle = '<span class="text-[#BC0202]">Banu</span> Lesmana <span class="text-[#BC0202]">Bagaskara</span>, S.M.';
+          } else {
+              $renderedProfileTitle = e($profileTitle);
+          }
+        @endphp
         <!-- Main Slogan & Headline (Disciplined Sans-Serif Typography) -->
         <h1 class="text-2xl sm:text-4xl md:text-[44px] lg:text-[40px] xl:text-[48px] text-zinc-950 font-bold leading-[1.15] tracking-tight">
-          <span class="text-[#BC0202]">Banu</span> Lesmana <span class="text-[#BC0202]">Bagaskara</span>, S.M.
+          {!! $renderedProfileTitle !!}
         </h1>
 
         <!-- Subtitle / Executive Summary -->
         <p class="text-xs sm:text-sm lg:text-[13px] xl:text-sm text-zinc-600 font-normal leading-relaxed mt-4 sm:mt-5 max-w-[480px]">
-          Anggota DPRD Kota Bogor terpilih periode 2024–2029 dari Dapil 4 Kecamatan Tanah Sareal (PDI Perjuangan No. Urut 5). Berlatar belakang profesional manajemen bisnis di sektor riil dengan tekad memperjuangkan transparansi anggaran publik dan pelayanan dasar rakyat tanpa sekat.
+          {{ $profileSettings['hero']['subtitle'] ?? 'Anggota DPRD Kota Bogor terpilih periode 2024–2029 dari Dapil 4 Kecamatan Tanah Sareal (PDI Perjuangan No. Urut 5). Berlatar belakang profesional manajemen bisnis di sektor riil dengan tekad memperjuangkan transparansi anggaran publik dan pelayanan dasar rakyat tanpa sekat.' }}
         </p>
 
         <!-- Key Metadata Grid (Clean 2x2, Rounded-xl Cards, No Pill) -->
@@ -79,15 +89,15 @@
           </div>
           <div class="flex flex-col">
             <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Partai Politik</span>
-            <span class="font-bold text-xs sm:text-sm text-[#BC0202] mt-0.5">PDI Perjuangan (No. 5)</span>
+            <span class="font-bold text-xs sm:text-sm text-[#BC0202] mt-0.5">{{ $generalSettings['party'] ?? 'PDI Perjuangan (No. 5)' }}</span>
           </div>
           <div class="flex flex-col">
             <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Domisili Warga</span>
-            <span class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">Kedung Badak, Tanah Sareal</span>
+            <span class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">{{ $generalSettings['address'] ?? 'Kedung Badak, Tanah Sareal' }}</span>
           </div>
           <div class="flex flex-col">
             <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Komisi DPRD</span>
-            <span class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">Komisi 1 DPRD Kota Bogor</span>
+            <span class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">{{ $generalSettings['officeRole'] ?? 'Komisi 1 DPRD Kota Bogor' }}</span>
           </div>
         </div>
 
@@ -114,7 +124,7 @@
 
     <!-- Hero Right: Edge-to-Edge Photo Side with Top-Right Menu Button on Desktop -->
     <div class="relative min-h-[360px] sm:min-h-[440px] lg:min-h-full w-full bg-zinc-100 overflow-hidden">
-      <img src="{{ asset('assets/banu/hero_banu.jpg') }}" alt="Banu Lesmana Bagaskara, S.M. - Profil Resmi" class="w-full h-full object-cover object-top filter grayscale contrast-105 hover:grayscale-0 transition-all duration-500" />
+      <img src="{{ asset($profileSettings['hero']['heroImage'] ?? 'assets/banu/hero_banu.jpg') }}" alt="Banu Lesmana Bagaskara, S.M. - Profil Resmi" class="w-full h-full object-cover object-top filter grayscale contrast-105 hover:grayscale-0 transition-all duration-500" />
 
       <!-- Desktop Pre-Scroll Navigation Bar (Rounded-xl container, No Pill) -->
       <div class="hidden lg:block absolute top-8 right-8 xl:top-10 xl:right-14 2xl:right-20 z-20">
@@ -144,64 +154,67 @@
       <div class="rounded-xl border border-zinc-200 bg-white p-7 sm:p-10 shadow-sm mb-8 relative overflow-hidden">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div class="max-w-3xl">
-            <h3 class="text-xl sm:text-3xl lg:text-4xl font-extrabold text-zinc-950 tracking-tight leading-tight">&ldquo;Kota Bogor yang Maju dan Nyaman untuk Semua&rdquo;</h3>
+            <h3 class="text-xl sm:text-3xl lg:text-4xl font-extrabold text-zinc-950 tracking-tight leading-tight">&ldquo;{{ $profileSettings['vision'] ?? 'Kota Bogor yang Maju dan Nyaman untuk Semua' }}&rdquo;</h3>
             <p class="text-xs sm:text-sm text-zinc-600 mt-3.5 leading-relaxed">
               Kemajuan Kota Bogor tidak boleh meninggalkan satu pun kelompok masyarakat. Pembangunan fisik harus berjalan selaras dengan ketenangan hidup, kemudahan akses kesehatan darurat, perlindungan hak belajar anak, serta kepastian berusaha bagi pedagang kecil di tingkat rukun warga.
             </p>
           </div>
           <div class="shrink-0 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-zinc-200 pt-4 lg:pt-0 lg:pl-8">
-            <span class="text-lg sm:text-xl font-black text-[#BC0202] mt-1">Bogor Lebih Baik</span>
+            <span class="text-lg sm:text-xl font-black text-[#BC0202] mt-1">{{ $generalSettings['slogan'] ?? 'Bogor Lebih Baik' }}</span>
           </div>
         </div>
       </div>
 
       <!-- 3 Misi Pokok Grid (3 Columns, Rounded-xl Cards) -->
+      @php
+        $missions = $profileSettings['mission'] ?? [
+          'Advokasi & Analisis Masukan Rakyat' => 'Menjaga rencana pembangunan agar senantiasa berpihak pada rakyat melalui analisis dampak mendalam serta penyerapan masukan warga secara berkala dan terverifikasi.',
+          'Peningkatan Taraf Pendidikan Warga' => 'Meningkatkan taraf pendidikan warga Kota Bogor dan memastikan penurunan angka putus sekolah melalui advokasi alokasi beasiswa daerah yang tepat sasaran.',
+          'Kemandirian Ekonomi & Keilmuan' => 'Mendorong masyarakat terjun di bidang keilmuan dan penelitian terapan guna mengurangi angka pengangguran serta meningkatkan daya beli dan taraf hidup warga.',
+        ];
+        $misiSubtexts = [
+          'Fungsi Pengawasan & Anggaran',
+          'Program Wajib Belajar 12 Tahun',
+          'Inovasi Riset & UMKM Lokal',
+          'Harmoni Sosial & Perlindungan Warga',
+        ];
+      @endphp
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
-        <!-- Misi 1 -->
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-colors">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">01</div>
-            <h4 class="font-bold text-base sm:text-lg text-zinc-950 mt-4 tracking-tight">Advokasi &amp; Analisis Masukan Rakyat</h4>
-            <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Menjaga rencana pembangunan agar senantiasa berpihak pada rakyat melalui analisis dampak mendalam serta penyerapan masukan warga secara berkala dan terverifikasi.
-            </p>
+        @foreach ($missions as $mKey => $m)
+          @php
+            $mText = is_array($m) ? ($m['desc'] ?? '') : $m;
+            if (!is_numeric($mKey)) {
+                $mTitle = $mKey;
+            } else {
+                if ($loop->index === 0 && str_contains($mText, 'hak-hak dasar')) {
+                    $mTitle = 'Pemenuhan Hak Dasar & Fasilitas Warga';
+                } elseif ($loop->index === 1 && str_contains($mText, 'transparansi')) {
+                    $mTitle = 'Transparansi Kebijakan & Alokasi APBD';
+                } elseif ($loop->index === 2 && str_contains($mText, 'ekonomi rakyat')) {
+                    $mTitle = 'Kemandirian Ekonomi & Digitalisasi UMKM';
+                } elseif ($loop->index === 3 && str_contains($mText, 'harmoni sosial')) {
+                    $mTitle = 'Harmoni Sosial & Perlindungan Warga';
+                } else {
+                    $mTitle = \Illuminate\Support\Str::words($mText, 4, '');
+                }
+            }
+          @endphp
+          <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-colors">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">{{ sprintf('%02d', $loop->iteration) }}</div>
+              <h4 class="font-bold text-base sm:text-lg text-zinc-950 mt-4 tracking-tight">{{ $mTitle }}</h4>
+              <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
+                {{ $mText }}
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-zinc-100 flex items-center text-xs font-semibold text-[#BC0202]">
+              <span>{{ $misiSubtexts[$loop->index % count($misiSubtexts)] }}</span>
+            </div>
           </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 flex items-center text-xs font-semibold text-[#BC0202]">
-            <span>Fungsi Pengawasan &amp; Anggaran</span>
-          </div>
-        </div>
-
-        <!-- Misi 2 -->
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-colors">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">02</div>
-            <h4 class="font-bold text-base sm:text-lg text-zinc-950 mt-4 tracking-tight">Peningkatan Taraf Pendidikan Warga</h4>
-            <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Meningkatkan taraf pendidikan warga Kota Bogor dan memastikan penurunan angka putus sekolah melalui advokasi alokasi beasiswa daerah yang tepat sasaran.
-            </p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 flex items-center text-xs font-semibold text-[#BC0202]">
-            <span>Program Wajib Belajar 12 Tahun</span>
-          </div>
-        </div>
-
-        <!-- Misi 3 -->
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-colors">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">03</div>
-            <h4 class="font-bold text-base sm:text-lg text-zinc-950 mt-4 tracking-tight">Kemandirian Ekonomi &amp; Keilmuan</h4>
-            <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Mendorong masyarakat terjun di bidang keilmuan dan penelitian terapan guna mengurangi angka pengangguran serta meningkatkan daya beli dan taraf hidup warga.
-            </p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 flex items-center text-xs font-semibold text-[#BC0202]">
-            <span>Inovasi Riset &amp; UMKM Lokal</span>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </section>
-
   <!-- ========================================== -->
   <!-- 3. REKAM JEJAK PENGALAMAN & PENDIDIKAN     -->
   <!-- ========================================== -->
@@ -211,6 +224,21 @@
       <div class="max-w-2xl mb-10 sm:mb-12">
         <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight">Rekam <span class="text-[#BC0202]">Jejak</span> Pengalaman &amp; <span class="text-[#BC0202]">Pendidikan</span></h2>
       </div>
+
+      @php
+        $experiences = $profileSettings['historyTrack']['experience'] ?? [
+          ['title' => 'Anggota DPRD Kota Bogor', 'institution' => 'DPRD Kota Bogor (Dapil 4 Tanah Sareal)', 'period' => '2024 – Sekarang'],
+          ['title' => 'Direktur Utama', 'institution' => 'PT. Kreasi Baraya Mandiri', 'period' => '2018 – 2023'],
+          ['title' => 'Direktur', 'institution' => 'CV. Putra Baraya Mandiri', 'period' => '2020 – 2023'],
+          ['title' => 'Pimpinan', 'institution' => 'KSU Karya Mandiri', 'period' => '2015 – 2023'],
+        ];
+        $educations = $profileSettings['historyTrack']['education'] ?? [
+          ['title' => 'Sarjana Manajemen (S.M.)', 'institution' => 'IBI Kesatuan Bogor', 'period' => '2015 – 2019'],
+          ['title' => 'Sekolah Menengah Atas (SMA)', 'institution' => 'SMA Negeri 4 Bogor', 'period' => '2011 – 2014'],
+          ['title' => 'Sekolah Menengah Pertama (SMP)', 'institution' => 'SMP Mardi Yuana Bogor', 'period' => '2008 – 2011'],
+          ['title' => 'Sekolah Dasar (SD)', 'institution' => 'SD Mardi Yuana Bogor', 'period' => '2002 – 2008'],
+        ];
+      @endphp
 
       <!-- 2 Separate Columns: Rekam Jejak Pengalaman & Riwayat Pendidikan -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
@@ -231,45 +259,19 @@
 
           <!-- List: Pengalaman -->
           <div class="space-y-3">
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Anggota DPRD Kota Bogor</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">DPRD Kota Bogor (Dapil 4 Tanah Sareal)</div>
+            @foreach ($experiences as $exp)
+              <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">{{ $exp['title'] }}</div>
+                  <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">{{ $exp['institution'] }}</div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs">
+                    {{ $exp['period'] }}
+                  </span>
+                </div>
               </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2024 – Sekarang </span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Direktur Utama</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">PT. Kreasi Baraya Mandiri</div>
-              </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2018 – 2023 </span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Direktur</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">CV. Putra Baraya Mandiri</div>
-              </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2020 – 2023 </span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Pimpinan</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">KSU Karya Mandiri</div>
-              </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2015 – 2023 </span>
-              </div>
-            </div>
+            @endforeach
           </div>
         </div>
 
@@ -292,45 +294,19 @@
 
           <!-- List: Pendidikan -->
           <div class="space-y-3">
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Sarjana Manajemen (S.M.)</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">IBI Kesatuan Bogor</div>
+            @foreach ($educations as $edu)
+              <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">{{ $edu['title'] }}</div>
+                  <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">{{ $edu['institution'] }}</div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs">
+                    {{ $edu['period'] }}
+                  </span>
+                </div>
               </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2015 – 2019 </span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Sekolah Menengah Atas (SMA)</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">SMA Negeri 4 Bogor</div>
-              </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2011 – 2014 </span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Sekolah Menengah Pertama (SMP)</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">SMP Mardi Yuana Bogor</div>
-              </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2008 – 2011 </span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Sekolah Dasar (SD)</div>
-                <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">SD Mardi Yuana Bogor</div>
-              </div>
-              <div class="text-right shrink-0">
-                <span class="inline-block text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs"> 2002 – 2008 </span>
-              </div>
-            </div>
+            @endforeach
           </div>
         </div>
       </div>
@@ -349,145 +325,28 @@
         </div>
       </div>
 
+      @php
+        $issues = $profileSettings['issues'] ?? [];
+      @endphp
       <!-- 12 Isu Grid (3 Columns Responsive) -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-        <!-- Isu 1 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'gov'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Aparat Daerah (DPRD, Pemda)</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">
-              Pengawasan kinerja birokrasi pemda, percepatan digitalisasi pelayanan publik (e-gov), serta transparansi alokasi belanja APBD Kota Bogor agar berdampak nyata bagi warga.
-            </p>
+        @foreach ($issues as $issue)
+          @php
+            $no = $issue['no'] ?? $loop->iteration;
+            $cat = $no <= 4 ? 'gov' : ($no <= 8 ? 'soc' : 'env');
+          @endphp
+          <div x-show="isuFilter === 'all' || isuFilter === '{{ $cat }}'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
+            <div>
+              <h3 class="font-bold text-base text-zinc-950 tracking-tight">{{ $issue['title'] }}</h3>
+              <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">
+                {{ $issue['desc'] }}
+              </p>
+            </div>
+            <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
+              <span class="text-[#BC0202]">Isu #{{ $no }} &bull; Dapil 4 Tanah Sareal</span>
+            </div>
           </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Akuntabilitas &amp; Reformasi Birokrasi</span>
-          </div>
-        </div>
-
-        <!-- Isu 2 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'gov'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Korupsi, KPK</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">
-              Mendukung pencegahan kebocoran anggaran publik, menolak praktik pungutan liar dalam perizinan UMKM, serta memastikan proses pengadaan barang dan jasa berjalan bersih.
-            </p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Pengawasan Anggaran &amp; Anti-Pungli</span>
-          </div>
-        </div>
-
-        <!-- Isu 3 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'gov'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Polisi &amp; Peradilan</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Mendorong penegakan hukum yang adil dan humanis tanpa diskriminasi, serta penyediaan fasilitas bantuan hukum advokasi bagi warga tidak mampu di Kota Bogor.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Kepastian Hukum &amp; Advokasi Warga</span>
-          </div>
-        </div>
-
-        <!-- Isu 4 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'gov'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Berita Hoax yang Meresahkan</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Penguatan literasi digital warga dan kanal verifikasi informasi resmi lingkungan untuk menangkal disinformasi provokatif demi ketenangan sosial di tingkat RT/RW.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Literasi Digital &amp; Ketenangan Warga</span>
-          </div>
-        </div>
-
-        <!-- Isu 5 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'soc'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Rawat Orang Tua, Disabilitas, Yatim, Orang Miskin</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">
-              Penyediaan jaminan perlindungan sosial terpadu, pendampingan kesehatan lansia melalui ambulans siaga 24 jam, pemenuhan hak anak yatim, dan aksesibilitas ramah disabilitas.
-            </p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Jaminan Sosial &amp; Layanan Kesehatan 24 Jam</span>
-          </div>
-        </div>
-
-        <!-- Isu 6 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'soc'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Kebebasan &amp; Kerukunan Beragama</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Merawat harmoni antarumat beragama, menjamin hak beribadah secara aman bagi semua kalangan, dan mempererat dialog lintas keyakinan di wilayah Tanah Sareal.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Toleransi &amp; Hak Beribadah Damai</span>
-          </div>
-        </div>
-
-        <!-- Isu 7 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'soc'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Pancasila, Terorisme, Keamanan</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Pengamalan nilai-nilai ideologis Pancasila dalam keseharian, pencegahan radikalisme, serta penguatan pos ronda dan ketertiban lingkungan permukiman warga.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Ideologi Pancasila &amp; Kamtibmas Warga</span>
-          </div>
-        </div>
-
-        <!-- Isu 8 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'soc'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Isu Moralitas Masyarakat</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Aksi konkret penanganan dan pencegahan tawuran pelajar melalui wadah riset kreatif, pelatihan vokasi pemuda, dan kompetisi olahraga antar-kelurahan yang terarah.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Anti-Tawuran &amp; Pembinaan Generasi Muda</span>
-          </div>
-        </div>
-
-        <!-- Isu 9 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'env'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Kebersihan Lingkungan</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Revitalisasi saluran air gang untuk mengatasi genangan banjir saat hujan deras, peremajaan armada pengangkut sampah, dan dukungan penguatan bank sampah RT/RW.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Drainase Bebas Banjir &amp; Sanitasi Permukiman</span>
-          </div>
-        </div>
-
-        <!-- Isu 10 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'env'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Polusi Udara, Sampah, dlsb.</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Pemantauan kualitas udara di koridor padat Tanah Sareal, pembatasan timbulan sampah plastik sekali pakai, serta tata kelola pembuangan limbah terintegrasi.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Pengendalian Polusi &amp; Tata Kelola Sampah</span>
-          </div>
-        </div>
-
-        <!-- Isu 11 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'env'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Ruang Terbuka Hijau, Taman</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Memperjuangkan penambahan taman tematik kelurahan, ruang bermain ramah anak yang aman, serta penghijauan peneduh di ruas-ruas jalan utama Kecamatan Tanah Sareal.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: RTH Publik &amp; Taman Ramah Anak</span>
-          </div>
-        </div>
-
-        <!-- Isu 12 -->
-        <div x-show="isuFilter === 'all' || isuFilter === 'env'" class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-base text-zinc-950 tracking-tight">Perubahan Iklim &amp; SDA</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Konservasi daerah tangkapan dan resapan air di bantaran sungai, mitigasi risiko bencana tanah longsor saat musim hujan, serta pelestarian sumber daya alam lokal.</p>
-          </div>
-          <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-            <span class="text-[#BC0202]">Fokus: Konservasi Resapan Air &amp; Mitigasi Bencana</span>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </section>
@@ -501,60 +360,28 @@
         <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight">Enam <span class="text-[#BC0202]">Fokus</span> Program</h2>
       </div>
 
+      @php
+        $programs = $profileSettings['programs'] ?? [];
+        $programBadges = [
+          'Kedung Badak, Tanah Sareal',
+          'Layanan Gratis 24 Jam',
+          'Keterbukaan Informasi Publik',
+          'Penurunan Angka Putus Sekolah',
+          'Pemberdayaan Pemuda Kreatif',
+          'Kemandirian Ekonomi Warga',
+        ];
+      @endphp
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 transition-colors flex flex-col justify-between">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">01</div>
-            <h3 class="font-bold text-base text-zinc-950 mt-4 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Rumah Aspirasi Rakyat</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Rumah singgah terbuka di Kedung Badak buat warga yang mau ngobrol santai, sampaikan unek-unek lingkungan, atau butuh bantuan advokasi dewan.</p>
+        @foreach ($programs as $progIdx => $prog)
+          <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 transition-colors flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">{{ sprintf('%02d', $prog['no'] ?? ($progIdx + 1)) }}</div>
+              <h3 class="font-bold text-base text-zinc-950 mt-4 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $prog['title'] }}</h3>
+              <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">{{ $prog['desc'] }}</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">{{ $programBadges[$progIdx % count($programBadges)] }}</div>
           </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">Kedung Badak, Tanah Sareal</div>
-        </div>
-
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 transition-colors flex flex-col justify-between">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">02</div>
-            <h3 class="font-bold text-base text-zinc-950 mt-4 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Ambulance Siaga 24 Jam</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Layanan ambulance gratis bareng relawan yang siap antar jemput warga sakit atau darurat medis kapan saja tanpa dipungut biaya.</p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">Layanan Gratis 24 Jam</div>
-        </div>
-
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 transition-colors flex flex-col justify-between">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">03</div>
-            <h3 class="font-bold text-base text-zinc-950 mt-4 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Transparansi APBD &amp; E-Gov</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Mendorong pengawasan publik terbuka dan digitalisasi administrasi Kota Bogor agar alokasi anggaran tepat sasaran dan terbebas dari kebocoran.</p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">Keterbukaan Informasi Publik</div>
-        </div>
-
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 transition-colors flex flex-col justify-between">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">04</div>
-            <h3 class="font-bold text-base text-zinc-950 mt-4 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Wajib Belajar Anak Kota Bogor</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Mencegah anak putus sekolah melalui advokasi alokasi beasiswa daerah serta perlindungan hak anak untuk menuntaskan pendidikan 12 tahun.</p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">Penurunan Angka Putus Sekolah</div>
-        </div>
-
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 transition-colors flex flex-col justify-between">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">05</div>
-            <h3 class="font-bold text-base text-zinc-950 mt-4 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Kota Bogor Tanpa Tawuran</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Membina generasi muda melalui wadah riset kreatif, pelatihan keahlian kerja, dan kompetisi olahraga lingkungan yang positif dan bebas kekerasan.</p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">Pemberdayaan Pemuda Kreatif</div>
-        </div>
-
-        <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 transition-colors flex flex-col justify-between">
-          <div>
-            <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">06</div>
-            <h3 class="font-bold text-base text-zinc-950 mt-4 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Digitalisasi UMKM RT/RW</h3>
-            <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">Pendampingan izin NIB resmi, sertifikasi halal gratis, pelatihan pemasaran produk digital, serta akses kemitraan permodalan usaha keluarga.</p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">Kemandirian Ekonomi Warga</div>
-        </div>
+        @endforeach
       </div>
 
       <div class="text-center mt-12">
@@ -606,7 +433,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-8 text-center">
       <div class="w-12 h-1 bg-[#BC0202] mx-auto mb-6 rounded-sm"></div>
       <blockquote class="text-lg sm:text-2xl lg:text-[26px] font-bold text-zinc-950 leading-snug tracking-tight">
-        &ldquo;Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.&rdquo;
+        &ldquo;{{ $profileSettings['quote'] ?? 'Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.' }}&rdquo;
       </blockquote>
       <div class="mt-6 flex flex-col items-center justify-center">
         <span class="font-bold text-sm text-zinc-950">Banu Lesmana Bagaskara, S.M.</span>

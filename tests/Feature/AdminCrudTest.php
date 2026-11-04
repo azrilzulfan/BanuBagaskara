@@ -366,3 +366,73 @@ it('allows admin to update site settings group', function () {
     expect($general['siteTitle'])->toBe('Portal Resmi Banu Bagaskara')
         ->and($general['slogan'])->toBe('Bogor Lebih Maju dan Berkeadilan');
 });
+
+it('reflects updated site settings on public frontend pages', function () {
+    // 1. Update general settings
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'general',
+        'data' => [
+            'siteTitle' => 'Situs Resmi Banu Bagaskara DPRD',
+            'slogan' => 'Bogor Guyub Rukun',
+            'visionSlogan' => 'Nyaman Tanpa Hambatan',
+            'address' => 'Jl. Pemuda No. 45, Kedung Badak, Tanah Sareal',
+            'phone' => '+62 811-9999-8888',
+            'email' => 'aduan@banubagaskara.id',
+            'socials' => [
+                'instagram' => 'https://instagram.com/banubagaskara_official',
+                'tiktok' => 'https://tiktok.com/@banubagaskara_official',
+                'facebook' => 'https://facebook.com/banubgsk_official',
+            ],
+        ],
+    ])->assertRedirect();
+
+    // 2. Update home settings
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'home',
+        'data' => [
+            'hero' => [
+                'headline' => 'Mengabdi Sepenuh Hati untuk Warga Tanah Sareal',
+                'description' => 'Transparansi penuh pengabdian dan kerja lapangan bersama warga.',
+                'ctaPrimaryText' => 'Adukan Masalahmu',
+                'ctaPrimaryLink' => '/kontak#aspirasi',
+                'ctaSecondaryText' => 'Ketahui Kinerjaku',
+                'ctaSecondaryLink' => '/kinerja',
+            ],
+            'banner' => [
+                'enabled' => true,
+                'title' => 'Ambulans Darurat Gratis 24 Jam Nonstop',
+            ],
+        ],
+    ])->assertRedirect();
+
+    // 3. Update profile settings
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'profile',
+        'data' => [
+            'vision' => 'Bogor Maju Berdaya dan Sejahtera Tanpa Pungli',
+            'quote' => 'Amanah rakyat adalah pertanggungjawaban dunia akhirat.',
+        ],
+    ])->assertRedirect();
+
+    // Verify Home page
+    $homeResponse = $this->get(route('home'));
+    $homeResponse->assertOk();
+    $homeResponse->assertSee('Mengabdi Sepenuh Hati untuk Warga Tanah Sareal');
+    $homeResponse->assertSee('Transparansi penuh pengabdian dan kerja lapangan bersama warga.');
+    $homeResponse->assertSee('Adukan Masalahmu');
+    $homeResponse->assertSee('Bogor Guyub Rukun');
+
+    // Verify Profile page
+    $profileResponse = $this->get(route('profile'));
+    $profileResponse->assertOk();
+    $profileResponse->assertSee('Bogor Maju Berdaya dan Sejahtera Tanpa Pungli');
+    $profileResponse->assertSee('Amanah rakyat adalah pertanggungjawaban dunia akhirat.');
+
+    // Verify Contact page
+    $contactResponse = $this->get(route('kontak.index'));
+    $contactResponse->assertOk();
+    $contactResponse->assertSee('Jl. Pemuda No. 45, Kedung Badak, Tanah Sareal');
+    $contactResponse->assertSee('+62 811-9999-8888');
+    $contactResponse->assertSee('aduan@banubagaskara.id');
+    $contactResponse->assertSee('https://instagram.com/banubagaskara_official');
+});

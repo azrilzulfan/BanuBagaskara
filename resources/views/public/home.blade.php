@@ -89,29 +89,39 @@
 
       <!-- Hero Content Block -->
       <div class="my-auto pt-2 sm:pt-6 pb-4 z-10 max-w-xl">
+        @php
+          $rawHeadline = $homeSettings['hero']['headline'] ?? 'Bogor Lebih Baik: Maju & Nyaman untuk Semua';
+          if (str_contains($rawHeadline, '<span')) {
+              $renderedHeadline = $rawHeadline;
+          } elseif ($rawHeadline === 'Bogor Lebih Baik: Maju & Nyaman untuk Semua' || $rawHeadline === 'Bogor Lebih Baik:<br />Maju & Nyaman untuk Semua') {
+              $renderedHeadline = 'Bogor <span class="text-[#BC0202]">Lebih</span> Baik:<br />Maju &amp; <span class="text-[#BC0202]">Nyaman</span> untuk <span class="text-[#BC0202]">Semua</span>';
+          } else {
+              $renderedHeadline = nl2br(e($rawHeadline));
+          }
+        @endphp
         <!-- Main Slogan & Headline (Disciplined Sans-Serif Typography) -->
         <h1 class="text-2xl sm:text-4xl md:text-[44px] lg:text-[40px] xl:text-[48px] text-zinc-950 font-bold leading-[1.15] tracking-tight">
-          Bogor <span class="text-[#BC0202]">Lebih</span> Baik:<br />Maju &amp; <span class="text-[#BC0202]">Nyaman</span> untuk <span class="text-[#BC0202]">Semua</span>
+          {!! $renderedHeadline !!}
         </h1>
 
         <!-- Subtitle / Manifesto -->
         <p class="text-xs sm:text-sm lg:text-[13px] xl:text-sm text-zinc-600 font-normal leading-relaxed mt-4 sm:mt-5 max-w-[460px]">
-          Hadir dan bekerja nyata bareng warga Tanah Sareal—mulai dari siaga ambulance gratis 24 jam, ngawal usulan lingkungan di gedung dewan, sampai mastiin anggaran kota beneran balik buat kebutuhan kita bersama.
+          {{ $homeSettings['hero']['description'] ?? 'Hadir dan bekerja nyata bareng warga Tanah Sareal—mulai dari siaga ambulance gratis 24 jam, ngawal usulan lingkungan di gedung dewan, sampai mastiin anggaran kota beneran balik buat kebutuhan kita bersama.' }}
         </p>
 
         <!-- CTA Buttons: Shadcn Button Style (Strictly No Pill) -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-4 mt-7 sm:mt-9">
           <a
-            href="{{ route('kontak.index') }}"
+            href="{{ !empty($homeSettings['hero']['ctaPrimaryLink']) ? url($homeSettings['hero']['ctaPrimaryLink']) : route('kontak.index') }}"
             class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 sm:px-6 py-2.5 sm:py-3 shadow-sm transition-colors active:scale-98 text-center"
           >
-            Sampaikan Aspirasi
+            {{ $homeSettings['hero']['ctaPrimaryText'] ?? 'Sampaikan Aspirasi' }}
           </a>
           <a
-            href="{{ route('profile') }}"
+            href="{{ !empty($homeSettings['hero']['ctaSecondaryLink']) ? url($homeSettings['hero']['ctaSecondaryLink']) : route('profile') }}"
             class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs sm:text-sm font-semibold px-5 sm:px-6 py-2.5 sm:py-3 shadow-2xs transition-colors active:scale-98 text-center"
           >
-            Kenali Banu Bagaskara
+            {{ $homeSettings['hero']['ctaSecondaryText'] ?? 'Kenali Banu Bagaskara' }}
           </a>
         </div>
       </div>
@@ -122,7 +132,7 @@
 
     <!-- Hero Right: Edge-to-Edge Photo Side with Top-Right Menu Button on Desktop -->
     <div class="relative min-h-[360px] sm:min-h-[440px] lg:min-h-full w-full bg-zinc-100 overflow-hidden">
-      <img src="{{ asset('assets/banu/hero_banu.jpg') }}" alt="Banu Lesmana Bagaskara, S.M. - Anggota DPRD Kota Bogor" class="w-full h-full object-cover object-top filter grayscale contrast-105 hover:grayscale-0 transition-all duration-500" />
+      <img src="{{ asset($homeSettings['hero']['heroImage'] ?? 'assets/banu/hero_banu.jpg') }}" alt="Banu Lesmana Bagaskara, S.M. - Anggota DPRD Kota Bogor" class="w-full h-full object-cover object-top filter grayscale contrast-105 hover:grayscale-0 transition-all duration-500" />
 
       <!-- Desktop Pre-Scroll Navigation Bar (Rounded-xl container, No Pill) -->
       <div class="hidden lg:block absolute top-8 right-8 xl:top-10 xl:right-14 2xl:right-20 z-20">
@@ -141,16 +151,20 @@
   <!-- ======================================================== -->
   <!-- 2. BANNER SERBAGUNA (FULL GAMBAR RESPONSIF)              -->
   <!-- ======================================================== -->
-  <section class="w-full bg-zinc-950 border-b border-zinc-200">
-    <div class="w-full max-w-[1920px] mx-auto overflow-hidden">
-      <img
-        src="{{ asset('assets/banu/banner_serbaguna.jpg') }}"
-        alt="Banner Resmi Banu Lesmana Bagaskara, S.M. - Bogor Lebih Baik: Maju dan Nyaman untuk Semua"
-        class="w-full h-auto object-cover min-h-[160px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] transition-transform duration-500 group-hover:scale-[1.008]"
-        loading="lazy"
-      />
-    </div>
-  </section>
+  @if ($homeSettings['banner']['enabled'] ?? true)
+    <section class="w-full bg-zinc-950 border-b border-zinc-200">
+      <div class="w-full max-w-[1920px] mx-auto overflow-hidden">
+        <a href="{{ !empty($homeSettings['banner']['linkUrl']) ? url($homeSettings['banner']['linkUrl']) : route('kontak.index') . '#aspirasi' }}" class="block group">
+          <img
+            src="{{ asset($homeSettings['banner']['image'] ?? 'assets/banu/banner_serbaguna.jpg') }}"
+            alt="{{ $homeSettings['banner']['title'] ?? 'Banner Resmi Banu Lesmana Bagaskara, S.M. - Bogor Lebih Baik: Maju dan Nyaman untuk Semua' }}"
+            class="w-full h-auto object-cover min-h-[160px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] transition-transform duration-500 group-hover:scale-[1.008]"
+            loading="lazy"
+          />
+        </a>
+      </div>
+    </section>
+  @endif
 
   <!-- ======================================================== -->
   <!-- 3. HASIL KINERJA & BERITA TERKINI (Desain Asli Terjaga)   -->
@@ -329,9 +343,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Rumah Aspirasi Rakyat</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][0]['title'] ?? 'Rumah Aspirasi Rakyat' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Pusat advokasi terbuka di Kedung Badak untuk menampung, memverifikasi, dan memperjuangkan seluruh keluhan serta usulan pembangunan warga Tanah Sareal ke instansi terkait.
+              {{ $profileSettings['programs'][0]['desc'] ?? 'Pusat advokasi terbuka di Kedung Badak untuk menampung, memverifikasi, dan memperjuangkan seluruh keluhan serta usulan pembangunan warga Tanah Sareal ke instansi terkait.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -349,9 +363,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Ambulance Siaga 24 Jam</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][1]['title'] ?? 'Ambulance Siaga 24 Jam' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Armada ambulans operasional dan relawan pendamping medis darurat siaga 24 jam bebas biaya untuk mengantar pasien darurat serta mengawal administrasi BPJS di RSUD Kota Bogor.
+              {{ $profileSettings['programs'][1]['desc'] ?? 'Armada ambulans operasional dan relawan pendamping medis darurat siaga 24 jam bebas biaya untuk mengantar pasien darurat serta mengawal administrasi BPJS di RSUD Kota Bogor.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -369,9 +383,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Mendorong E-Government</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][2]['title'] ?? 'Mendorong E-Government' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Mendorong integrasi layanan birokrasi digital dan transparansi anggaran APBD Kota Bogor agar akuntabel, efisien, serta terbebas dari pemborosan dan kebocoran dana rakyat.
+              {{ $profileSettings['programs'][2]['desc'] ?? 'Mendorong integrasi layanan birokrasi digital dan transparansi anggaran APBD Kota Bogor agar akuntabel, efisien, serta terbebas dari pemborosan dan kebocoran dana rakyat.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -390,9 +404,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Wajib Belajar Anak</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][3]['title'] ?? 'Wajib Belajar Anak' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Memastikan tidak ada anak Kota Bogor yang putus sekolah melalui advokasi alokasi beasiswa siswa prasejahtera, tebus ijazah tertahan, serta pemerataan mutu pendidikan.
+              {{ $profileSettings['programs'][3]['desc'] ?? 'Memastikan tidak ada anak Kota Bogor yang putus sekolah melalui advokasi alokasi beasiswa siswa prasejahtera, tebus ijazah tertahan, serta pemerataan mutu pendidikan.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -415,9 +429,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Kota Bogor Tanpa Tawuran</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][4]['title'] ?? 'Kota Bogor Tanpa Tawuran' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Pembinaan karakter pemuda berbasis komunitas melalui wadah keilmuan, riset, fasilitas olahraga positif, dan pelatihan ketenagakerjaan untuk membasmi tawuran antar pelajar.
+              {{ $profileSettings['programs'][4]['desc'] ?? 'Pembinaan karakter pemuda berbasis komunitas melalui wadah keilmuan, riset, fasilitas olahraga positif, dan pelatihan ketenagakerjaan untuk membasmi tawuran antar pelajar.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -435,9 +449,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> Digitalisasi UMKM RT/RW</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][5]['title'] ?? 'Digitalisasi UMKM RT/RW' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              Mendorong kemandirian ekonomi warga melalui fasilitasi Nomor Induk Berusaha (NIB) gratis, sertifikasi produk, pelatihan foto digital, serta akses kemitraan modal usaha rakyat.
+              {{ $profileSettings['programs'][5]['desc'] ?? 'Mendorong kemandirian ekonomi warga melalui fasilitasi Nomor Induk Berusaha (NIB) gratis, sertifikasi produk, pelatihan foto digital, serta akses kemitraan modal usaha rakyat.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -469,31 +483,31 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-5">
         <!-- Bento Card 1 (Large Feature Card: Spans 7 cols on lg, 2 rows) -->
         <div class="lg:col-span-7 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/testi_dialog.jpg') }}" alt="Dialog Aspirasi Warga Kebon Pedes" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src="{{ asset($homeSettings['collage'][0]['image'] ?? 'assets/banu/testi_dialog.jpg') }}" alt="{{ $homeSettings['collage'][0]['label'] ?? 'Dialog Aspirasi Warga Kebon Pedes' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
         </div>
 
         <!-- Bento Card 2 (Spans 5 cols on lg, Medium Height) -->
         <div class="lg:col-span-5 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[250px] sm:min-h-[300px] lg:min-h-[420px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/program_ambulance.jpg') }}" alt="Operasional Ambulance Siaga 24 Jam" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src="{{ asset($homeSettings['collage'][1]['image'] ?? 'assets/banu/program_ambulance.jpg') }}" alt="{{ $homeSettings['collage'][1]['label'] ?? 'Operasional Ambulance Siaga 24 Jam' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
         </div>
 
         <!-- Bento Card 3 (Spans 4 cols on lg) -->
         <div class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/program_umkm.jpg') }}" alt="Pelatihan Digitalisasi UMKM RT/RW" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src="{{ asset($homeSettings['collage'][2]['image'] ?? 'assets/banu/program_umkm.jpg') }}" alt="{{ $homeSettings['collage'][2]['label'] ?? 'Pelatihan Digitalisasi UMKM RT/RW' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
         </div>
 
         <!-- Bento Card 4 (Spans 4 cols on lg) -->
         <div class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/footer_community.jpg') }}" alt="Rembug Guyub Komunitas Warga" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src="{{ asset($homeSettings['collage'][3]['image'] ?? 'assets/banu/footer_community.jpg') }}" alt="{{ $homeSettings['collage'][3]['label'] ?? 'Rembug Guyub Komunitas Warga' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
         </div>
 
         <!-- Bento Card 5 (Spans 4 cols on lg) -->
         <div class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/hero_banu.jpg') }}" alt="Sidang Paripurna & Pengawasan APBD di Parlemen" class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+          <img src="{{ asset($homeSettings['hero']['heroImage'] ?? 'assets/banu/hero_banu.jpg') }}" alt="Sidang Paripurna & Pengawasan APBD di Parlemen" class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
         </div>
       </div>

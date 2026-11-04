@@ -113,7 +113,7 @@
                 <div>
                   <span class="font-bold text-zinc-950 block text-[13px]">Alamat:</span>
                   <span class="text-zinc-600 mt-0.5 block leading-relaxed">
-                    {{ $generalSettings['address']['street'] ?? 'Kelurahan Kedung Badak, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat.' }}
+                    {{ $generalSettings['address'] ?? 'Kelurahan Kedung Badak, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat.' }}
                   </span>
                 </div>
               </div>
@@ -132,8 +132,8 @@
                 </div>
                 <div>
                   <span class="font-bold text-zinc-950 block text-[13px]">Telepon / WhatsApp:</span>
-                  <a href="tel:{{ $generalSettings['contact']['ambulance_hotline'] ?? '+6281288880000' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
-                    {{ $generalSettings['contact']['ambulance_hotline'] ?? '+62 812-8888-0000' }}
+                  <a href="tel:{{ $generalSettings['phone'] ?? '+6281288880000' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
+                    {{ $generalSettings['phone'] ?? '+62 812-8888-0000' }}
                   </a>
                 </div>
               </div>
@@ -147,8 +147,8 @@
                 </div>
                 <div>
                   <span class="font-bold text-zinc-950 block text-[13px]">Email:</span>
-                  <a href="mailto:{{ $generalSettings['contact']['email'] ?? 'aspirasi@banubagaskara.id' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
-                    {{ $generalSettings['contact']['email'] ?? 'aspirasi@banubagaskara.id' }}
+                  <a href="mailto:{{ $generalSettings['email'] ?? 'aspirasi@banubagaskara.id' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
+                    {{ $generalSettings['email'] ?? 'aspirasi@banubagaskara.id' }}
                   </a>
                 </div>
               </div>

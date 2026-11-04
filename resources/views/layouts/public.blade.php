@@ -8,8 +8,8 @@
 
     <!-- OpenGraph / Social Meta Tags -->
     <meta property="og:type" content="@yield('og_type', 'website')" />
-    <meta property="og:title" content="@yield('title', 'Banu Lesmana Bagaskara | Beranda Resmi')" />
-    <meta property="og:description" content="@yield('meta_description', 'Kanal resmi transparansi hasil kinerja, rilis berita resmi, galeri dokumentasi, dan Kotak Aspirasi warga Tanah Sareal.')" />
+    <meta property="og:title" content="@yield('title', 'Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024–2029')" />
+    <meta property="og:description" content="@yield('meta_description')" />
     <meta property="og:image" content="@yield('og_image', asset('assets/banu/hero_banu.jpg'))" />
     <meta property="og:url" content="{{ url()->current() }}" />
 
@@ -21,65 +21,10 @@
 
     <link rel="canonical" href="{{ url()->current() }}" />
 
-    <!-- Font: Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-    <!-- Tailwind CSS CDN & Config -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: ['class'],
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-            },
-            colors: {
-              border: 'hsl(240 5.9% 90%)',
-              input: 'hsl(240 5.9% 90%)',
-              ring: '#FF0000',
-              background: '#ffffff',
-              foreground: '#000000',
-              brand: {
-                bright: '#FF0000',
-                DEFAULT: '#BC0202',
-                dark: '#830000',
-                black: '#000000',
-              },
-              primary: {
-                DEFAULT: '#BC0202',
-                foreground: '#ffffff',
-                hover: '#830000',
-                bright: '#FF0000',
-                dark: '#830000',
-                subtle: '#fee2e2',
-              },
-            },
-            borderRadius: {
-              '2xl': '1.25rem',
-              xl: '1rem',
-              lg: '0.625rem',
-              md: '0.5rem',
-              sm: '0.375rem',
-            },
-          },
-        },
-      };
-    </script>
-
+    <!-- Font: Plus Jakarta Sans & Tailwind v4 via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-      *, *::before, *::after { box-sizing: border-box; }
-      html, body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #ffffff;
-        color: #000000;
-        -webkit-font-smoothing: antialiased;
-        overflow-x: hidden;
-      }
       [x-cloak] { display: none !important; }
     </style>
 
@@ -88,7 +33,6 @@
   <body class="min-h-screen w-full flex flex-col bg-white overflow-x-hidden" x-data="{ isScrolled: false, mobileMenu: false }" @scroll.window="isScrolled = (window.pageYOffset > 80)">
     <!-- Main Website Canvas Container: Full Screen Edge-to-Edge -->
     <main class="w-full flex flex-col flex-1 overflow-x-hidden">
-
       <!-- ======================================================== -->
       <!-- POST-SCROLL STICKY NAVBAR (ONLY NAVIGATION LINKS)        -->
       <!-- ======================================================== -->
@@ -135,7 +79,7 @@
         </div>
       </div>
 
-      <!-- MAIN BODY CONTENT -->
+      <!-- Main Page Content -->
       @yield('content')
 
       <!-- ========================================== -->
@@ -143,6 +87,7 @@
       <!-- ========================================== -->
       <footer id="kontak" class="w-full bg-[#000000] text-white pt-14 sm:pt-16 pb-12 border-t border-zinc-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+          <!-- Top Columns Links Grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pb-10 border-b border-zinc-800">
             <!-- Column 1: Navigasi Portal -->
             <div class="min-w-0">
@@ -162,25 +107,28 @@
               <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4 text-zinc-300">Media Sosial &amp; Kontak</h4>
               <ul class="space-y-2 text-xs text-zinc-400">
                 <li>
-                  <a href="https://instagram.com/banubagaskara" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+                  <a href="{{ $generalSettings['socials']['instagram'] ?? 'https://instagram.com/banubagaskara' }}" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
                     <span class="text-[#BC0202] font-bold">&bull;</span> Instagram: @banubagaskara
                   </a>
                 </li>
                 <li>
-                  <a href="https://tiktok.com/@banubagaskara" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+                  <a href="{{ $generalSettings['socials']['tiktok'] ?? 'https://tiktok.com/@banubagaskara' }}" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
                     <span class="text-[#BC0202] font-bold">&bull;</span> TikTok: @banubagaskara
                   </a>
                 </li>
                 <li>
-                  <a href="https://facebook.com/banubgsk" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5"> <span class="text-[#BC0202] font-bold">&bull;</span> Facebook: banubgsk </a>
+                  <a href="{{ $generalSettings['socials']['facebook'] ?? 'https://facebook.com/banubgsk' }}" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+                    <span class="text-[#BC0202] font-bold">&bull;</span> Facebook: banubgsk
+                  </a>
                 </li>
-                <li class="pt-1 text-[11px] text-zinc-400">Kelurahan Kedung Badak, Kec. Tanah Sareal, Kota Bogor, Jawa Barat.</li>
+                <li class="pt-1 text-[11px] text-zinc-400">{{ $generalSettings['address'] ?? 'Kelurahan Kedung Badak, Kec. Tanah Sareal, Kota Bogor, Jawa Barat.' }}</li>
               </ul>
             </div>
           </div>
 
           <!-- Bottom Row: Brand Slogan + Banner Full Gambar -->
           <div id="aspirasi" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-10">
+            <!-- Left: Slogan & Formal Entity -->
             <div class="lg:col-span-5 flex flex-col justify-between">
               <h3 class="text-2xl sm:text-3xl text-white font-bold leading-tight tracking-tight mb-4">Bogor Lebih Baik:<br />Maju &amp; Nyaman untuk Semua</h3>
               <div class="flex items-center gap-3 text-white">
@@ -191,8 +139,9 @@
               </div>
             </div>
 
+            <!-- Right: Banner Full Gambar -->
             <div class="lg:col-span-7 rounded-xl border border-zinc-800 overflow-hidden shadow-sm aspect-[16/9] sm:aspect-[21/9] lg:aspect-auto lg:h-64 bg-zinc-900 group">
-              <img src="/assets/banu/footer_community.jpg" alt="Banner Aspirasi Warga Tanah Sareal bersama Banu Lesmana Bagaskara" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="{{ asset('assets/banu/footer_community.jpg') }}" alt="Banner Aspirasi Warga Tanah Sareal bersama Banu Lesmana Bagaskara" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
           </div>
 

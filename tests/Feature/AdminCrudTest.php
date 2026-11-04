@@ -137,7 +137,7 @@ it('allows admin to view news index', function () {
     $response = $this->actingAs($this->admin)->get(route('admin.berita.index'));
 
     $response->assertOk();
-    $response->assertSee('Kelola Artikel Berita');
+    $response->assertSee('Kelola Berita');
 });
 
 it('allows admin to create news article', function () {
@@ -226,6 +226,7 @@ it('allows admin to view gallery album index', function () {
 
     $response->assertOk();
     $response->assertSee('Kelola Galeri');
+    $response->assertSee('Pemberian Bantuan Sembako');
 });
 
 it('allows admin to create album with nested photos', function () {

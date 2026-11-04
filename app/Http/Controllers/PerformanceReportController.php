@@ -25,7 +25,7 @@ class PerformanceReportController extends Controller
             $reportsQuery->where('id', '!=', $featuredReport->id);
         }
 
-        $reports = $reportsQuery->paginate(6);
+        $reports = $reportsQuery->paginate(9);
 
         return view('public.kinerja.index', compact('featuredReport', 'reports'));
     }

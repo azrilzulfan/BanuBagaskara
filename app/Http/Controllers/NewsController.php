@@ -20,7 +20,7 @@ class NewsController extends Controller
             $newsQuery->where('id', '!=', $featuredNews->id);
         }
 
-        $newsList = $newsQuery->paginate(6);
+        $newsList = $newsQuery->paginate(9);
 
         return view('public.berita.index', compact('featuredNews', 'newsList'));
     }

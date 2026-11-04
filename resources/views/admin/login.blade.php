@@ -11,39 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Alpine.js CDN for Lightweight Reactive UI -->
+    <!-- Tailwind & Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script>
-      function loginForm() {
-        return {
-          email: 'admin@banubagaskara.id',
-          password: '',
-          showPassword: false,
-          remember: true,
-          errorMessage: '',
-          isLoading: false,
-
-          handleLogin() {
-            this.errorMessage = '';
-            this.isLoading = true;
-
-            setTimeout(() => {
-              if (this.password.trim() === '') {
-                this.errorMessage = 'Kata sandi wajib diisi.';
-                this.isLoading = false;
-                return;
-              }
-              // Demo single-admin authentication simulation
-              window.location.href = 'dashboard.html';
-            }, 500);
-          },
-        };
-      }
-    </script>
 
     <style>
       [x-cloak] {
@@ -54,11 +23,11 @@
       }
     </style>
   </head>
-  <body class="min-h-screen bg-[#fafafa] text-zinc-900 antialiased font-normal selection:bg-[#BC0202] selection:text-white flex flex-col justify-between" x-data="loginForm()">
+  <body class="min-h-screen bg-[#fafafa] text-zinc-900 antialiased font-normal selection:bg-[#BC0202] selection:text-white flex flex-col justify-between" x-data="{ showPassword: false }">
     <!-- Top Bar with Back Link -->
     <header class="w-full border-b border-zinc-200 bg-white px-4 sm:px-8 py-4">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <a href="/" class="flex items-center gap-3 text-zinc-950 group">
+        <a href="{{ route('home') }}" class="flex items-center gap-3 text-zinc-950 group">
           <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
             B
           </div>
@@ -73,7 +42,7 @@
         </a>
 
         <a
-          href="/"
+          href="{{ route('home') }}"
           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition-colors shadow-2xs"
         >
           <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,12 +80,6 @@
               <span>{{ $errors->first() }}</span>
             </div>
           @endif
-          <div x-show="errorMessage" x-cloak class="p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900 flex items-start gap-2.5">
-            <svg class="w-4 h-4 text-red-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span x-text="errorMessage"></span>
-          </div>
 
           <!-- Form Element -->
           <form method="POST" action="{{ route('admin.login.submit') }}" class="space-y-4">
@@ -125,9 +88,9 @@
             <div>
               <label class="block text-xs font-bold text-zinc-900 mb-1.5">Email / Nama Pengguna</label>
               <input
-                type="text"
+                type="email"
                 name="email"
-                x-model="email"
+                value="{{ old('email', 'admin@banubagaskara.id') }}"
                 required
                 placeholder="admin@banubagaskara.id"
                 class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs font-medium"
@@ -144,7 +107,6 @@
                 <input
                   :type="showPassword ? 'text' : 'password'"
                   name="password"
-                  x-model="password"
                   required
                   placeholder="Masukkan kata sandi admin..."
                   class="w-full rounded-lg border border-zinc-300 bg-white pl-3.5 pr-10 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
@@ -172,7 +134,7 @@
                 <input
                   type="checkbox"
                   name="remember"
-                  x-model="remember"
+                  value="1"
                   class="rounded border-zinc-300 text-[#BC0202] focus:ring-[#BC0202] focus:ring-offset-0"
                 />
                 <span class="text-xs text-zinc-700 font-medium">Ingat saya di perangkat ini</span>
@@ -182,32 +144,34 @@
             <!-- Submit Button (No Pill, Rounded-lg) -->
             <button
               type="submit"
-              :disabled="isLoading"
-              class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold py-2.5 px-4 shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+              class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold py-2.5 px-4 shadow-sm transition-colors gap-2"
             >
-              <svg x-show="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <span>Masuk ke Panel Dasbor</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
-              <span x-text="isLoading ? 'Memverifikasi...' : 'Masuk ke Dasbor Admin'"></span>
             </button>
           </form>
 
-          <!-- Security Badge Notice -->
-          <div class="pt-4 border-t border-zinc-100 text-center">
-            <p class="text-[11px] text-zinc-500 leading-relaxed">
-              Dilindungi otentikasi tunggal (Single Admin Account) terenkripsi untuk integritas data publikasi kedewanan.
-            </p>
+          <!-- Security Notice -->
+          <div class="pt-4 border-t border-zinc-100 flex items-center justify-center gap-2 text-[11px] text-zinc-500">
+            <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Autentikasi Terenkripsi &bull; Sesi Aman Dilindungi</span>
           </div>
         </div>
+
+        <!-- Footer Link -->
+        <p class="text-center text-xs text-zinc-400 mt-6">
+          &copy; 2026 banubagaskara. Panel Khusus Administrator Resmi.
+        </p>
       </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="w-full border-t border-zinc-200 bg-white py-4 px-4 text-center">
-      <p class="text-xs text-zinc-500">
-        &copy; 2026 Banu Lesmana Bagaskara, S.M. &bull; Fraksi PDI Perjuangan &bull; DPRD Kota Bogor
-      </p>
+    <!-- Page Bottom Bar -->
+    <footer class="w-full border-t border-zinc-200 bg-white py-3 px-4 text-center text-[11px] text-zinc-400">
+      Fraksi PDI Perjuangan DPRD Kota Bogor &bull; Dapil 4 Kecamatan Tanah Sareal
     </footer>
   </body>
 </html>

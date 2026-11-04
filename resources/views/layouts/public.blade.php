@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@yield('title', 'Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024–2029')</title>
-    <meta name="description" content="@yield('meta_description', 'Website resmi Banu Lesmana Bagaskara, S.M., Anggota DPRD Kota Bogor Terpilih 2024–2029 (Dapil 4 Tanah Sareal, Fraksi PDI Perjuangan). Bogor Lebih Baik: Maju dan Nyaman untuk Semua.')" />
+    <title>@yield('title', 'Banu Lesmana Bagaskara | Beranda Resmi')</title>
+    <meta name="description" content="@yield('meta_description', 'Website resmi Banu Lesmana Bagaskara, S.M., Anggota DPRD Kota Bogor Terpilih 2024–2029 (Dapil 4 Tanah Sareal, PDI Perjuangan). Bogor Lebih Baik: Maju dan Nyaman untuk Semua.')" />
 
     <!-- OpenGraph / Social Meta Tags -->
     <meta property="og:type" content="@yield('og_type', 'website')" />
-    <meta property="og:title" content="@yield('title', 'Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024–2029')" />
+    <meta property="og:title" content="@yield('title', 'Banu Lesmana Bagaskara | Beranda Resmi')" />
     <meta property="og:description" content="@yield('meta_description', 'Kanal resmi transparansi hasil kinerja, rilis berita resmi, galeri dokumentasi, dan Kotak Aspirasi warga Tanah Sareal.')" />
     <meta property="og:image" content="@yield('og_image', asset('assets/banu/hero_banu.jpg'))" />
     <meta property="og:url" content="{{ url()->current() }}" />
@@ -21,126 +21,185 @@
 
     <link rel="canonical" href="{{ url()->current() }}" />
 
-    <!-- Font: Plus Jakarta Sans via Vite & Bunny -->
+    <!-- Font: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN & Config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: ['class'],
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              border: 'hsl(240 5.9% 90%)',
+              input: 'hsl(240 5.9% 90%)',
+              ring: '#FF0000',
+              background: '#ffffff',
+              foreground: '#000000',
+              brand: {
+                bright: '#FF0000',
+                DEFAULT: '#BC0202',
+                dark: '#830000',
+                black: '#000000',
+              },
+              primary: {
+                DEFAULT: '#BC0202',
+                foreground: '#ffffff',
+                hover: '#830000',
+                bright: '#FF0000',
+                dark: '#830000',
+                subtle: '#fee2e2',
+              },
+            },
+            borderRadius: {
+              '2xl': '1.25rem',
+              xl: '1rem',
+              lg: '0.625rem',
+              md: '0.5rem',
+              sm: '0.375rem',
+            },
+          },
+        },
+      };
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
       [x-cloak] { display: none !important; }
     </style>
 
     @stack('schema')
   </head>
-  <body class="min-h-screen w-full flex flex-col bg-white overflow-x-hidden font-sans text-zinc-900 antialiased selection:bg-[#BC0202] selection:text-white" x-data="{ isScrolled: false, mobileMenu: false }" @scroll.window="isScrolled = (window.pageYOffset > 100)">
+  <body class="min-h-screen w-full flex flex-col bg-white overflow-x-hidden" x-data="{ isScrolled: false, mobileMenu: false }" @scroll.window="isScrolled = (window.pageYOffset > 80)">
+    <!-- Main Website Canvas Container: Full Screen Edge-to-Edge -->
+    <main class="w-full flex flex-col flex-1 overflow-x-hidden">
 
-    <!-- ======================================================== -->
-    <!-- POST-SCROLL STICKY NAVBAR                                -->
-    <!-- ======================================================== -->
-    <div
-      x-cloak
-      x-show="isScrolled"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="-translate-y-full opacity-0"
-      x-transition:enter-end="translate-y-0 opacity-100"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="translate-y-0 opacity-100"
-      x-transition:leave-end="-translate-y-full opacity-0"
-      class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-zinc-200 py-2.5 px-4 sm:px-6 shadow-2xs"
-    >
-      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0">
-          <div class="w-7 h-7 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs shadow-2xs">B</div>
-          <span class="font-bold text-xs sm:text-sm text-zinc-950 tracking-tight">Banu Bagaskara</span>
-        </a>
-
-        <!-- Desktop Navigation Links -->
-        <nav class="hidden lg:flex items-center gap-1">
-          <a href="{{ route('home') }}" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors {{ request()->routeIs('home') ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50' }}">Beranda</a>
-          <a href="{{ route('profile') }}" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors {{ request()->routeIs('profile') ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50' }}">Kenali Saya</a>
-          <a href="{{ route('kinerja.index') }}" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors {{ request()->routeIs('kinerja.*') ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50' }}">Hasil Kinerja</a>
-          <a href="{{ route('berita.index') }}" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors {{ request()->routeIs('berita.*') ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50' }}">Berita</a>
-          <a href="{{ route('galeri.index') }}" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors {{ request()->routeIs('galeri.*') ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50' }}">Galeri</a>
-          <a href="{{ route('kontak.index') }}" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors {{ request()->routeIs('kontak.*') ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50' }}">Kontak</a>
-        </nav>
-
-        <a
-          href="{{ route('kontak.index') }}#aspirasi"
-          class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white shadow-2xs transition-colors shrink-0"
+      <!-- ======================================================== -->
+      <!-- POST-SCROLL STICKY NAVBAR (ONLY NAVIGATION LINKS)        -->
+      <!-- ======================================================== -->
+      <div class="fixed top-3 sm:top-4 left-0 right-0 w-full z-50 flex justify-center pointer-events-none" x-cloak>
+        <div
+          x-show="isScrolled"
+          x-transition:enter="transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1)"
+          x-transition:enter-start="opacity-0 scale-x-50 scale-y-90 -translate-y-2"
+          x-transition:enter-end="opacity-100 scale-x-100 scale-y-100 translate-y-0"
+          x-transition:leave="transition-all duration-300 ease-in"
+          x-transition:leave-start="opacity-100 scale-x-100 scale-y-100 translate-y-0"
+          x-transition:leave-end="opacity-0 scale-x-50 scale-y-90 -translate-y-2"
+          class="w-[calc(100%-2rem)] max-w-7xl pointer-events-auto origin-center flex justify-center"
         >
-          <span>Kotak Aspirasi</span>
-        </a>
-      </div>
-    </div>
+          <nav class="w-full sm:w-auto bg-white/95 backdrop-blur-md border border-zinc-200/90 py-2 sm:py-2.5 px-4 sm:px-8 rounded-xl sm:rounded-2xl shadow-md mx-auto">
+            <!-- Desktop: ONLY Navigation Links Centered across full content width -->
+            <div class="hidden lg:flex items-center justify-center gap-3 xl:gap-6 w-full">
+              <a href="{{ route('home') }}" class="text-xs font-semibold px-4 py-2 {{ request()->routeIs('home') ? 'text-zinc-950 bg-zinc-100' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100' }} rounded-lg transition-colors shrink-0">Beranda</a>
+              <a href="{{ route('profile') }}" class="text-xs font-semibold px-4 py-2 {{ request()->routeIs('profile') ? 'text-zinc-950 bg-zinc-100' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100' }} rounded-lg transition-colors shrink-0">Profil</a>
+              <a href="{{ route('kinerja.index') }}" class="text-xs font-semibold px-4 py-2 {{ request()->routeIs('kinerja.*') ? 'text-zinc-950 bg-zinc-100' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100' }} rounded-lg transition-colors shrink-0">Kinerja</a>
+              <a href="{{ route('berita.index') }}" class="text-xs font-semibold px-4 py-2 {{ request()->routeIs('berita.*') ? 'text-zinc-950 bg-zinc-100' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100' }} rounded-lg transition-colors shrink-0">Berita</a>
+              <a href="{{ route('galeri.index') }}" class="text-xs font-semibold px-4 py-2 {{ request()->routeIs('galeri.*') ? 'text-zinc-950 bg-zinc-100' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100' }} rounded-lg transition-colors shrink-0">Galeri</a>
+              <a href="{{ route('kontak.index') }}" class="text-xs font-semibold px-4 py-2 {{ request()->routeIs('kontak.*') ? 'text-zinc-950 bg-zinc-100' : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100' }} rounded-lg transition-colors shrink-0">Kontak</a>
+            </div>
 
-    <!-- MAIN BODY CONTENT -->
-    <main class="flex-1 w-full">
+            <!-- Mobile / Tablet (< lg): Compact Nav Pill on Scroll -->
+            <div class="lg:hidden flex items-center justify-between w-full px-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#BC0202]"></span>
+                <span class="text-xs font-bold text-zinc-900 tracking-tight">Navigasi Banu Lesmana</span>
+              </div>
+              <button
+                @click="mobileMenu = !mobileMenu"
+                aria-label="Buka Menu"
+                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 py-1 shadow-2xs transition-colors active:bg-zinc-200"
+              >
+                <svg class="w-3.5 h-3.5 text-zinc-700 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                Menu
+              </button>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <!-- MAIN BODY CONTENT -->
       @yield('content')
+
+      <!-- ========================================== -->
+      <!-- FOOTER SECTION                             -->
+      <!-- ========================================== -->
+      <footer id="kontak" class="w-full bg-[#000000] text-white pt-14 sm:pt-16 pb-12 border-t border-zinc-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pb-10 border-b border-zinc-800">
+            <!-- Column 1: Navigasi Portal -->
+            <div class="min-w-0">
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4 text-zinc-300">Navigasi Portal</h4>
+              <ul class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-zinc-400">
+                <li><a href="{{ route('home') }}" class="hover:text-white transition-colors">Beranda Utama</a></li>
+                <li><a href="{{ route('profile') }}" class="hover:text-white transition-colors">Biografi &amp; Visi Misi</a></li>
+                <li><a href="{{ route('kinerja.index') }}" class="hover:text-white transition-colors">Laporan Kinerja</a></li>
+                <li><a href="{{ route('berita.index') }}" class="hover:text-white transition-colors">Berita &amp; Rilis</a></li>
+                <li><a href="{{ route('galeri.index') }}" class="hover:text-white transition-colors">Galeri Dokumentasi</a></li>
+                <li><a href="{{ route('kontak.index') }}" class="hover:text-white transition-colors">Rumah Aspirasi</a></li>
+              </ul>
+            </div>
+
+            <!-- Column 2: Kontak & Media Sosial -->
+            <div class="min-w-0">
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4 text-zinc-300">Media Sosial &amp; Kontak</h4>
+              <ul class="space-y-2 text-xs text-zinc-400">
+                <li>
+                  <a href="https://instagram.com/banubagaskara" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+                    <span class="text-[#BC0202] font-bold">&bull;</span> Instagram: @banubagaskara
+                  </a>
+                </li>
+                <li>
+                  <a href="https://tiktok.com/@banubagaskara" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+                    <span class="text-[#BC0202] font-bold">&bull;</span> TikTok: @banubagaskara
+                  </a>
+                </li>
+                <li>
+                  <a href="https://facebook.com/banubgsk" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5"> <span class="text-[#BC0202] font-bold">&bull;</span> Facebook: banubgsk </a>
+                </li>
+                <li class="pt-1 text-[11px] text-zinc-400">Kelurahan Kedung Badak, Kec. Tanah Sareal, Kota Bogor, Jawa Barat.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Brand Slogan + Banner Full Gambar -->
+          <div id="aspirasi" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-10">
+            <div class="lg:col-span-5 flex flex-col justify-between">
+              <h3 class="text-2xl sm:text-3xl text-white font-bold leading-tight tracking-tight mb-4">Bogor Lebih Baik:<br />Maju &amp; Nyaman untuk Semua</h3>
+              <div class="flex items-center gap-3 text-white">
+                <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs">BLB</div>
+                <div class="flex flex-col leading-tight">
+                  <span class="font-bold text-sm tracking-tight text-white">Banu Lesmana Bagaskara</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7 rounded-xl border border-zinc-800 overflow-hidden shadow-sm aspect-[16/9] sm:aspect-[21/9] lg:aspect-auto lg:h-64 bg-zinc-900 group">
+              <img src="/assets/banu/footer_community.jpg" alt="Banner Aspirasi Warga Tanah Sareal bersama Banu Lesmana Bagaskara" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            </div>
+          </div>
+
+          <!-- Copyright Minimalis -->
+          <div class="pt-8 mt-10 border-t border-zinc-800 text-center text-xs text-zinc-500">&copy; 2026 banubagaskara.</div>
+        </div>
+      </footer>
     </main>
-
-    <!-- ======================================================== -->
-    <!-- OFFICIAL FOOTER                                          -->
-    <!-- ======================================================== -->
-    <footer class="w-full border-t border-zinc-200 bg-[#fafafa] pt-12 pb-8 px-4 sm:px-6 lg:px-8 mt-16">
-      <div class="max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-zinc-200">
-          <!-- Col 1: Identity & Party -->
-          <div class="md:col-span-2 space-y-4">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
-                B
-              </div>
-              <div>
-                <h3 class="font-bold text-sm sm:text-base text-zinc-950 tracking-tight">Banu Lesmana Bagaskara, S.M.</h3>
-                <p class="text-xs text-zinc-500 font-medium">Anggota DPRD Kota Bogor Periode 2024–2029</p>
-              </div>
-            </div>
-            <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-md">
-              Fraksi PDI Perjuangan &bull; Komisi 1 DPRD Kota Bogor &bull; Daerah Pemilihan Kota Bogor 4 (Kecamatan Tanah Sareal). Mengabdi dengan integritas, hadir memberi solusi nyata untuk warga.
-            </p>
-            <div class="flex items-center gap-2 pt-1 text-xs text-zinc-600">
-              <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-red-50 text-[#BC0202] border border-red-100 font-bold">
-                PDI Perjuangan
-              </span>
-              <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-zinc-100 text-zinc-800 border border-zinc-200 font-semibold">
-                Dapil Tanah Sareal
-              </span>
-            </div>
-          </div>
-
-          <!-- Col 2: Navigasi Menu -->
-          <div class="space-y-3">
-            <h4 class="text-xs font-bold text-zinc-950 uppercase tracking-wider">Navigasi Halaman</h4>
-            <ul class="space-y-2 text-xs">
-              <li><a href="{{ route('home') }}" class="text-zinc-600 hover:text-[#BC0202] transition-colors">Beranda</a></li>
-              <li><a href="{{ route('profile') }}" class="text-zinc-600 hover:text-[#BC0202] transition-colors">Profil (Kenali Banu)</a></li>
-              <li><a href="{{ route('kinerja.index') }}" class="text-zinc-600 hover:text-[#BC0202] transition-colors">Hasil Kinerja Dewan</a></li>
-              <li><a href="{{ route('berita.index') }}" class="text-zinc-600 hover:text-[#BC0202] transition-colors">Berita & Rilis Pers</a></li>
-              <li><a href="{{ route('galeri.index') }}" class="text-zinc-600 hover:text-[#BC0202] transition-colors">Galeri Dokumentasi</a></li>
-              <li><a href="{{ route('kontak.index') }}" class="text-zinc-600 hover:text-[#BC0202] transition-colors">Kontak & Rumah Aspirasi</a></li>
-            </ul>
-          </div>
-
-          <!-- Col 3: Posko Rumah Aspirasi -->
-          <div class="space-y-3">
-            <h4 class="text-xs font-bold text-zinc-950 uppercase tracking-wider">Rumah Aspirasi Rakyat</h4>
-            <p class="text-xs text-zinc-600 leading-relaxed">
-              Kelurahan Kedung Badak, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat.
-            </p>
-            <div class="space-y-1.5 text-xs text-zinc-600">
-              <p class="font-medium text-zinc-900">Hotline Ambulance Siaga 24 Jam:</p>
-              <a href="tel:+6281288880000" class="font-mono font-bold text-[#BC0202] hover:underline block">+62 812-8888-0000</a>
-              <p class="text-[11px] text-zinc-500">Email: aspirasi@banubagaskara.id</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Copyright -->
-        <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>&copy; 2026 Banu Lesmana Bagaskara, S.M. Seluruh hak cipta dilindungi.</p>
-          <div class="flex items-center gap-4">
-            <a href="{{ route('admin.login') }}" class="text-zinc-400 hover:text-zinc-700 transition-colors">Akses Internal Dewan</a>
-          </div>
-        </div>
-      </div>
-    </footer>
   </body>
 </html>

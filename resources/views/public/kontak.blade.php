@@ -1,278 +1,495 @@
-@extends('layouts.public')
+﻿<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kontak &amp; Rumah Aspirasi Rakyat | Banu Lesmana Bagaskara, S.M.</title>
+    <meta name="description" content="Saluran kontak resmi, alamat sekretariat Rumah Aspirasi Rakyat di Kedung Badak, hotline ambulance siaga 24 jam, dan formulir pengaduan warga Banu Lesmana Bagaskara, S.M. (DPRD Kota Bogor 2024–2029)." />
 
-@section('title', 'Kontak & Rumah Aspirasi Warga | Banu Lesmana Bagaskara, S.M.')
-@section('meta_description', 'Saluran resmi pengaduan warga, alamat sekretariat Rumah Aspirasi di Kedung Badak, dan layanan ambulance siaga 24 jam gratis bersama Banu Lesmana Bagaskara, S.M.')
+    <!-- Font: Plus Jakarta Sans (Clean, Modern, Disciplined Sans-Serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-@section('content')
-  <!-- Header Hero -->
-  <header class="w-full bg-[#faf5f5] border-b border-zinc-200 py-14 sm:py-18">
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
-      <div class="max-w-3xl">
-        <span class="text-xs font-bold text-[#BC0202] uppercase tracking-wider block mb-2">Rumah Aspirasi Rakyat Digital</span>
-        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-950 tracking-tight leading-tight">
-          <span class="text-[#BC0202]">Kontak</span> &amp; Kotak <span class="text-[#BC0202]">Aspirasi</span> Warga
-        </h1>
-        <p class="text-xs sm:text-sm text-zinc-600 mt-4 leading-relaxed">
-          Kanal pengaduan publik langsung tanpa sekat. Sampaikan usulan perbaikan lingkungan, keluhan fasilitas umum, maupun permohonan pendampingan kesehatan dan UMKM di wilayah Tanah Sareal.
-        </p>
-      </div>
-    </div>
-  </header>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Banner Ambulance Siaga 24 Jam -->
-  <section class="w-full bg-zinc-950 border-b border-zinc-200">
-    <div class="w-full max-w-[1920px] mx-auto overflow-hidden">
-      <a href="#aspirasi" class="block w-full group">
-        <img
-          src="{{ asset('assets/banu/banner_serbaguna.jpg') }}"
-          alt="Ambulance Siaga 24 Jam & Pendamping Rujukan RSUD - Banu Lesmana Bagaskara, S.M."
-          class="w-full h-auto object-cover min-h-[160px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] transition-transform duration-500 group-hover:scale-[1.008]"
-          loading="lazy"
-        />
-      </a>
-    </div>
-  </section>
+    <!-- Alpine.js CDN for Lightweight Reactive UI -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-  <!-- Main Contact & Aspiration Form Section -->
-  <section class="w-full bg-[#f4f4f5] py-14 sm:py-20 border-b border-zinc-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-        <!-- Left: Official Contact Card -->
-        <div class="lg:col-span-5 flex flex-col space-y-6">
-          <div class="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs">
-            <h2 class="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight"><span class="text-[#BC0202]">Kontak</span> Resmi</h2>
+    <!-- Tailwind & Shadcn Configuration (100% Consistent) -->
+    <script>
+      tailwind.config = {
+        darkMode: ['class'],
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              border: 'hsl(240 5.9% 90%)',
+              input: 'hsl(240 5.9% 90%)',
+              ring: '#FF0000',
+              background: '#ffffff',
+              foreground: '#000000',
+              brand: {
+                bright: '#FF0000',
+                DEFAULT: '#BC0202', // Warna Utama Merah
+                dark: '#830000',
+                black: '#000000',
+              },
+              primary: {
+                DEFAULT: '#BC0202', // Warna Utama Merah
+                foreground: '#ffffff',
+                hover: '#830000',
+                bright: '#FF0000',
+                dark: '#830000',
+                subtle: '#fee2e2',
+              },
+              secondary: {
+                DEFAULT: 'hsl(240 4.8% 95.9%)',
+                foreground: 'hsl(240 5.9% 10%)',
+              },
+              muted: {
+                DEFAULT: 'hsl(240 4.8% 95.9%)',
+                foreground: 'hsl(240 3.8% 46.1%)',
+              },
+              accent: {
+                DEFAULT: 'hsl(240 4.8% 95.9%)',
+                foreground: 'hsl(240 5.9% 10%)',
+              },
+              card: {
+                DEFAULT: 'hsl(0 0% 100%)',
+                foreground: '#000000',
+              },
+            },
+            borderRadius: {
+              '2xl': '1.25rem' /* 20px */,
+              xl: '1rem' /* 16px */,
+              lg: '0.625rem' /* 10px */,
+              md: '0.5rem' /* 8px */,
+              sm: '0.375rem' /* 6px */,
+            },
+          },
+        },
+      };
+    </script>
 
-            <div class="mt-6 space-y-5 text-xs text-zinc-700">
-              <!-- Alamat -->
-              <div class="flex items-start gap-3.5">
-                <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <span class="font-bold text-zinc-950 block text-[13px]">Posko Rumah Aspirasi:</span>
-                  <span class="text-zinc-600 mt-0.5 block leading-relaxed">
-                    {{ $generalSettings['address'] ?? 'Kelurahan Kedung Badak, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat.' }}
-                  </span>
-                </div>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Clean custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f4f4f5;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d4d4d8;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a1a1aa;
+      }
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen w-full flex flex-col bg-white overflow-x-hidden" x-data="{ isScrolled: false, mobileMenu: false, submitted: false, ticketNum: '' }" @scroll.window="isScrolled = (window.pageYOffset > 80)">
+    <!-- Main Website Canvas Container: Full Screen Edge-to-Edge -->
+    <main class="w-full flex flex-col flex-1 overflow-x-hidden">
+      <!-- ======================================================== -->
+      <!-- POST-SCROLL STICKY NAVBAR (ONLY NAVIGATION LINKS)        -->
+      <!-- ======================================================== -->
+      <div class="fixed top-3 sm:top-4 left-0 right-0 w-full z-50 flex justify-center pointer-events-none" x-cloak>
+        <div
+          x-show="isScrolled"
+          x-transition:enter="transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1)"
+          x-transition:enter-start="opacity-0 scale-x-50 scale-y-90 -translate-y-2"
+          x-transition:enter-end="opacity-100 scale-x-100 scale-y-100 translate-y-0"
+          x-transition:leave="transition-all duration-300 ease-in"
+          x-transition:leave-start="opacity-100 scale-x-100 scale-y-100 translate-y-0"
+          x-transition:leave-end="opacity-0 scale-x-50 scale-y-90 -translate-y-2"
+          class="w-[calc(100%-2rem)] max-w-7xl pointer-events-auto origin-center flex justify-center"
+        >
+          <nav class="w-full sm:w-auto bg-white/95 backdrop-blur-md border border-zinc-200/90 py-2 sm:py-2.5 px-4 sm:px-8 rounded-xl sm:rounded-2xl shadow-md mx-auto">
+            <!-- Desktop: ONLY Navigation Links Centered across full content width -->
+            <div class="hidden lg:flex items-center justify-center gap-3 xl:gap-6 w-full">
+              <a href="/" class="text-xs font-semibold px-4 py-2 text-zinc-950 bg-zinc-100 rounded-lg transition-colors shrink-0">Beranda</a>
+              <a href="/kenali" class="text-xs font-semibold px-4 py-2 text-zinc-600 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors shrink-0">Profil</a>
+              <a href="/kinerja" class="text-xs font-semibold px-4 py-2 text-zinc-600 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors shrink-0">Kinerja</a>
+              <a href="/berita" class="text-xs font-semibold px-4 py-2 text-zinc-600 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors shrink-0">Berita</a>
+              <a href="/galeri" class="text-xs font-semibold px-4 py-2 text-zinc-600 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors shrink-0">Galeri</a>
+              <a href="/kontak" class="text-xs font-semibold px-4 py-2 text-zinc-600 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors shrink-0">Kontak</a>
+            </div>
+
+            <!-- Mobile / Tablet (< lg): Compact Nav Pill on Scroll -->
+            <div class="lg:hidden flex items-center justify-between w-full px-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#BC0202]"></span>
+                <span class="text-xs font-bold text-zinc-900 tracking-tight">Navigasi Banu Lesmana</span>
               </div>
-
-              <!-- Telepon / WA -->
-              <div class="flex items-start gap-3.5">
-                <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                </div>
-                <div>
-                  <span class="font-bold text-zinc-950 block text-[13px]">Hotline Ambulance Siaga 24 Jam:</span>
-                  <a href="tel:{{ $generalSettings['phone'] ?? '+6281288880000' }}" class="text-[#BC0202] font-mono font-bold mt-0.5 block hover:underline text-sm">
-                    {{ $generalSettings['phone'] ?? '+62 812-8888-0000' }}
-                  </a>
-                </div>
-              </div>
-
-              <!-- Email -->
-              <div class="flex items-start gap-3.5">
-                <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <span class="font-bold text-zinc-950 block text-[13px]">Email Resmi:</span>
-                  <a href="mailto:{{ $generalSettings['email'] ?? 'aspirasi@banubagaskara.id' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
-                    {{ $generalSettings['email'] ?? 'aspirasi@banubagaskara.id' }}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Media Sosial -->
-            <div class="mt-7 pt-6 border-t border-zinc-100">
-              <span class="text-xs font-bold text-zinc-950 block mb-3 uppercase tracking-wider">Media Sosial Resmi:</span>
-              <div class="flex flex-col space-y-2.5 text-xs text-zinc-600">
-                <a href="{{ $generalSettings['socials']['instagram'] ?? 'https://instagram.com/banubagaskara' }}" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-[#BC0202] transition-colors">
-                  <span class="w-2 h-2 rounded-xs bg-[#BC0202]"></span>
-                  <span>Instagram: <strong>@banubagaskara</strong></span>
-                </a>
-                <a href="{{ $generalSettings['socials']['tiktok'] ?? 'https://tiktok.com/@banubagaskara' }}" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-[#BC0202] transition-colors">
-                  <span class="w-2 h-2 rounded-xs bg-[#BC0202]"></span>
-                  <span>TikTok: <strong>@banubagaskara</strong></span>
-                </a>
-                <a href="{{ $generalSettings['socials']['facebook'] ?? 'https://facebook.com/banubgsk' }}" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-[#BC0202] transition-colors">
-                  <span class="w-2 h-2 rounded-xs bg-[#BC0202]"></span>
-                  <span>Facebook: <strong>banubgsk</strong></span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: Sampaikan Aspirasi Form -->
-        <div id="aspirasi" class="lg:col-span-7 rounded-2xl border border-zinc-200 bg-white p-6 sm:p-9 shadow-xs">
-          <div class="mb-6 sm:mb-8">
-            <h2 class="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight leading-snug"><span class="text-[#BC0202]">Formulir</span> Kotak Aspirasi</h2>
-            <p class="text-xs text-zinc-600 mt-1.5">Laporan Anda akan tercatat dengan nomor tiket resmi untuk ditinjau oleh tim sekretariat dewan.</p>
-          </div>
-
-          <!-- Success Notification Card -->
-          @if (session('ticket_number'))
-            <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-xs text-emerald-900">
-              <div class="flex items-start gap-3">
-                <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">&check;</div>
-                <div>
-                  <span class="font-bold text-sm block text-emerald-950">Aspirasi Anda Berhasil Terkirim!</span>
-                  <p class="mt-1 leading-relaxed text-zinc-700">
-                    Terima kasih <strong>{{ session('sender_name', 'Bapak/Ibu') }}</strong>. Laporan Anda telah tersimpan dengan nomor tiket:
-                  </p>
-                  <div class="mt-2.5 inline-block px-3.5 py-1.5 rounded-lg bg-white border border-emerald-300 font-mono font-bold text-base text-emerald-800 shadow-2xs">
-                    {{ session('ticket_number') }}
-                  </div>
-                  <p class="mt-2 text-[11px] text-zinc-500">
-                    Simpan nomor tiket ini sebagai bukti pelaporan. Tim Rumah Aspirasi akan meninjau dan menghubungi Anda via WhatsApp.
-                  </p>
-                </div>
-              </div>
-            </div>
-          @endif
-
-          <!-- Validation Errors Alert -->
-          @if ($errors->any())
-            <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-900 space-y-1">
-              <span class="font-bold block">Mohon perbaiki isian formulir:</span>
-              <ul class="list-disc list-inside space-y-0.5 text-red-800">
-                @foreach ($errors->all() as $err)
-                  <li>{{ $err }}</li>
-                @endforeach
-              </ul>
-            </div>
-          @endif
-
-          <!-- Form Element -->
-          <form method="POST" action="{{ route('aspirasi.store') }}" class="space-y-4">
-            @csrf
-
-            <!-- Honeypot field (hidden from real users, traps automated bots) -->
-            <div class="hidden" aria-hidden="true" style="display:none !important;">
-              <input type="text" name="website_hp" tabindex="-1" autocomplete="off" />
-            </div>
-
-            <!-- Nama Lengkap & Nomor Telepon -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label for="sender_name" class="block text-xs font-bold text-zinc-900 mb-1.5">Nama Lengkap *</label>
-                <input
-                  id="sender_name"
-                  name="sender_name"
-                  type="text"
-                  required
-                  value="{{ old('sender_name') }}"
-                  placeholder="Nama lengkap Anda..."
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-                />
-              </div>
-              <div>
-                <label for="phone_number" class="block text-xs font-bold text-zinc-900 mb-1.5">Nomor WhatsApp Aktif *</label>
-                <input
-                  id="phone_number"
-                  name="phone_number"
-                  type="tel"
-                  required
-                  value="{{ old('phone_number') }}"
-                  placeholder="Contoh: 081234567890"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-                />
-              </div>
-            </div>
-
-            <!-- Kelurahan & Kategori -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label for="kelurahan" class="block text-xs font-bold text-zinc-900 mb-1.5">Kelurahan (Kec. Tanah Sareal)</label>
-                <select
-                  id="kelurahan"
-                  name="kelurahan"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-                >
-                  <option value="">Pilih Kelurahan...</option>
-                  @foreach ($kelurahanList as $kel)
-                    <option value="{{ $kel }}" {{ old('kelurahan') === $kel ? 'selected' : '' }}>{{ $kel }}</option>
-                  @endforeach
-                </select>
-              </div>
-              <div>
-                <label for="category" class="block text-xs font-bold text-zinc-900 mb-1.5">Kategori Bidang</label>
-                <select
-                  id="category"
-                  name="category"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-                >
-                  <option value="Infrastruktur & Drainase" {{ old('category') === 'Infrastruktur & Drainase' ? 'selected' : '' }}>Infrastruktur &amp; Drainase</option>
-                  <option value="Penerangan Jalan (PJU)" {{ old('category') === 'Penerangan Jalan (PJU)' ? 'selected' : '' }}>Penerangan Jalan (PJU)</option>
-                  <option value="Layanan Ambulance Siaga" {{ old('category') === 'Layanan Ambulance Siaga' ? 'selected' : '' }}>Layanan Ambulance Siaga</option>
-                  <option value="UMKM & Usaha Warga" {{ old('category') === 'UMKM & Usaha Warga' ? 'selected' : '' }}>UMKM &amp; Legalitas Usaha</option>
-                  <option value="Pendidikan & Beasiswa" {{ old('category') === 'Pendidikan & Beasiswa' ? 'selected' : '' }}>Pendidikan &amp; Beasiswa</option>
-                  <option value="Sosial & Kesehatan Lainnya" {{ old('category') === 'Sosial & Kesehatan Lainnya' ? 'selected' : '' }}>Sosial &amp; Kesehatan Lainnya</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Alamat Lengkap -->
-            <div>
-              <label for="address" class="block text-xs font-bold text-zinc-900 mb-1.5">Alamat Lengkap / Lokasi Masalah *</label>
-              <input
-                id="address"
-                name="address"
-                type="text"
-                required
-                value="{{ old('address') }}"
-                placeholder="RT/RW, nama jalan/gang, nomor rumah..."
-                class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-              />
-            </div>
-
-            <!-- Subjek -->
-            <div>
-              <label for="subject" class="block text-xs font-bold text-zinc-900 mb-1.5">Perihal / Subjek *</label>
-              <input
-                id="subject"
-                name="subject"
-                type="text"
-                required
-                value="{{ old('subject') }}"
-                placeholder="Contoh: Perbaikan saluran drainase tersumbat saat hujan deras"
-                class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-              />
-            </div>
-
-            <!-- Uraian -->
-            <div>
-              <label for="description" class="block text-xs font-bold text-zinc-900 mb-1.5">Uraian Lengkap Masalah / Usulan *</label>
-              <textarea
-                id="description"
-                name="description"
-                required
-                rows="4"
-                placeholder="Ceritakan kronologi, kondisi lapangan, atau bantuan apa yang Anda butuhkan secara terperinci..."
-                class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs leading-relaxed"
-              >{{ old('description') }}</textarea>
-            </div>
-
-            <!-- Submit Button (Strictly Rounded-lg, No Pill) -->
-            <div class="pt-2">
               <button
-                type="submit"
-                class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-7 py-3 shadow-sm transition-colors active:scale-98"
+                @click="mobileMenu = !mobileMenu"
+                aria-label="Buka Menu"
+                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 py-1 shadow-2xs transition-colors active:bg-zinc-200"
               >
-                Kirim Aspirasi Sekarang
+                <svg class="w-3.5 h-3.5 text-zinc-700 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                Menu
               </button>
             </div>
-          </form>
+          </nav>
         </div>
       </div>
-    </div>
-  </section>
-@endsection
+
+      <!-- ========================================== -->
+      <!-- 1. HEADER & HERO SECTION (Kontak)          -->
+      <!-- ========================================== -->
+      <header class="w-full bg-[#faf5f5] border-b border-zinc-200 pt-7 sm:pt-9 pb-12 sm:pb-16 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+          <!-- Top Nav Bar: Logo & Navigation Links -->
+          <div class="flex items-center justify-between z-10 w-full mb-10 sm:mb-14 gap-2">
+            <a href="/" class="flex items-center gap-2.5 sm:gap-3 text-zinc-950 group min-w-0 flex-1">
+              <!-- Official Parliamentary / Democratic Red Mark (No Pill, Rounded-lg) -->
+              <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-sm shrink-0">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <div class="flex flex-col leading-tight min-w-0 flex-1">
+                <span class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
+              </div>
+            </a>
+            <!-- Desktop Navigation Bar (Pre-scroll) -->
+            <div class="hidden lg:block shrink-0">
+              <nav class="flex items-center gap-1.5 bg-white/95 border border-zinc-200 p-1.5 rounded-xl shadow-sm">
+                <a href="/" class="text-xs font-semibold px-3 py-1.5 text-zinc-700 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors">Beranda</a>
+                <a href="/kenali" class="text-xs font-semibold px-3 py-1.5 text-zinc-700 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors">Profil</a>
+                <a href="/kinerja" class="text-xs font-semibold px-3 py-1.5 text-zinc-700 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors">Kinerja</a>
+                <a href="/berita" class="text-xs font-semibold px-3 py-1.5 text-zinc-700 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors">Berita</a>
+                <a href="/galeri" class="text-xs font-semibold px-3 py-1.5 text-zinc-700 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 transition-colors">Galeri</a>
+                <a href="/kontak" class="text-xs font-semibold px-3 py-1.5 text-zinc-950 bg-zinc-100 rounded-lg transition-colors">Kontak</a>
+              </nav>
+            </div>
+
+            <!-- Menu Button for Mobile & Tablet (< lg) - Shadcn Button (No Pill, Rounded-lg) -->
+            <div class="lg:hidden shrink-0 ml-2">
+              <button
+                @click="mobileMenu = !mobileMenu"
+                aria-label="Buka Menu"
+                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200"
+              >
+                <svg class="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <span class="hidden sm:inline ml-1.5">Menu</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Navigation Drawer Overlay (Alpine.js - Rounded-xl) -->
+          <div x-show="mobileMenu" x-cloak @click.away="mobileMenu = false" class="lg:hidden fixed top-16 left-4 right-4 bg-white border border-zinc-200 rounded-xl p-5 shadow-xl z-50">
+            <nav class="flex flex-col space-y-3 text-sm font-medium text-zinc-800">
+              <a href="/" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Beranda</a>
+              <a href="/kenali" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Profil (Kenali Banu)</a>
+              <a href="/kinerja" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Hasil Kinerja</a>
+              <a href="/berita" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Berita &amp; Rilis Pers</a>
+              <a href="/galeri" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Galeri Dokumentasi</a>
+              <a href="/kontak" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg bg-zinc-100 font-bold text-zinc-950 transition-colors">Rumah Aspirasi &amp; Kontak</a>
+              <div class="pt-2 border-t border-zinc-100">
+                <a href="/kontak#aspirasi" @click="mobileMenu = false" class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] text-white py-2 text-xs font-semibold"> Sampaikan Aspirasi </a>
+              </div>
+            </nav>
+          </div>
+
+          <!-- Hero Content (Editorial Header, No Badge) -->
+          <div class="max-w-3xl">
+            <h1 class="text-2xl sm:text-4xl md:text-[44px] lg:text-[42px] text-zinc-950 font-bold leading-[1.16] tracking-tight"><span class="text-[#BC0202]">Kontak</span> &amp; Kotak <span class="text-[#BC0202]">Aspirasi</span></h1>
+          </div>
+        </div>
+      </header>
+
+      <!-- ======================================================== -->
+      <!-- 2. BANNER AMBULANCE SIAGA 24 JAM (FULL GAMBAR RESPONSIF) -->
+      <!-- ======================================================== -->
+      <section class="w-full bg-zinc-950 border-b border-zinc-200">
+        <div class="w-full max-w-[1920px] mx-auto overflow-hidden">
+          <a href="#aspirasi" class="block w-full group focus:outline-none" title="Banner Layanan Ambulance Siaga 24 Jam & Aspirasi Warga - Banu Lesmana Bagaskara, S.M.">
+            <img
+              src="/assets/banu/banner_serbaguna.jpg"
+              alt="Ambulance Siaga 24 Jam & Pendamping Rujukan RSUD - Banu Lesmana Bagaskara, S.M."
+              class="w-full h-auto object-cover min-h-[160px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] transition-transform duration-500 group-hover:scale-[1.008]"
+              loading="lazy"
+            />
+          </a>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 3. MAIN CONTACT & ASPIRATION FORM SECTION  -->
+      <!-- ========================================== -->
+      <section class="w-full bg-[#f4f4f5] py-14 sm:py-20 border-b border-zinc-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+            <!-- Left Column (5 Cols): Kontak Resmi (Hanya Alamat, Telepon, Email, Media Sosial) -->
+            <div class="lg:col-span-5 flex flex-col space-y-6">
+              <div class="rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
+                <h2 class="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight"><span class="text-[#BC0202]">Kontak</span> Resmi</h2>
+
+                <!-- List: Alamat, Telepon, Email -->
+                <div class="mt-6 space-y-5 text-xs text-zinc-700">
+                  <!-- 1. Alamat -->
+                  <div class="flex items-start gap-3.5">
+                    <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <span class="font-bold text-zinc-950 block text-[13px]">Alamat:</span>
+                      <span class="text-zinc-600 mt-0.5 block leading-relaxed"> Kelurahan Kedung Badak, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat. </span>
+                    </div>
+                  </div>
+
+                  <!-- 2. Telepon -->
+                  <div class="flex items-start gap-3.5">
+                    <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <span class="font-bold text-zinc-950 block text-[13px]">Telepon / WhatsApp:</span>
+                      <a href="tel:+6281288880000" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium"> +62 812-8888-0000 </a>
+                    </div>
+                  </div>
+
+                  <!-- 3. Email -->
+                  <div class="flex items-start gap-3.5">
+                    <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <span class="font-bold text-zinc-950 block text-[13px]">Email:</span>
+                      <a href="mailto:aspirasi@banubagaskara.id" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium"> aspirasi@banubagaskara.id </a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. Media Sosial -->
+                <div class="mt-7 pt-6 border-t border-zinc-100">
+                  <span class="text-xs font-bold text-zinc-950 block mb-3 uppercase tracking-wider">Media Sosial Resmi:</span>
+                  <div class="flex flex-col space-y-2.5 text-xs text-zinc-600">
+                    <a href="https://instagram.com/banubagaskara" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-[#BC0202] transition-colors group">
+                      <span class="w-2 h-2 rounded-xs bg-[#BC0202] group-hover:scale-125 transition-transform"></span>
+                      <span>Instagram: <strong>@banubagaskara</strong></span>
+                    </a>
+                    <a href="https://tiktok.com/@banubagaskara" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-[#BC0202] transition-colors group">
+                      <span class="w-2 h-2 rounded-xs bg-[#BC0202] group-hover:scale-125 transition-transform"></span>
+                      <span>TikTok: <strong>@banubagaskara</strong></span>
+                    </a>
+                    <a href="https://facebook.com/banubgsk" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-[#BC0202] transition-colors group">
+                      <span class="w-2 h-2 rounded-xs bg-[#BC0202] group-hover:scale-125 transition-transform"></span>
+                      <span>Facebook: <strong>banubgsk</strong></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column (7 Cols): Sampaikan Aspirasimu -->
+            <div id="aspirasi" class="lg:col-span-7 rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-9 shadow-xs" x-data="{ submitted: {{ session('ticket_number') ? 'true' : 'false' }}, ticketNum: '{{ session('ticket_number') ?? '' }}' }">
+              <div class="mb-6 sm:mb-8">
+                <h2 class="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight leading-snug"><span class="text-[#BC0202]">Sampaikan</span> Aspirasi</h2>
+              </div>
+
+              <!-- Form Element (Alpine.js State) -->
+              @if ($errors->any())
+                <div class="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900">
+                  <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
+
+              <form method="POST" action="{{ route('aspirasi.store') }}" class="space-y-4">
+                @csrf
+                <input type="text" name="website_hp" value="" class="hidden" tabindex="-1" autocomplete="off" />
+                <!-- 1. Nama Lengkap & 2. Nomor Telepon -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-zinc-900 mb-1.5">Nama Lengkap *</label>
+                    <input
+                      type="text"
+                      required
+                      name="sender_name" value="{{ old('sender_name') }}" placeholder="Nama lengkap kamu"
+                      class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-zinc-900 mb-1.5">Nomor Telepon *</label>
+                    <input
+                      type="tel"
+                      required
+                      name="phone_number" value="{{ old('phone_number') }}" placeholder="Nomor WhatsApp aktif (misal: 081234567890)"
+                      class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                    />
+                  </div>
+                </div>
+
+                <!-- 3. Alamat -->
+                <div>
+                  <label class="block text-xs font-bold text-zinc-900 mb-1.5">Alamat *</label>
+                  <input
+                    type="text"
+                    required
+                    name="address" value="{{ old('address') }}" placeholder="Alamat tinggal (Kelurahan / RT-RW)"
+                    class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                  />
+                </div>
+
+                <!-- 4. Subjek -->
+                <div>
+                  <label class="block text-xs font-bold text-zinc-900 mb-1.5">Subjek *</label>
+                  <input
+                    type="text"
+                    required
+                    name="subject" value="{{ old('subject') }}" placeholder="Apa yang mau disampaikan? (Contoh: Lampu jalan mati / Saluran mampet)"
+                    class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                  />
+                </div>
+
+                <!-- 5. Uraian -->
+                <div>
+                  <label class="block text-xs font-bold text-zinc-900 mb-1.5">Uraian *</label>
+                  <textarea
+                    required
+                    rows="4"
+                    name="description" placeholder="Ceritakan detail masalah atau usulanmu secara lengkap di sini..."
+                    class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs leading-relaxed"
+                  ></textarea>
+                </div>
+
+                <!-- 6. Button Submit Kirim Aspirasi -->
+                <div class="pt-2">
+                  <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-7 py-3 shadow-sm transition-colors active:scale-98">
+                    Kirim Aspirasi
+                  </button>
+                </div>
+              </form>
+
+              <!-- Success Notification Card (Alpine.js) -->
+              <div x-show="submitted" x-cloak class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50/80 p-5 text-xs text-emerald-900">
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">&check;</div>
+                  <div>
+                    <span class="font-bold text-sm block">Aspirasi Anda Berhasil Terkirim!</span>
+                    <p class="mt-1 leading-relaxed">
+                      Terima kasih banyak! Pesanmu sudah kami terima dengan Nomor Tiket: <strong class="text-emerald-950 font-mono text-sm" x-text="ticketNum"></strong>. Tim kami bakal segera cek dan hubungi nomor WhatsApp kamu.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 4. FOOTER SECTION                          -->
+      <!-- ========================================== -->
+      <footer id="kontak" class="w-full bg-[#000000] text-white pt-14 sm:pt-16 pb-12 border-t border-zinc-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+          <!-- Top Columns Links Grid (Minimalis: Disederhanakan & Tanpa Elemen Berlebih) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pb-10 border-b border-zinc-800">
+            <!-- Column 1: Navigasi Portal -->
+            <div class="min-w-0">
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4 text-zinc-300">Navigasi Portal</h4>
+              <ul class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-zinc-400">
+                <li><a href="/" class="hover:text-white transition-colors">Beranda Utama</a></li>
+                <li><a href="/kenali" class="hover:text-white transition-colors">Biografi &amp; Visi Misi</a></li>
+                <li><a href="/kinerja" class="hover:text-white transition-colors">Laporan Kinerja</a></li>
+                <li><a href="/berita" class="hover:text-white transition-colors">Berita &amp; Rilis</a></li>
+                <li><a href="/galeri" class="hover:text-white transition-colors">Galeri Dokumentasi</a></li>
+                <li><a href="/kontak" class="hover:text-white transition-colors">Rumah Aspirasi</a></li>
+              </ul>
+            </div>
+
+            <!-- Column 2: Kontak & Media Sosial -->
+            <div class="min-w-0">
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4 text-zinc-300">Media Sosial &amp; Kontak</h4>
+              <ul class="space-y-2 text-xs text-zinc-400">
+                <li>
+                  <a href="https://instagram.com/banubagaskara" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+                    <span class="text-[#BC0202] font-bold">&bull;</span> Instagram: @banubagaskara
+                  </a>
+                </li>
+                <li>
+                  <a href="https://tiktok.com/@banubagaskara" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+                    <span class="text-[#BC0202] font-bold">&bull;</span> TikTok: @banubagaskara
+                  </a>
+                </li>
+                <li>
+                  <a href="https://facebook.com/banubgsk" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5"> <span class="text-[#BC0202] font-bold">&bull;</span> Facebook: banubgsk </a>
+                </li>
+                <li class="pt-1 text-[11px] text-zinc-400">Kelurahan Kedung Badak, Kec. Tanah Sareal, Kota Bogor, Jawa Barat.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Brand Slogan + Banner Full Gambar (Menggantikan Kotak Aspirasi) -->
+          <div id="aspirasi" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-10">
+            <!-- Left: Slogan & Formal Entity -->
+            <div class="lg:col-span-5 flex flex-col justify-between">
+              <h3 class="text-2xl sm:text-3xl text-white font-bold leading-tight tracking-tight mb-4">Bogor Lebih Baik:<br />Maju &amp; Nyaman untuk Semua</h3>
+              <div class="flex items-center gap-3 text-white">
+                <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs">BLB</div>
+                <div class="flex flex-col leading-tight">
+                  <span class="font-bold text-sm tracking-tight text-white">Banu Lesmana Bagaskara</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Banner Full Gambar (Menggantikan Kotak Form Aspirasi Online) -->
+            <div class="lg:col-span-7 rounded-xl border border-zinc-800 overflow-hidden shadow-sm aspect-[16/9] sm:aspect-[21/9] lg:aspect-auto lg:h-64 bg-zinc-900 group">
+              <img src="/assets/banu/footer_community.jpg" alt="Banner Aspirasi Warga Tanah Sareal bersama Banu Lesmana Bagaskara" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            </div>
+          </div>
+
+          <!-- Copyright Minimalis -->
+          <div class="pt-8 mt-10 border-t border-zinc-800 text-center text-xs text-zinc-500">&copy; 2026 banubagaskara.</div>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

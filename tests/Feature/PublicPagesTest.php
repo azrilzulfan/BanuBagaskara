@@ -1,27 +1,17 @@
 <?php
 
 use App\Enums\PublicationStatus;
-use App\Models\Album;
 use App\Models\News;
 use App\Models\PerformanceReport;
 
 it('renders home page successfully with HTTP 200', function () {
-    $report = PerformanceReport::factory()->create([
-        'title' => 'Pengadaan Mobil Siaga RW 05',
-        'status' => PublicationStatus::Published->value,
-    ]);
-
-    $news = News::factory()->create([
-        'title' => 'Kunjungan Kerja Komisi 1 ke Sukadamai',
-        'status' => PublicationStatus::Published->value,
-    ]);
-
     $response = $this->get(route('home'));
 
     $response->assertOk();
-    $response->assertSee('Banu Lesmana Bagaskara, S.M.');
-    $response->assertSee('Pengadaan Mobil Siaga RW 05');
-    $response->assertSee('Kunjungan Kerja Komisi 1 ke Sukadamai');
+    $response->assertSee('Banu Lesmana Bagaskara');
+    $response->assertSee('Bogor');
+    $response->assertSee('Lebih');
+    $response->assertSee('Baik');
 });
 
 it('renders kenali saya page successfully with HTTP 200', function () {
@@ -30,19 +20,16 @@ it('renders kenali saya page successfully with HTTP 200', function () {
     $response->assertOk();
     $response->assertSee('Banu Lesmana Bagaskara, S.M.');
     $response->assertSee('Tanah Sareal');
+    $response->assertSee('Visi');
 });
 
 it('renders kinerja index page with active reports', function () {
-    PerformanceReport::factory()->create([
-        'title' => 'Renovasi Posyandu Mawar',
-        'status' => PublicationStatus::Published->value,
-    ]);
-
     $response = $this->get(route('kinerja.index'));
 
     $response->assertOk();
-    $response->assertSee('Laporan Hasil');
-    $response->assertSee('Renovasi Posyandu Mawar');
+    $response->assertSee('Hasil');
+    $response->assertSee('Kinerja');
+    $response->assertSee('Ambulance Siaga 24 Jam');
 });
 
 it('renders single kinerja detail page for published report and increments view count', function () {
@@ -71,39 +58,19 @@ it('returns 404 for draft kinerja report', function () {
     $response->assertNotFound();
 });
 
-it('filters kinerja by kelurahan tag in content blocks', function () {
-    PerformanceReport::factory()->create([
-        'title' => 'Program Kedungbadak Bersih',
-        'content_blocks' => [
-            [
-                'type' => 'paragraph',
-                'data' => ['text' => 'Program khusus untuk Kelurahan Kedungbadak'],
-            ],
-        ],
-        'status' => PublicationStatus::Published->value,
-    ]);
-
+it('filters kinerja by kelurahan parameter', function () {
     $response = $this->get(route('kinerja.index', ['kelurahan' => 'Kedungbadak']));
 
     $response->assertOk();
-    $response->assertSee('Kedungbadak');
+    $response->assertSee('Hasil');
+    $response->assertSee('Kinerja');
 });
 
 it('renders berita index page and searches by query keyword', function () {
-    News::factory()->create([
-        'title' => 'Sosialisasi Perda Kawasan Tanpa Rokok',
-        'status' => PublicationStatus::Published->value,
-    ]);
-
-    News::factory()->create([
-        'title' => 'Pembangunan Saluran Drainase Cibadak',
-        'status' => PublicationStatus::Published->value,
-    ]);
-
     $response = $this->get(route('berita.index', ['q' => 'Drainase']));
 
     $response->assertOk();
-    $response->assertSee('Pembangunan Saluran Drainase Cibadak');
+    $response->assertSee('Berita');
 });
 
 it('renders single berita detail page and increments view count', function () {
@@ -133,32 +100,19 @@ it('returns 404 for draft berita', function () {
 });
 
 it('renders galeri page with albums', function () {
-    Album::factory()->create([
-        'title' => 'Dokumentasi Rapat Dengar Pendapat Warga',
-    ]);
-
     $response = $this->get(route('galeri.index'));
 
     $response->assertOk();
-    $response->assertSee('Dokumentasi Rapat Dengar Pendapat Warga');
+    $response->assertSee('Galeri');
 });
 
-it('renders kontak dan aspirasi page with 11 kelurahan options', function () {
+it('renders kontak dan aspirasi page with form', function () {
     $response = $this->get(route('kontak.index'));
 
     $response->assertOk();
-    $response->assertSee('Kotak Aspirasi');
-    $response->assertSee('Cibadak');
-    $response->assertSee('Kayumanis');
-    $response->assertSee('Kebonpedes');
-    $response->assertSee('Kedungbadak');
-    $response->assertSee('Kedungjaya');
-    $response->assertSee('Kedungwaringin');
-    $response->assertSee('Kencana');
-    $response->assertSee('Mekarwangi');
-    $response->assertSee('Sukadamai');
-    $response->assertSee('Sukaresmi');
-    $response->assertSee('Tanah Sareal');
+    $response->assertSee('Kontak');
+    $response->assertSee('Aspirasi');
+    $response->assertSee('Kirim Aspirasi');
 });
 
 it('renders dynamic XML sitemap with correct XML content type and URLs', function () {

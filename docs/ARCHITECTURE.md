@@ -15,31 +15,31 @@ flowchart TD
         AdminBrowser["Browser Administrator (Single Admin Portal)"]
     end
 
-    subgraph Presentation ["Presentation & Routing Layer (Laravel)"]
-        WebRoutes["web.php (Public Routes)"]
+    subgraph Presentation ["Presentation & Routing Layer (Laravel 11 + Vite)"]
+        WebRoutes["web.php (Public Routes + Rate Limiting)"]
         AdminRoutes["admin.php (Protected Routes + Auth Guard + Throttle)"]
-        PublicViews["Blade Public Components (Tailwind + Alpine.js)"]
-        AdminViews["Blade Admin Components (Tailwind + Alpine.js)"]
+        PublicViews["Blade Public Components (Tailwind v4 + Alpine.js)"]
+        AdminViews["Blade Admin Components (Tailwind v4 + Alpine.js)"]
     end
 
     subgraph ControllerLayer ["HTTP Controller Layer"]
-        PublicControllers["Public Controllers (Kinerja, Berita, Galeri, Kontak)"]
-        AdminControllers["Admin Controllers (Dashboard, CRUD Kinerja, Berita, Galeri, Aspirasi, Settings)"]
-        FormRequests["Form Request Validation (Strict Validation & Honeypot)"]
+        PublicControllers["Public Controllers (HomeController, KinerjaController, BeritaController, GaleriController, KontakController)"]
+        AdminControllers["Admin Controllers (DashboardController, PerformanceController, NewsController, GalleryController, AspirationController, SettingController)"]
+        FormRequests["Form Request Validation (Strict Validation, Honeypot & File Uploads)"]
     end
 
     subgraph DomainLayer ["Domain & Action / Service Layer (SOLID)"]
-        BlockEngine["Modular Block Canvas Engine (Gutenberg-style)"]
-        AspirationService["Aspiration Pipeline (Ticket Generator & WhatsApp Handler)"]
-        SettingsService["Site Settings Manager (Cached Key-Value Store)"]
-        MediaService["Media & Asset Processing Service"]
+        BlockEngine["Modular Block Canvas Engine (10 Block Types + Rich Text Sanitizer)"]
+        AspirationService["Aspiration Pipeline (Unique Ticket Generator & WhatsApp Click-to-Chat)"]
+        SettingsService["Site Settings Manager (Cached Key-Value Store with Direct Uploads)"]
+        MediaService["Media & Storage Service (Direct File Uploads & Local Assets)"]
     end
 
     subgraph DataLayer ["Data Access & Storage Layer"]
-        EloquentModels["Eloquent Models (Kinerja, Berita, Album, Aspirasi, Setting)"]
+        EloquentModels["Eloquent Models (PerformanceReport, News, Album, AlbumPhoto, Aspiration, SiteSetting, ActivityLog)"]
         MySQL["MySQL Database (InnoDB Engine)"]
-        PublicDisk["Storage Public Disk (WebP Optimized Assets)"]
-        AppCache["Laravel Cache (File / Redis Cache)"]
+        PublicDisk["Storage Public Disk (symlink public/storage)"]
+        AppCache["Laravel Cache Engine (File / Redis Cache)"]
     end
 
     PublicBrowser -->|HTTP GET/POST| WebRoutes
@@ -71,34 +71,23 @@ flowchart TD
 ### 2.1 SOLID Principles
 1. **Single Responsibility Principle (SRP)**:
    - Setiap *Controller* hanya bertindak sebagai pengatur lalu lintas HTTP (menerima request, memanggil action, dan mengembalikan view/redirect).
-   - Seluruh logika bisnis dipindahkan ke kelas *Action* tunggal, misalnya:
-     - `SubmitAspirationAction`: Memvalidasi, membuat nomor tiket `BLB-xxxxxx`, menyimpan ke database, dan menyiapkan template pesan WhatsApp.
-     - `SavePerformanceReportAction`: Memproses metadata artikel dan memvalidasi struktur blok modular.
-     - `UpdateSiteSettingsAction`: Memperbarui nilai pengaturan statis dan membersihkan cache aplikasi.
+   - Seluruh logika bisnis dipusatkan pada *Action* atau *Service* tunggal:
+     - Pembuatan tiket pengaduan unik berformat `BLB-xxxxxx`.
+     - Logika *Single Featured* pada artikel Kinerja dan Berita (memastikan tepat satu artikel aktif secara atomik).
+     - Manajemen pembaruan pengaturan situs dan pembersihan cache.
 
 2. **Open/Closed Principle (OCP)**:
    - **Modular Block Canvas Engine** dirancang terbuka untuk penambahan blok baru (*Open for extension*), namun tertutup untuk modifikasi kode inti (*Closed for modification*).
-   - Setiap tipe blok mengimplementasikan interface `BlockRendererInterface`:
-     ```php
-     namespace App\Services\BlockEngine\Contracts;
-
-     interface BlockRendererInterface
-     {
-         public function supports(string $type): bool;
-         public function render(array $blockData): string;
-         public function validate(array $blockData): array;
-     }
-     ```
-   - Jika di masa depan ingin menambahkan blok baru (misalnya *Video Embed* atau *Tabel Perbandingan*), pengembang cukup membuat kelas baru `VideoBlockRenderer` dan mendaftarkannya pada `BlockEngineServiceProvider` tanpa menyentuh kode blok yang sudah ada.
+   - Setiap tipe blok kanvas mengimplementasikan penanganan data terstandarisasi. Penambahan blok baru (seperti blok metrik, lampiran dokumen, tabel, dan callout) diintegrasikan tanpa merombak skema basis data utama.
 
 3. **Liskov Substitution Principle (LSP)**:
-   - Seluruh implementasi kontrak penyimpanan media (`StorageServiceInterface`) dan notifikasi dapat saling menggantikan tanpa merusak fungsionalitas sistem (misalnya beralih dari `LocalStorageService` ke `S3StorageService`).
+   - Implementasi penyimpanan berkas (`Storage::disk('public')`) dapat saling ditukar dengan penyimpanan cloud (seperti S3) secara transparan tanpa mengubah antarmuka controller.
 
 4. **Interface Segregation Principle (ISP)**:
-   - Antarmuka (*interfaces*) dibuat spesifik dan ramping. Daripada membuat satu `AdminManagerInterface` raksasa, sistem membaginya menjadi `ExportableReportInterface`, `DispatchedNotificationInterface`, dan `CacheableSettingInterface`.
+   - Antarmuka controller dan form request dirancang spesifik untuk tiap domain modul (misal `UpdateSettingRequest` terpisah per seksi: Umum, Beranda, Profil, dan SEO).
 
 5. **Dependency Inversion Principle (DIP)**:
-   - Controller tidak secara langsung menginstansiasi layanan menggunakan `new`, melainkan mengandalkan *Dependency Injection* melalui Service Container Laravel berdasarkan abstraksi kontrak.
+   - Controller tidak mengikat logika ke implementasi konkret tingkat rendah, melainkan mengandalkan *Dependency Injection* Service Container Laravel.
 
 ---
 
@@ -106,65 +95,133 @@ flowchart TD
 
 | Prinsip | Implementasi Teknis pada Codebase |
 | :--- | :--- |
-| **DRY (Don't Repeat Yourself)** | Seluruh elemen visual berulang dipecah menjadi komponen Blade atomik: `<x-admin.sidebar>`, `<x-admin.topbar>`, `<x-badge.status>`, `<x-form.input>`, `<x-modal.confirm-delete>`, dan `<x-lightbox>`. Tidak ada duplikasi markup HTML antarmuka. |
-| **KISS (Keep It Simple, Stupid)** | Desain sistem monolitik modular Laravel standar. Menghindari kerumitan GraphQL atau microservices yang tidak diperlukan; cukup menggunakan *server-rendered Blade* yang diperkaya interaktivitas ringan *Alpine.js*. |
-| **YAGNI (You Ain't Gonna Need It)** | Hanya membangun fitur yang sesuai spesifikasi 6 modul dasbor dan 6 halaman publik. Tidak menambahkan sistem multi-role, payment gateway, atau API oauth publik yang tidak dibutuhkan. |
-| **Separation of Concerns (SoC)** | Pemisahan tegas: File migrasi & model untuk skema data, Action/Service untuk bisnis logika, Blade untuk antarmuka visual, dan CSS/Tailwind terkompilasi via Vite untuk styling. |
+| **DRY (Don't Repeat Yourself)** | Seluruh elemen visual berulang dipecah menjadi komponen Blade atomik: sidebar admin, topbar, modal konfirmasi, penampil lightbox, dan kartu konten. |
+| **KISS (Keep It Simple, Stupid)** | Desain sistem monolitik modular Laravel standar. Menggunakan server-rendered Blade yang diperkaya Alpine.js tanpa kerumitan framework SPA terpisah. |
+| **YAGNI (You Ain't Gonna Need It)** | Hanya membangun fitur yang benar-benar dibutuhkan dewan dan warga. Contoh: antarmuka admin aspirasi disederhanakan secara fokus untuk inspeksi, WhatsApp langsung, dan penghapusan tanpa alur birokrasi berbelit. |
+| **Separation of Concerns (SoC)** | Pemisahan tegas: File migrasi & model untuk skema data, Controller untuk HTTP, Blade untuk tampilan, dan CSS Tailwind v4 terkompilasi via Vite. |
 
 ---
 
 ## 3. Arsitektur Mesin Kanvas Blok Modular (Modular Block Canvas Engine)
 
-Salah satu fitur inti pada modul **Hasil Kinerja** adalah editor kanvas modular (bergaya WordPress Gutenberg / Notion) yang memungkinkan penyusunan artikel secara dinamis.
+Editor artikel pada modul **Hasil Kinerja** menggunakan kanvas modular (WordPress Gutenberg / Notion style) yang memungkinkan penyusunan artikel secara dinamis.
 
 ### 3.1 Struktur Data Blok (JSON Schema)
-Setiap artikel kinerja menyimpan susunan bloknya dalam format JSON pada kolom `content_blocks` di tabel `performance_reports`:
+Setiap artikel kinerja menyimpan susunan bloknya dalam format JSON pada kolom `content_blocks` di tabel `performance_reports`. Sistem mendukung **10 tipe blok**:
 
 ```json
 [
   {
-    "id": "blk-9a8b1c",
+    "id": "blk-01",
     "type": "heading",
     "order": 1,
     "data": {
       "level": "h2",
-      "text": "Normalisasi Saluran Air dan Pencegahan Genangan di Kebon Pedes"
+      "text": "Normalisasi Saluran Air dan Penanganan Genangan di Kebon Pedes"
     }
   },
   {
-    "id": "blk-4d5e6f",
+    "id": "blk-02",
     "type": "paragraph",
     "order": 2,
     "data": {
-      "text": "Melalui koordinasi intensif bersama Dinas PUPR Kota Bogor dan pengurus RW 05, proses pengerukan sedimen dan penggantian penutup drainase telah selesai dilakukan."
+      "content": "<p>Melalui advokasi anggaran bersama <strong>Dinas PUPR Kota Bogor</strong>, pengerukan sedimen lumpur sepanjang 450 meter telah selesai dilaksanakan.</p>"
     }
   },
   {
-    "id": "blk-7g8h9i",
+    "id": "blk-03",
     "type": "image",
     "order": 3,
     "data": {
-      "url": "storage/performance/kebon-pedes-saluran.jpg",
-      "caption": "Kondisi saluran drainase pasca pengerukan sedimen lumpur bersama warga.",
+      "url": "storage/performance/saluran-air.jpg",
+      "caption": "Kondisi fisik saluran drainase pasca pengerukan bersama warga.",
       "aspect": "16/9"
     }
   },
   {
-    "id": "blk-2j3k4l",
-    "type": "grid_2col",
+    "id": "blk-04",
+    "type": "list",
     "order": 4,
     "data": {
-      "col1": { "title": "Sebelum Intervensi", "text": "Saluran tersumbat sedimen pasir dan sampah padat, kapasitas buang air hanya 30%." },
-      "col2": { "title": "Capaian Saat Ini", "text": "Aliran air normal lancar, genangan di gang permukiman surut dalam waktu kurang dari 15 menit." }
+      "style": "bullet",
+      "items": [
+        "Pembersihan endapan sedimen lumpur sedalam 60 cm",
+        "Pemasangan u-ditch beton pracetak bertulang",
+        "Pembuatan bak kontrol pembersihan sampah berkala"
+      ]
     }
   },
   {
-    "id": "blk-5m6n7o",
+    "id": "blk-05",
     "type": "quote",
     "order": 5,
     "data": {
       "quote": "Pengawalan pokir dan aspirasi warga bukan sekadar formalitas rapat, melainkan kehadiran langsung memastikan pengerjaan tuntas di lapangan.",
       "author": "Banu Lesmana Bagaskara, S.M."
+    }
+  },
+  {
+    "id": "blk-06",
+    "type": "metric",
+    "order": 6,
+    "data": {
+      "value": "450 Meter",
+      "label": "Panjang Saluran Dinormalisasi",
+      "description": "Menghubungkan drainase lingkungan RW 04 dan RW 05 langsung ke saluran primer."
+    }
+  },
+  {
+    "id": "blk-07",
+    "type": "attachment",
+    "order": 7,
+    "data": {
+      "file_name": "Laporan-Monitoring-PUPR-2026.pdf",
+      "file_url": "storage/attachments/laporan-monitoring.pdf",
+      "file_size": "2.4 MB",
+      "description": "Dokumen Berita Acara Serah Terima pekerjaan perbaikan saluran drainase."
+    }
+  },
+  {
+    "id": "blk-08",
+    "type": "table",
+    "order": 8,
+    "data": {
+      "caption": "Tabel Rekapitulasi Titik Intervensi",
+      "headers": ["Titik Lokasi", "Volume Pekerjaan", "Status"],
+      "rows": [
+        ["RW 04 RT 02", "150 meter", "Tuntas 100%"],
+        ["RW 05 RT 01", "300 meter", "Tuntas 100%"]
+      ]
+    }
+  },
+  {
+    "id": "blk-09",
+    "type": "callout",
+    "order": 9,
+    "data": {
+      "title": "Catatan Pengawasan Lapangan",
+      "message": "Warga diimbau untuk tidak menutup bak kontrol secara permanen demi kemudahan pemeliharaan berkala.",
+      "type": "info"
+    }
+  },
+  {
+    "id": "blk-10",
+    "type": "grid",
+    "order": 10,
+    "data": {
+      "columns": 2,
+      "blocks": [
+        {
+          "id": "blk-nested-01",
+          "type": "paragraph",
+          "data": { "content": "<p><strong>Kondisi Sebelum:</strong> Aliran tersumbat sampah dan pasir.</p>" }
+        },
+        {
+          "id": "blk-nested-02",
+          "type": "paragraph",
+          "data": { "content": "<p><strong>Kondisi Sesudah:</strong> Air mengalir lancar saat hujan lebat.</p>" }
+        }
+      ]
     }
   }
 ]
@@ -176,29 +233,23 @@ Setiap artikel kinerja menyimpan susunan bloknya dalam format JSON pada kolom `c
 sequenceDiagram
     autonumber
     actor Admin as Administrator
-    participant AdminUI as Block Editor (Alpine.js)
+    participant AdminUI as Block Canvas Editor (Alpine.js)
     participant Controller as PerformanceController
-    participant BlockEngine as BlockEngineService
-    participant Renderer as BlockRenderers
+    participant Validator as FormRequest / Sanitizer
     participant DB as MySQL (performance_reports)
     actor PublicUser as Pengunjung Publik
 
-    Admin->>AdminUI: Tambah/Geser/Ubah Blok (Heading, Grid, Image, Quote)
-    Admin->>Controller: POST /admin/kinerja (Kirim Payload JSON Blok)
-    Controller->>BlockEngine: ValidateBlocks(payload)
-    BlockEngine->>BlockEngine: Validasi Integritas Tipe & Sanitasi HTML
-    BlockEngine->>DB: Simpan record ke kolom `content_blocks` (JSON)
+    Admin->>AdminUI: Tambah/Geser/Ubah Blok (10 Tipe Blok, Rich Text Toolbar, Upload Gambar)
+    Admin->>Controller: POST /admin/kinerja (Payload JSON content_blocks & Berkas Gambar)
+    Controller->>Validator: Validasi Tipe Blok, Integritas File & Sanitasi HTML Paragraf
+    Validator-->>Controller: Payload Bersih & Aman
+    Controller->>DB: Simpan record & kelola Single Featured secara atomik
     DB-->>Controller: Status Berhasil
-    Controller-->>AdminUI: Notifikasi Tersimpan
+    Controller-->>AdminUI: Notifikasi Sukses / Redirect
 
     PublicUser->>Controller: GET /kinerja/{slug}
-    Controller->>DB: Ambil artikel berdasarkan slug
-    Controller->>BlockEngine: RenderToHtml(content_blocks)
-    loop Setiap Blok
-        BlockEngine->>Renderer: Render blok sesuai tipe (Blade view)
-    end
-    BlockEngine-->>Controller: Gabungan HTML Aman (Sanitized)
-    Controller-->>PublicUser: Tampilkan Halaman Detail Kinerja Lengkap
+    Controller->>DB: Ambil artikel berdasarkan slug (status: published)
+    Controller->>PublicUser: Render View Blade (Looping content_blocks secara rekursif & nested)
 ```
 
 ---
@@ -213,10 +264,10 @@ Sesuai spesifikasi proyek:
 flowchart TD
     LoginAttempt["Admin Mengakses /admin/login"] --> RateCheck{"Cek Rate Limit (Maks 5x/menit)"}
     RateCheck -->|Melebihi Batas| Lockout["Tolak Request: HTTP 429 Too Many Requests (Lockout 15 Menit)"]
-    RateCheck -->|Dalam Batas Aman| CredentialCheck{"Verifikasi Email & Bcrypt Password"}
+    RateCheck -->|Dalam Batas Aman| CredentialCheck{"Verifikasi Email & Bcrypt/Argon2id Password"}
     CredentialCheck -->|Kredensial Salah| ErrorToast["Kembalikan Pesan Error & Catat di Activity Log"]
     CredentialCheck -->|Kredensial Valid| AuthSuccess["Regenerasi Session ID + Buat Remember Token"]
-    AuthSuccess --> AuditLog["Simpan Waktu Login & IP Address ke Audit Log"]
+    AuthSuccess --> AuditLog["Simpan Waktu Login & IP Address ke Activity Log"]
     AuditLog --> DashboardRedirect["Redirect ke /admin (Dasbor Ringkasan)"]
 ```
 
@@ -224,33 +275,35 @@ flowchart TD
 
 ## 5. Arsitektur Alur Pengaduan Warga (Kotak Aspirasi)
 
-Alur penanganan pengaduan dari halaman publik hingga ditindaklanjuti oleh dewan:
+Alur penanganan pengaduan dari halaman publik hingga ditindaklanjuti secara langsung oleh tim kedewanan via WhatsApp:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> FormulirPublik: Warga mengisi formulir di /kontak
-    FormulirPublik --> Validasi: Cek Honeypot & Rate Limiting
+    [*] --> FormulirPublik: Warga mengisi form di /kontak (Nama, WA, Alamat, Pesan)
+    FormulirPublik --> Validasi: Cek Honeypot & Rate Limiting (Maks 3/10 menit)
     Validasi --> SimpanTiket: Generate Nomor Tiket Unik (BLB-xxxxxx)
-    SimpanTiket --> Status_Baru: Disimpan ke Basis Data (Status: Baru)
-    
-    state Admin_Tindak_Lanjut {
-        Status_Baru --> Status_Ditinjau: Tim dewan memverifikasi laporan & survei lapangan
-        Status_Ditinjau --> Catatan_Internal: Tambahkan riwayat disposisi (koordinasi dinas/pokir)
-        Catatan_Internal --> Hubungi_Warga: Klik tombol 'Buka WhatsApp' (Template Pesan Otomatis)
-        Hubungi_Warga --> Status_Selesai: Aspirasi terealisasi / solusi diberikan
+    SimpanTiket --> NotifikasiWarga: Tampilkan nomor tiket & konfirmasi pengiriman
+
+    state Dasbor_Admin {
+        SimpanTiket --> DaftarAspirasi: Tampil di Admin Aspirasi (/admin/aspirasi)
+        DaftarAspirasi --> LihatDetail: Modal Inspeksi Detail Data Pengirim
+        DaftarAspirasi --> HubungiWhatsApp: Klik 'Buka WhatsApp' (https://wa.me/62... dengan draft pesan resmi)
+        DaftarAspirasi --> HapusAspirasi: Hapus individual atau Hapus Massal (Bulk Delete)
+        DaftarAspirasi --> EksporCSV: Unduh Rekap Data Warga ke Format CSV
     }
 
-    Status_Selesai --> Ekspor_Rekap: Masuk rekapitulasi laporan triwulan / CSV
-    Ekspor_Rekap --> [*]
+    HubungiWhatsApp --> [*]
+    HapusAspirasi --> [*]
+    EksporCSV --> [*]
 ```
 
 ---
 
 ## 6. Arsitektur Pengaturan Halaman Statis & Caching
 
-Data dinamis pada halaman publik (narasi hero, visi-misi, 12 isu, 6 program, banner ambulance) dikelola melalui modul **Pengaturan Halaman Website**.
+Data dinamis pada halaman publik (narasi hero, visi-misi, 12 isu, 6 program, banner ambulance, testimoni warga, kutipan resmi) dikelola melalui modul **Pengaturan Halaman Website**.
 
 ### Pola Cache-Aside (Cache-Aside Strategy)
 1. Setiap kali pengunjung mengakses halaman publik (`/` atau `/kenali`), sistem terlebih dahulu membaca dari cache aplikasi (`Cache::remember('site_settings', 86400)`).
 2. Jika cache belum tersedia, sistem membaca dari tabel `site_settings` di basis data dan menyimpannya di memory cache.
-3. Saat Administrator memperbarui pengaturan di `/admin/pengaturan`, sistem secara atomik memanggil event `SettingsUpdated` yang langsung menjalankan pembersihan cache (`Cache::forget('site_settings')`), sehingga perubahan langsung terlihat seketika oleh publik tanpa jeda *stale cache*.
+3. Saat Administrator memperbarui pengaturan di `/admin/pengaturan`, sistem secara atomik memanggil pembersihan cache (`Cache::forget('site_settings')`), sehingga perubahan langsung terlihat seketika oleh publik tanpa jeda *stale cache*.

@@ -549,35 +549,107 @@
                     </div>
                   </template>
 
-                  <!-- 2. TIPE: PARAGRAF -->
+                  <!-- 2. TIPE: PARAGRAF DENGAN RICH TEXT EDITOR -->
                   <template x-if="block.type === 'paragraph'">
-                    <div>
+                    <div class="space-y-2">
+                      <!-- Toolbar Formatting -->
+                      <div class="flex flex-wrap items-center gap-1.5 p-2 bg-[#fafafa] border border-zinc-200 rounded-lg text-xs">
+                        <button
+                          type="button"
+                          @click="applyFormatting(block, 'strong')"
+                          class="px-2.5 py-1 rounded-md bg-white border border-zinc-200 hover:border-[#BC0202] hover:text-[#BC0202] font-bold text-zinc-800 transition-colors cursor-pointer shadow-2xs"
+                          title="Tebal (Bold)"
+                        >
+                          B
+                        </button>
+                        <button
+                          type="button"
+                          @click="applyFormatting(block, 'em')"
+                          class="px-2.5 py-1 rounded-md bg-white border border-zinc-200 hover:border-[#BC0202] hover:text-[#BC0202] italic font-serif text-zinc-800 transition-colors cursor-pointer shadow-2xs"
+                          title="Miring (Italic)"
+                        >
+                          I
+                        </button>
+                        <button
+                          type="button"
+                          @click="applyFormatting(block, 'u')"
+                          class="px-2.5 py-1 rounded-md bg-white border border-zinc-200 hover:border-[#BC0202] hover:text-[#BC0202] underline text-zinc-800 transition-colors cursor-pointer shadow-2xs"
+                          title="Garis Bawah (Underline)"
+                        >
+                          U
+                        </button>
+                        <button
+                          type="button"
+                          @click="applyLinkFormatting(block)"
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-zinc-200 hover:border-[#BC0202] hover:text-[#BC0202] text-zinc-800 transition-colors cursor-pointer shadow-2xs"
+                          title="Sisipkan Tautan (Link)"
+                        >
+                          <svg class="w-3.5 h-3.5 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                          </svg>
+                          <span>Tautan</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          @click="block._showPreview = !block._showPreview"
+                          class="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-zinc-200 hover:border-zinc-400 text-zinc-600 transition-colors cursor-pointer text-[11px] font-semibold"
+                        >
+                          <span x-text="block._showPreview ? 'Sembunyikan Pratinjau' : 'Pratinjau Teks'"></span>
+                        </button>
+                      </div>
+
+                      <!-- Textarea Input Formatter -->
                       <textarea
+                        :id="'para_textarea_' + block.id"
                         x-model="block.text"
+                        @input="block.format = 'html'"
                         rows="4"
-                        placeholder="Tuliskan isi teks atau uraian kebijakan..."
-                        class="w-full rounded-lg border border-zinc-300 bg-white p-3 text-xs sm:text-sm text-zinc-900 leading-relaxed focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                        placeholder="Tuliskan isi teks atau uraian kebijakan. Blok teks lalu klik tombol B, I, U, atau Tautan untuk memformat..."
+                        class="w-full rounded-lg border border-zinc-300 bg-white p-3 text-xs sm:text-sm text-zinc-900 leading-relaxed focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs font-sans"
                       ></textarea>
+
+                      <!-- Pratinjau Teks Kaya Live -->
+                      <div x-show="block._showPreview" class="p-3.5 bg-zinc-50 rounded-lg border border-zinc-200 text-xs sm:text-sm text-zinc-800 leading-relaxed">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">Pratinjau Hasil Format:</span>
+                        <div x-html="block.text"></div>
+                      </div>
                     </div>
                   </template>
 
-                  <!-- 3. TIPE: GAMBAR / IMAGE -->
+                  <!-- 3. TIPE: GAMBAR / IMAGE (UPLOAD LANGSUNG, TANPA SELECT) -->
                   <template x-if="block.type === 'image'">
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
-                      <div class="sm:col-span-5 aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200">
-                        <img :src="block.url" alt="Pratinjau Foto Blok" class="w-full h-full object-cover" />
+                      <div class="sm:col-span-5 aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 relative shadow-2xs">
+                        <img :src="block.url ? (block.url.startsWith('http') || block.url.startsWith('/') ? block.url : '/' + block.url) : '/assets/banu/testi_dialog.jpg'" alt="Pratinjau Foto Blok" class="w-full h-full object-cover" />
+                        <div x-show="block._uploading" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
+                          Mengunggah...
+                        </div>
                       </div>
                       <div class="sm:col-span-7 space-y-3">
                         <div>
-                          <label class="block text-[11px] font-bold text-zinc-700 mb-1">Pilih Foto Dokumentasi:</label>
-                          <select
-                            x-model="block.url"
-                            class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
-                          >
-                            <template x-for="c in availableCovers" :key="c.url">
-                              <option :value="c.url" x-text="c.label"></option>
-                            </template>
-                          </select>
+                          <label class="block text-[11px] font-bold text-zinc-700 mb-1.5">Unggah Foto Dokumentasi:</label>
+                          <input
+                            type="file"
+                            :id="'block_img_' + block.id"
+                            @change="uploadBlockImage($event, block)"
+                            accept="image/*"
+                            class="hidden"
+                          />
+                          <div class="flex items-center gap-2">
+                            <button
+                              type="button"
+                              @click="document.getElementById('block_img_' + block.id).click()"
+                              :disabled="block._uploading"
+                              class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 hover:border-[#BC0202] text-xs font-semibold px-3 py-2 text-zinc-800 transition-colors cursor-pointer shadow-2xs"
+                            >
+                              <svg class="w-3.5 h-3.5 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span x-text="block._uploading ? 'Mengunggah Berkas...' : 'Pilih & Unggah Foto'"></span>
+                            </button>
+                            <span class="text-[11px] text-zinc-500 truncate" x-text="block.url ? block.url.split('/').pop() : 'Belum ada foto diunggah'"></span>
+                          </div>
                         </div>
                         <div>
                           <label class="block text-[11px] font-bold text-zinc-700 mb-1">Keterangan Gambar (Caption):</label>
@@ -628,39 +700,157 @@
                     </div>
                   </template>
 
-                  <!-- 5. TIPE: GRID 2 KOLOM -->
+                  <!-- 5. TIPE: CONTAINER GRID 2 KOLOM (NESTED BLOCKS) -->
                   <template x-if="block.type === 'grid'">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div class="p-3.5 rounded-lg border border-zinc-200 bg-[#fafafa] space-y-2">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#BC0202] block">Kolom Kiri</span>
-                        <input
-                          type="text"
-                          x-model="block.col1Title"
-                          placeholder="Judul Kolom Kiri..."
-                          class="w-full font-bold rounded-lg border border-zinc-300 bg-white text-xs px-3 py-1.5 text-zinc-900"
-                        />
-                        <textarea
-                          x-model="block.col1Text"
-                          rows="3"
-                          placeholder="Keterangan singkat kolom kiri..."
-                          class="w-full rounded-lg border border-zinc-300 bg-white text-xs p-2.5 text-zinc-700"
-                        ></textarea>
+                    <div class="p-4 rounded-xl border border-zinc-300 bg-[#fafafa] space-y-4">
+                      <div class="flex items-center justify-between pb-2 border-b border-zinc-200">
+                        <div class="flex items-center gap-2">
+                          <span class="w-2.5 h-2.5 rounded-full bg-[#BC0202]"></span>
+                          <span class="text-xs font-bold text-zinc-900 uppercase tracking-wider">Blok Container Grid (Dapat Diisi Blok Bersarang)</span>
+                        </div>
+                        <span class="text-[11px] text-zinc-500">Tata letak kolom berdampingan untuk menyusun konten komparatif</span>
                       </div>
 
-                      <div class="p-3.5 rounded-lg border border-zinc-200 bg-[#fafafa] space-y-2">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#BC0202] block">Kolom Kanan</span>
-                        <input
-                          type="text"
-                          x-model="block.col2Title"
-                          placeholder="Judul Kolom Kanan..."
-                          class="w-full font-bold rounded-lg border border-zinc-300 bg-white text-xs px-3 py-1.5 text-zinc-900"
-                        />
-                        <textarea
-                          x-model="block.col2Text"
-                          rows="3"
-                          placeholder="Keterangan singkat kolom kanan..."
-                          class="w-full rounded-lg border border-zinc-300 bg-white text-xs p-2.5 text-zinc-700"
-                        ></textarea>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                        <!-- CONTAINER KOLOM KIRI -->
+                        <div class="p-4 rounded-lg border border-zinc-200 bg-white space-y-3 shadow-2xs">
+                          <div class="flex items-center justify-between pb-2 border-b border-zinc-100">
+                            <span class="text-xs font-bold text-[#BC0202] uppercase tracking-wider">Kolom Kiri</span>
+                            <div class="relative" x-data="{ openMenu: false }">
+                              <button
+                                type="button"
+                                @click="openMenu = !openMenu"
+                                class="inline-flex items-center gap-1 text-[11px] font-bold text-[#BC0202] hover:text-[#830000] cursor-pointer"
+                              >
+                                + Tambah Blok
+                              </button>
+                              <div
+                                x-show="openMenu"
+                                @click.away="openMenu = false"
+                                x-cloak
+                                class="absolute right-0 mt-1 w-44 rounded-lg bg-white border border-zinc-200 shadow-lg py-1 z-20 space-y-0.5 text-xs font-medium text-zinc-800"
+                              >
+                                <button type="button" @click="addChildBlock(block, 'col1Blocks', 'heading'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Subjudul (H)</button>
+                                <button type="button" @click="addChildBlock(block, 'col1Blocks', 'paragraph'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Paragraf</button>
+                                <button type="button" @click="addChildBlock(block, 'col1Blocks', 'metric'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Metrik</button>
+                                <button type="button" @click="addChildBlock(block, 'col1Blocks', 'quote'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Kutipan</button>
+                                <button type="button" @click="addChildBlock(block, 'col1Blocks', 'callout'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Kotak Sorotan</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Daftar Child Blocks Kolom Kiri -->
+                          <div class="space-y-3">
+                            <template x-for="(cBlock, cIdx) in (block.col1Blocks || [])" :key="cBlock.id">
+                              <div class="p-3 rounded-lg border border-zinc-200 bg-[#fafafa] space-y-2 relative">
+                                <div class="flex items-center justify-between pb-1 border-b border-zinc-200/60">
+                                  <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500" x-text="cBlock.type"></span>
+                                  <button
+                                    type="button"
+                                    @click="removeChildBlock(block, 'col1Blocks', cIdx)"
+                                    class="text-zinc-400 hover:text-red-600 p-0.5 cursor-pointer text-xs"
+                                    title="Hapus blok ini"
+                                  >&times;</button>
+                                </div>
+
+                                <template x-if="cBlock.type === 'heading'">
+                                  <input type="text" x-model="cBlock.text" placeholder="Subjudul kolom..." class="w-full font-bold rounded border border-zinc-300 bg-white text-xs px-2.5 py-1.5" />
+                                </template>
+                                <template x-if="cBlock.type === 'paragraph'">
+                                  <textarea x-model="cBlock.text" rows="3" placeholder="Teks paragraf..." class="w-full rounded border border-zinc-300 bg-white text-xs p-2"></textarea>
+                                </template>
+                                <template x-if="cBlock.type === 'metric'">
+                                  <div class="space-y-1.5">
+                                    <input type="text" x-model="cBlock.value" placeholder="Nilai (misal: 100%)" class="w-full font-bold text-[#BC0202] rounded border border-zinc-300 bg-white text-xs px-2.5 py-1" />
+                                    <input type="text" x-model="cBlock.label" placeholder="Label metrik" class="w-full rounded border border-zinc-300 bg-white text-xs px-2.5 py-1" />
+                                  </div>
+                                </template>
+                                <template x-if="cBlock.type === 'quote'">
+                                  <textarea x-model="cBlock.quote" rows="2" placeholder="Kutipan..." class="w-full italic rounded border border-zinc-300 bg-white text-xs p-2"></textarea>
+                                </template>
+                                <template x-if="cBlock.type === 'callout'">
+                                  <div class="space-y-1">
+                                    <input type="text" x-model="cBlock.title" placeholder="Judul sorotan..." class="w-full font-bold rounded border border-zinc-300 bg-white text-xs px-2 py-1" />
+                                    <textarea x-model="cBlock.text" rows="2" placeholder="Isi sorotan..." class="w-full rounded border border-zinc-300 bg-white text-xs p-1.5"></textarea>
+                                  </div>
+                                </template>
+                              </div>
+                            </template>
+                            <div x-show="!block.col1Blocks || block.col1Blocks.length === 0" class="text-center py-4 border border-dashed border-zinc-200 rounded-lg text-xs text-zinc-400">
+                              Kolom kiri belum memiliki blok. Klik "+ Tambah Blok" di atas.
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- CONTAINER KOLOM KANAN -->
+                        <div class="p-4 rounded-lg border border-zinc-200 bg-white space-y-3 shadow-2xs">
+                          <div class="flex items-center justify-between pb-2 border-b border-zinc-100">
+                            <span class="text-xs font-bold text-[#BC0202] uppercase tracking-wider">Kolom Kanan</span>
+                            <div class="relative" x-data="{ openMenu: false }">
+                              <button
+                                type="button"
+                                @click="openMenu = !openMenu"
+                                class="inline-flex items-center gap-1 text-[11px] font-bold text-[#BC0202] hover:text-[#830000] cursor-pointer"
+                              >
+                                + Tambah Blok
+                              </button>
+                              <div
+                                x-show="openMenu"
+                                @click.away="openMenu = false"
+                                x-cloak
+                                class="absolute right-0 mt-1 w-44 rounded-lg bg-white border border-zinc-200 shadow-lg py-1 z-20 space-y-0.5 text-xs font-medium text-zinc-800"
+                              >
+                                <button type="button" @click="addChildBlock(block, 'col2Blocks', 'heading'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Subjudul (H)</button>
+                                <button type="button" @click="addChildBlock(block, 'col2Blocks', 'paragraph'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Paragraf</button>
+                                <button type="button" @click="addChildBlock(block, 'col2Blocks', 'metric'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Metrik</button>
+                                <button type="button" @click="addChildBlock(block, 'col2Blocks', 'quote'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Kutipan</button>
+                                <button type="button" @click="addChildBlock(block, 'col2Blocks', 'callout'); openMenu = false" class="w-full text-left px-3 py-1.5 hover:bg-zinc-50">Kotak Sorotan</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Daftar Child Blocks Kolom Kanan -->
+                          <div class="space-y-3">
+                            <template x-for="(cBlock, cIdx) in (block.col2Blocks || [])" :key="cBlock.id">
+                              <div class="p-3 rounded-lg border border-zinc-200 bg-[#fafafa] space-y-2 relative">
+                                <div class="flex items-center justify-between pb-1 border-b border-zinc-200/60">
+                                  <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500" x-text="cBlock.type"></span>
+                                  <button
+                                    type="button"
+                                    @click="removeChildBlock(block, 'col2Blocks', cIdx)"
+                                    class="text-zinc-400 hover:text-red-600 p-0.5 cursor-pointer text-xs"
+                                    title="Hapus blok ini"
+                                  >&times;</button>
+                                </div>
+
+                                <template x-if="cBlock.type === 'heading'">
+                                  <input type="text" x-model="cBlock.text" placeholder="Subjudul kolom..." class="w-full font-bold rounded border border-zinc-300 bg-white text-xs px-2.5 py-1.5" />
+                                </template>
+                                <template x-if="cBlock.type === 'paragraph'">
+                                  <textarea x-model="cBlock.text" rows="3" placeholder="Teks paragraf..." class="w-full rounded border border-zinc-300 bg-white text-xs p-2"></textarea>
+                                </template>
+                                <template x-if="cBlock.type === 'metric'">
+                                  <div class="space-y-1.5">
+                                    <input type="text" x-model="cBlock.value" placeholder="Nilai (misal: 100%)" class="w-full font-bold text-[#BC0202] rounded border border-zinc-300 bg-white text-xs px-2.5 py-1" />
+                                    <input type="text" x-model="cBlock.label" placeholder="Label metrik" class="w-full rounded border border-zinc-300 bg-white text-xs px-2.5 py-1" />
+                                  </div>
+                                </template>
+                                <template x-if="cBlock.type === 'quote'">
+                                  <textarea x-model="cBlock.quote" rows="2" placeholder="Kutipan..." class="w-full italic rounded border border-zinc-300 bg-white text-xs p-2"></textarea>
+                                </template>
+                                <template x-if="cBlock.type === 'callout'">
+                                  <div class="space-y-1">
+                                    <input type="text" x-model="cBlock.title" placeholder="Judul sorotan..." class="w-full font-bold rounded border border-zinc-300 bg-white text-xs px-2 py-1" />
+                                    <textarea x-model="cBlock.text" rows="2" placeholder="Isi sorotan..." class="w-full rounded border border-zinc-300 bg-white text-xs p-1.5"></textarea>
+                                  </div>
+                                </template>
+                              </div>
+                            </template>
+                            <div x-show="!block.col2Blocks || block.col2Blocks.length === 0" class="text-center py-4 border border-dashed border-zinc-200 rounded-lg text-xs text-zinc-400">
+                              Kolom kanan belum memiliki blok. Klik "+ Tambah Blok" di atas.
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </template>
@@ -684,6 +874,215 @@
                           class="flex-1 rounded-md border border-zinc-300 bg-white text-xs px-2.5 py-1 text-zinc-900"
                         />
                       </div>
+                    </div>
+                  </template>
+
+                  <!-- 7. TIPE: METRIK (STAT BOX) -->
+                  <template x-if="block.type === 'metric'">
+                    <div class="p-4 rounded-xl bg-[#fafafa] border border-zinc-200 space-y-3 shadow-2xs">
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label class="block text-[11px] font-bold text-zinc-700 mb-1">Angka / Nilai Metrik:</label>
+                          <input
+                            type="text"
+                            x-model="block.value"
+                            placeholder="Contoh: 100%, Rp 2,5 M, 1.200 Warga"
+                            class="w-full font-bold text-[#BC0202] rounded-lg border border-zinc-300 bg-white text-sm px-3 py-2 focus:outline-none focus:border-[#FF0000]"
+                          />
+                        </div>
+                        <div>
+                          <label class="block text-[11px] font-bold text-zinc-700 mb-1">Label Capaian:</label>
+                          <input
+                            type="text"
+                            x-model="block.label"
+                            placeholder="Contoh: Tingkat Responsif Aduan"
+                            class="w-full font-semibold rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label class="block text-[11px] font-bold text-zinc-700 mb-1">Keterangan / Uraian Metrik:</label>
+                        <textarea
+                          x-model="block.description"
+                          rows="2"
+                          placeholder="Penjelasan konteks pencapaian metrik..."
+                          class="w-full rounded-lg border border-zinc-300 bg-white text-xs p-2.5 text-zinc-700 focus:outline-none focus:border-[#FF0000]"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </template>
+
+                  <!-- 8. TIPE: LAMPIRAN (DOKUMEN UNDUH) -->
+                  <template x-if="block.type === 'attachment'">
+                    <div class="p-4 rounded-xl bg-[#fafafa] border border-zinc-200 space-y-3 shadow-2xs">
+                      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b border-zinc-200">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-700">Dokumen Lampiran</span>
+                        <div>
+                          <input
+                            type="file"
+                            :id="'block_doc_' + block.id"
+                            @change="uploadBlockDocument($event, block)"
+                            accept=".pdf,.doc,.docx,.xls,.xlsx,.zip"
+                            class="hidden"
+                          />
+                          <button
+                            type="button"
+                            @click="document.getElementById('block_doc_' + block.id).click()"
+                            :disabled="block._uploadingDoc"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-[#BC0202] text-white text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
+                          >
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span x-text="block._uploadingDoc ? 'Mengunggah Berkas...' : 'Unggah Berkas Dokumen'"></span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                        <div class="sm:col-span-8">
+                          <label class="block text-[11px] font-bold text-zinc-700 mb-1">Judul / Nama Dokumen:</label>
+                          <input
+                            type="text"
+                            x-model="block.title"
+                            placeholder="Contoh: Laporan Realisasi Reses Masa Sidang 2026.pdf"
+                            class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+                          />
+                        </div>
+                        <div class="sm:col-span-2">
+                          <label class="block text-[11px] font-bold text-zinc-700 mb-1">Format:</label>
+                          <input
+                            type="text"
+                            x-model="block.fileType"
+                            placeholder="PDF / DOC"
+                            class="w-full uppercase rounded-lg border border-zinc-300 bg-white text-xs px-2.5 py-2 text-zinc-900 text-center font-bold focus:outline-none focus:border-[#FF0000]"
+                          />
+                        </div>
+                        <div class="sm:col-span-2">
+                          <label class="block text-[11px] font-bold text-zinc-700 mb-1">Ukuran:</label>
+                          <input
+                            type="text"
+                            x-model="block.fileSize"
+                            placeholder="Contoh: 2.4 MB"
+                            class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-2.5 py-2 text-zinc-900 text-center focus:outline-none focus:border-[#FF0000]"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label class="block text-[11px] font-bold text-zinc-700 mb-1">Tautan URL Berkas:</label>
+                        <input
+                          type="text"
+                          x-model="block.url"
+                          placeholder="storage/documents/... atau https://..."
+                          class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+                        />
+                      </div>
+                    </div>
+                  </template>
+
+                  <!-- 9. TIPE: TABEL KUSTOM -->
+                  <template x-if="block.type === 'table'">
+                    <div class="p-4 rounded-xl bg-[#fafafa] border border-zinc-200 space-y-3 shadow-2xs">
+                      <div>
+                        <label class="block text-[11px] font-bold text-zinc-700 mb-1">Judul Tabel (Opsional):</label>
+                        <input
+                          type="text"
+                          x-model="block.title"
+                          placeholder="Contoh: Rincian Anggaran Berdasarkan Wilayah"
+                          class="w-full font-bold rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+                        />
+                      </div>
+
+                      <div class="flex items-center justify-between pt-1">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-600">Header Kolom:</span>
+                        <button
+                          type="button"
+                          @click="addTableColumn(block)"
+                          class="text-[11px] font-semibold text-[#BC0202] hover:underline cursor-pointer"
+                        >
+                          + Tambah Kolom
+                        </button>
+                      </div>
+
+                      <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                        <template x-for="(h, hIdx) in (block.headers || [])" :key="hIdx">
+                          <div class="flex items-center gap-1 shrink-0">
+                            <input
+                              type="text"
+                              x-model="block.headers[hIdx]"
+                              class="w-32 rounded-lg border border-zinc-300 bg-white text-xs px-2.5 py-1.5 font-bold text-zinc-900"
+                            />
+                            <button
+                              type="button"
+                              @click="removeTableColumn(block, hIdx)"
+                              :disabled="block.headers && block.headers.length <= 1"
+                              class="text-zinc-400 hover:text-red-600 p-1 cursor-pointer disabled:opacity-30"
+                              title="Hapus Kolom"
+                            >
+                              &times;
+                            </button>
+                          </div>
+                        </template>
+                      </div>
+
+                      <div class="pt-2 border-t border-zinc-200">
+                        <div class="flex items-center justify-between mb-2">
+                          <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-600">Baris Data:</span>
+                          <button
+                            type="button"
+                            @click="addTableRow(block)"
+                            class="text-[11px] font-semibold text-[#BC0202] hover:underline cursor-pointer"
+                          >
+                            + Tambah Baris
+                          </button>
+                        </div>
+
+                        <div class="space-y-2">
+                          <template x-for="(row, rIdx) in (block.rows || [])" :key="rIdx">
+                            <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                              <span class="text-xs text-zinc-400 font-mono w-4 shrink-0" x-text="rIdx + 1"></span>
+                              <template x-for="(col, cIdx) in (block.headers || [])" :key="cIdx">
+                                <input
+                                  type="text"
+                                  x-model="block.rows[rIdx][cIdx]"
+                                  class="w-32 rounded-lg border border-zinc-300 bg-white text-xs px-2.5 py-1.5 text-zinc-800 shrink-0"
+                                />
+                              </template>
+                              <button
+                                type="button"
+                                @click="removeTableRow(block, rIdx)"
+                                :disabled="block.rows && block.rows.length <= 1"
+                                class="text-zinc-400 hover:text-red-600 p-1 cursor-pointer disabled:opacity-30 shrink-0"
+                                title="Hapus Baris"
+                              >
+                                &times;
+                              </button>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <!-- 10. TIPE: KOTAK SOROTAN (CALLOUT) -->
+                  <template x-if="block.type === 'callout' || block.type === 'highlight'">
+                    <div class="p-4 rounded-xl bg-[#faf5f5] border-l-4 border-[#BC0202] border border-red-200/60 space-y-2.5 shadow-2xs">
+                      <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-[#BC0202] uppercase tracking-wider">Kotak Sorotan Utama</span>
+                      </div>
+                      <input
+                        type="text"
+                        x-model="block.title"
+                        placeholder="Judul Sorotan Penting..."
+                        class="w-full font-bold rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-950 focus:outline-none focus:border-[#FF0000]"
+                      />
+                      <textarea
+                        x-model="block.text"
+                        rows="3"
+                        placeholder="Isi uraian sorotan kebijakan, catatan penting dewan, atau poin krusial..."
+                        class="w-full rounded-lg border border-zinc-300 bg-white text-xs p-2.5 text-zinc-800 focus:outline-none focus:border-[#FF0000]"
+                      ></textarea>
                     </div>
                   </template>
                 </div>
@@ -714,7 +1113,7 @@
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
                 </svg>
-                <span>Paragraf</span>
+                <span>Paragraf (Rich Text)</span>
               </button>
 
               <button
@@ -725,7 +1124,7 @@
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>Gambar / Image</span>
+                <span>Gambar / Foto</span>
               </button>
 
               <button
@@ -747,7 +1146,7 @@
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
                 </svg>
-                <span>Grid 2 Kolom</span>
+                <span>Grid 2 Kolom (Container)</span>
               </button>
 
               <button
@@ -759,6 +1158,50 @@
                   <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                 </svg>
                 <span>Kutipan (Quote)</span>
+              </button>
+
+              <button
+                type="button"
+                @click="addBlock('metric')"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-[#BC0202] hover:text-[#BC0202] text-xs font-semibold px-3 py-2 shadow-2xs transition-all cursor-pointer"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span>Metrik (Stat Box)</span>
+              </button>
+
+              <button
+                type="button"
+                @click="addBlock('attachment')"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-[#BC0202] hover:text-[#BC0202] text-xs font-semibold px-3 py-2 shadow-2xs transition-all cursor-pointer"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Lampiran (Dokumen)</span>
+              </button>
+
+              <button
+                type="button"
+                @click="addBlock('table')"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-[#BC0202] hover:text-[#BC0202] text-xs font-semibold px-3 py-2 shadow-2xs transition-all cursor-pointer"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span>Tabel Kustom</span>
+              </button>
+
+              <button
+                type="button"
+                @click="addBlock('callout')"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-[#BC0202] hover:text-[#BC0202] text-xs font-semibold px-3 py-2 shadow-2xs transition-all cursor-pointer"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Kotak Sorotan</span>
               </button>
             </div>
           </div>
@@ -815,7 +1258,7 @@
                 <div>
                   <span class="font-bold text-xs text-zinc-950 block">Sorotan Utama (Featured)</span>
                   <span class="text-[11px] text-zinc-500 leading-normal block mt-0.5">
-                    Menampilkan artikel ini di kartu besar halaman Beranda &amp; bagian teratas halaman Kinerja.
+                    Hanya 1 artikel yang dapat dijadikan sorotan utama. Mengaktifkan ini akan otomatis menonaktifkan status sorotan pada artikel lain.
                   </span>
                 </div>
               </label>
@@ -833,29 +1276,42 @@
             </div>
           </div>
 
-          <!-- Panel Cover Image -->
+          <!-- Panel Cover Image (Upload File Langsung, Hapus Select) -->
           <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
             <h3 class="font-bold text-sm text-zinc-950 pb-3 border-b border-zinc-100 flex items-center tracking-tight">
               <span class="text-[#BC0202] font-black mr-2">|</span> Cover Image (Gambar Sampul)
             </h3>
 
             <!-- Pratinjau Cover -->
-            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs">
-              <img :src="form.coverImage" alt="Cover Image Laporan" class="w-full h-full object-cover" />
+            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs relative">
+              <img :src="form.coverImage ? (form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage) : '/assets/banu/program_ambulance.jpg'" alt="Cover Image Laporan" class="w-full h-full object-cover" />
+              <div x-show="uploadingCover" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
+                Mengunggah Sampul...
+              </div>
             </div>
 
-            <!-- Pilihan Cover dari Aset Lokal -->
+            <!-- Upload File Sampul -->
             <div>
-              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Pilih Gambar Sampul:</label>
-              <select
-                x-model="form.coverImage"
-                class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Unggah Gambar Sampul:</label>
+              <input
+                type="file"
+                x-ref="coverFileInput"
+                @change="uploadCoverImage($event)"
+                accept="image/*"
+                class="hidden"
+              />
+              <button
+                type="button"
+                @click="$refs.coverFileInput.click()"
+                :disabled="uploadingCover"
+                class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 hover:border-[#BC0202] text-xs font-semibold px-3 py-2.5 text-zinc-800 transition-colors cursor-pointer shadow-2xs"
               >
-                <template x-for="c in availableCovers" :key="c.url">
-                  <option :value="c.url" x-text="c.label"></option>
-                </template>
-              </select>
-              <p class="text-[11px] text-zinc-500 mt-1.5">Format rasio 16:9 atau 16:10 untuk tampilan ideal pada kartu publik.</p>
+                <svg class="w-4 h-4 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span x-text="uploadingCover ? 'Mengunggah...' : 'Pilih & Unggah Gambar Sampul'"></span>
+              </button>
+              <p class="text-[11px] text-zinc-500 mt-1.5">Rasio 16:9 disarankan untuk tampilan ideal pada kartu publik.</p>
             </div>
           </div>
         </div>
@@ -930,7 +1386,7 @@
         <div class="space-y-6 pt-2">
           <template x-for="block in form.blocks" :key="block.id">
             <div>
-              <!-- Heading Block -->
+              <!-- 1. Heading Block -->
               <template x-if="block.type === 'heading'">
                 <div>
                   <h2 x-show="block.level === 'h2'" class="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight leading-snug mt-6 mb-2" x-text="block.text"></h2>
@@ -938,25 +1394,25 @@
                 </div>
               </template>
 
-              <!-- Paragraph Block -->
+              <!-- 2. Paragraph Block (Rich Text Render) -->
               <template x-if="block.type === 'paragraph'">
-                <p class="text-xs sm:text-sm text-zinc-700 leading-relaxed" x-text="block.text"></p>
+                <div class="text-xs sm:text-sm text-zinc-700 leading-relaxed" x-html="block.text"></div>
               </template>
 
-              <!-- Image Block -->
+              <!-- 3. Image Block -->
               <template x-if="block.type === 'image'">
                 <figure class="my-4 space-y-2">
-                  <div class="aspect-[16/10] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100">
-                    <img :src="block.url" :alt="block.caption" class="w-full h-full object-cover" />
+                  <div class="aspect-[16/10] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100 shadow-2xs">
+                    <img :src="block.url ? (block.url.startsWith('http') || block.url.startsWith('/') ? block.url : '/' + block.url) : '/assets/banu/testi_dialog.jpg'" :alt="block.caption" class="w-full h-full object-cover" />
                   </div>
                   <figcaption x-show="block.caption" class="text-center text-xs text-zinc-500 italic" x-text="block.caption"></figcaption>
                 </figure>
               </template>
 
-              <!-- List Block -->
+              <!-- 4. List Block -->
               <template x-if="block.type === 'list'">
                 <ul class="space-y-2 my-3 pl-2">
-                  <template x-for="item in block.items" :key="item">
+                  <template x-for="item in (block.items || [])" :key="item">
                     <li class="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-700 leading-relaxed">
                       <span class="w-1.5 h-1.5 rounded-full bg-[#BC0202] mt-2 shrink-0"></span>
                       <span x-text="item"></span>
@@ -965,26 +1421,134 @@
                 </ul>
               </template>
 
-              <!-- Grid Block -->
+              <!-- 5. Grid Container Block (Nested Child Blocks) -->
               <template x-if="block.type === 'grid'">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
-                  <div class="p-5 rounded-xl border border-zinc-200 bg-[#fafafa]">
-                    <h4 class="font-bold text-sm sm:text-base text-zinc-950 tracking-tight" x-text="block.col1Title"></h4>
-                    <p class="text-xs text-zinc-600 mt-2 leading-relaxed" x-text="block.col1Text"></p>
+                <div>
+                  <!-- Nested Grid View -->
+                  <template x-if="(block.col1Blocks && block.col1Blocks.length) || (block.col2Blocks && block.col2Blocks.length)">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
+                      <!-- Kolom Kiri -->
+                      <div class="space-y-3">
+                        <template x-for="cb in (block.col1Blocks || [])" :key="cb.id">
+                          <div class="p-3.5 rounded-xl border border-zinc-200 bg-[#fafafa]">
+                            <h4 x-show="cb.type === 'heading'" class="font-bold text-xs sm:text-sm text-zinc-950 mb-1" x-text="cb.text"></h4>
+                            <div x-show="cb.type === 'paragraph'" class="text-xs text-zinc-700 leading-relaxed" x-html="cb.text"></div>
+                            <div x-show="cb.type === 'metric'">
+                              <div class="text-2xl font-extrabold text-[#BC0202]" x-text="cb.value"></div>
+                              <div class="text-xs font-bold text-zinc-950 mt-0.5" x-text="cb.label"></div>
+                            </div>
+                            <blockquote x-show="cb.type === 'quote'" class="text-xs italic border-l-2 border-[#BC0202] pl-2.5 text-zinc-800" x-text="cb.quote"></blockquote>
+                            <div x-show="cb.type === 'callout'" class="text-xs border-l-2 border-[#BC0202] pl-2.5">
+                              <span class="font-bold text-zinc-950 block" x-text="cb.title"></span>
+                              <span class="text-zinc-600 mt-0.5 block" x-text="cb.text"></span>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+
+                      <!-- Kolom Kanan -->
+                      <div class="space-y-3">
+                        <template x-for="cb in (block.col2Blocks || [])" :key="cb.id">
+                          <div class="p-3.5 rounded-xl border border-zinc-200 bg-[#fafafa]">
+                            <h4 x-show="cb.type === 'heading'" class="font-bold text-xs sm:text-sm text-zinc-950 mb-1" x-text="cb.text"></h4>
+                            <div x-show="cb.type === 'paragraph'" class="text-xs text-zinc-700 leading-relaxed" x-html="cb.text"></div>
+                            <div x-show="cb.type === 'metric'">
+                              <div class="text-2xl font-extrabold text-[#BC0202]" x-text="cb.value"></div>
+                              <div class="text-xs font-bold text-zinc-950 mt-0.5" x-text="cb.label"></div>
+                            </div>
+                            <blockquote x-show="cb.type === 'quote'" class="text-xs italic border-l-2 border-[#BC0202] pl-2.5 text-zinc-800" x-text="cb.quote"></blockquote>
+                            <div x-show="cb.type === 'callout'" class="text-xs border-l-2 border-[#BC0202] pl-2.5">
+                              <span class="font-bold text-zinc-950 block" x-text="cb.title"></span>
+                              <span class="text-zinc-600 mt-0.5 block" x-text="cb.text"></span>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </div>
+                  </template>
+
+                  <!-- Legacy 2-Col Fallback -->
+                  <template x-if="!((block.col1Blocks && block.col1Blocks.length) || (block.col2Blocks && block.col2Blocks.length))">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
+                      <div class="p-5 rounded-xl border border-zinc-200 bg-[#fafafa]">
+                        <h4 class="font-bold text-sm sm:text-base text-zinc-950 tracking-tight" x-text="block.col1Title"></h4>
+                        <p class="text-xs text-zinc-600 mt-2 leading-relaxed" x-text="block.col1Text"></p>
+                      </div>
+                      <div class="p-5 rounded-xl border border-zinc-200 bg-[#fafafa]">
+                        <h4 class="font-bold text-sm sm:text-base text-zinc-950 tracking-tight" x-text="block.col2Title"></h4>
+                        <p class="text-xs text-zinc-600 mt-2 leading-relaxed" x-text="block.col2Text"></p>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </template>
+
+              <!-- 6. Quote Block -->
+              <template x-if="block.type === 'quote'">
+                <blockquote class="p-5 sm:p-6 rounded-xl bg-[#fafafa] border-l-4 border-[#BC0202] my-4 shadow-2xs">
+                  <p class="text-sm sm:text-base font-bold italic text-zinc-950 leading-relaxed" x-text="'“' + block.quote + '”'"></p>
+                  <span x-show="block.author" class="block text-xs font-semibold text-[#BC0202] mt-2" x-text="'— ' + block.author"></span>
+                </blockquote>
+              </template>
+
+              <!-- 7. Metric Block -->
+              <template x-if="block.type === 'metric'">
+                <div class="my-4 p-5 rounded-xl border border-zinc-200 bg-[#fafafa] shadow-2xs">
+                  <div class="text-3xl font-extrabold text-[#BC0202] tracking-tight" x-text="block.value"></div>
+                  <div class="text-sm font-bold text-zinc-950 mt-1" x-text="block.label"></div>
+                  <p x-show="block.description" class="text-xs text-zinc-600 mt-1 leading-relaxed" x-text="block.description"></p>
+                </div>
+              </template>
+
+              <!-- 8. Attachment Block -->
+              <template x-if="block.type === 'attachment'">
+                <div class="my-4 p-4 rounded-xl border border-zinc-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-lg bg-red-50 border border-red-200 text-[#BC0202] flex items-center justify-center font-bold text-xs uppercase shrink-0" x-text="block.fileType || 'PDF'"></div>
+                    <div class="min-w-0">
+                      <h4 class="text-xs sm:text-sm font-bold text-zinc-950 truncate" x-text="block.title"></h4>
+                      <span class="text-[11px] text-zinc-500 font-medium" x-text="(block.fileSize ? block.fileSize + ' • ' : '') + 'Dokumen Lampiran Resmi'"></span>
+                    </div>
                   </div>
-                  <div class="p-5 rounded-xl border border-zinc-200 bg-[#fafafa]">
-                    <h4 class="font-bold text-sm sm:text-base text-zinc-950 tracking-tight" x-text="block.col2Title"></h4>
-                    <p class="text-xs text-zinc-600 mt-2 leading-relaxed" x-text="block.col2Text"></p>
+                  <span class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-semibold shrink-0">
+                    Unduh Berkas
+                  </span>
+                </div>
+              </template>
+
+              <!-- 9. Table Block -->
+              <template x-if="block.type === 'table'">
+                <div class="my-4 rounded-xl border border-zinc-200 overflow-hidden bg-white shadow-2xs">
+                  <div x-show="block.title" class="px-4 py-2.5 bg-[#fafafa] border-b border-zinc-200 font-bold text-xs text-zinc-900" x-text="block.title"></div>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-zinc-700">
+                      <thead class="bg-zinc-100 border-b border-zinc-200 font-bold text-[11px] uppercase tracking-wider text-zinc-900">
+                        <tr>
+                          <template x-for="h in (block.headers || [])" :key="h">
+                            <th scope="col" class="px-3.5 py-2.5" x-text="h"></th>
+                          </template>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-zinc-200">
+                        <template x-for="(row, rIdx) in (block.rows || [])" :key="rIdx">
+                          <tr class="hover:bg-zinc-50">
+                            <template x-for="(cell, cIdx) in row" :key="cIdx">
+                              <td class="px-3.5 py-2.5" x-text="cell"></td>
+                            </template>
+                          </tr>
+                        </template>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </template>
 
-              <!-- Quote Block -->
-              <template x-if="block.type === 'quote'">
-                <blockquote class="p-5 sm:p-6 rounded-xl bg-[#fafafa] border-l-4 border-[#BC0202] my-4">
-                  <p class="text-sm sm:text-base font-bold italic text-zinc-950 leading-relaxed" x-text="'“' + block.quote + '”'"></p>
-                  <span x-show="block.author" class="block text-xs font-semibold text-[#BC0202] mt-2" x-text="'— ' + block.author"></span>
-                </blockquote>
+              <!-- 10. Callout Block -->
+              <template x-if="block.type === 'callout' || block.type === 'highlight'">
+                <div class="my-4 rounded-xl border border-red-200 border-l-4 border-l-[#BC0202] bg-[#faf5f5] p-4 sm:p-5 shadow-2xs">
+                  <h4 class="font-bold text-xs sm:text-sm text-zinc-950 mb-1" x-text="block.title"></h4>
+                  <p class="text-xs sm:text-sm text-zinc-700 leading-relaxed" x-text="block.text"></p>
+                </div>
               </template>
             </div>
           </template>
@@ -1016,27 +1580,19 @@
       statusFilter: 'all',
       previewModal: false,
       saveSuccessNotification: false,
+      uploadingCover: false,
 
       formMode: 'create',
       currentArticleId: null,
       form: {
         title: '',
         date: '',
-        coverImage: '{{ asset("assets/banu/program_ambulance.jpg") }}',
+        coverImage: 'assets/banu/program_ambulance.jpg',
         excerpt: '',
         isFeatured: false,
         status: 'Terbit',
         blocks: []
       },
-
-      availableCovers: [
-        { label: 'Ambulance Siaga 24 Jam', url: '{{ asset("assets/banu/program_ambulance.jpg") }}' },
-        { label: 'Pelatihan UMKM RT/RW', url: '{{ asset("assets/banu/program_umkm.jpg") }}' },
-        { label: 'Dialog Warga Kebon Pedes', url: '{{ asset("assets/banu/testi_dialog.jpg") }}' },
-        { label: 'Foto Parlemen / Sidang', url: '{{ asset("assets/banu/hero_banu.jpg") }}' },
-        { label: 'Rembug Komunitas Warga', url: '{{ asset("assets/banu/footer_community.jpg") }}' },
-        { label: 'Banner Serbaguna Pengabdian', url: '{{ asset("assets/banu/banner_serbaguna.jpg") }}' }
-      ],
 
       articles: @json($initialArticles),
 
@@ -1061,7 +1617,7 @@
         this.form = {
           title: '',
           date: new Date().toISOString().split('T')[0],
-          coverImage: '{{ asset("assets/banu/program_ambulance.jpg") }}',
+          coverImage: 'assets/banu/program_ambulance.jpg',
           excerpt: '',
           isFeatured: false,
           status: 'Terbit',
@@ -1075,6 +1631,7 @@
             {
               id: 'b_' + Date.now() + '_2',
               type: 'paragraph',
+              format: 'html',
               text: 'Tuliskan deskripsi narasi hasil kinerja, latar belakang aksi lapangan, atau kebijakan yang diperjuangkan di sini...'
             }
           ]
@@ -1099,6 +1656,198 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
 
+      // Upload file methods
+      uploadCoverImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        this.uploadingCover = true;
+        const fd = new FormData();
+        fd.append('file', file);
+
+        fetch('{{ route("admin.upload") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+          this.uploadingCover = false;
+          if (data && data.success) {
+            this.form.coverImage = data.path;
+          } else {
+            alert(data.message || 'Gagal mengunggah gambar sampul.');
+          }
+        })
+        .catch(() => {
+          this.uploadingCover = false;
+          alert('Terjadi kesalahan jaringan saat mengunggah.');
+        });
+      },
+
+      uploadBlockImage(event, block) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        block._uploading = true;
+        const fd = new FormData();
+        fd.append('file', file);
+
+        fetch('{{ route("admin.upload") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+          block._uploading = false;
+          if (data && data.success) {
+            block.url = data.path;
+          } else {
+            alert(data.message || 'Gagal mengunggah foto.');
+          }
+        })
+        .catch(() => {
+          block._uploading = false;
+          alert('Terjadi kesalahan jaringan.');
+        });
+      },
+
+      uploadBlockDocument(event, block) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        block._uploadingDoc = true;
+        const fd = new FormData();
+        fd.append('file', file);
+
+        fetch('{{ route("admin.upload") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+          block._uploadingDoc = false;
+          if (data && data.success) {
+            block.url = data.path;
+            if (!block.title || block.title === 'Laporan Realisasi Program.pdf') {
+              block.title = data.filename || file.name;
+            }
+            block.fileType = data.file_type || 'PDF';
+            block.fileSize = data.file_size || '';
+          } else {
+            alert(data.message || 'Gagal mengunggah dokumen.');
+          }
+        })
+        .catch(() => {
+          block._uploadingDoc = false;
+          alert('Terjadi kesalahan jaringan.');
+        });
+      },
+
+      // Rich Text Formatting Toolbar
+      applyFormatting(block, tag) {
+        const el = document.getElementById('para_textarea_' + block.id);
+        if (!el) return;
+
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const selected = el.value.substring(start, end);
+        const replacement = selected ? `<${tag}>${selected}</${tag}>` : `<${tag}>Teks</${tag}>`;
+
+        el.setRangeText(replacement, start, end, 'end');
+        block.text = el.value;
+        block.format = 'html';
+        el.focus();
+      },
+
+      applyLinkFormatting(block) {
+        const el = document.getElementById('para_textarea_' + block.id);
+        if (!el) return;
+
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const selected = el.value.substring(start, end);
+
+        const url = prompt('Masukkan alamat URL tautan (contoh: https://...):', 'https://');
+        if (!url) return;
+
+        const linkText = selected || 'Tautan';
+        const replacement = `<a href="${url}" class="text-[#BC0202] underline" target="_blank">${linkText}</a>`;
+
+        el.setRangeText(replacement, start, end, 'end');
+        block.text = el.value;
+        block.format = 'html';
+        el.focus();
+      },
+
+      // Table Block Helpers
+      addTableColumn(block) {
+        if (!block.headers) block.headers = [];
+        if (!block.rows) block.rows = [];
+
+        block.headers.push('Kolom ' + (block.headers.length + 1));
+        block.rows.forEach(row => {
+          row.push('-');
+        });
+      },
+
+      removeTableColumn(block, index) {
+        if (block.headers && block.headers.length > 1) {
+          block.headers.splice(index, 1);
+          block.rows.forEach(row => {
+            row.splice(index, 1);
+          });
+        }
+      },
+
+      addTableRow(block) {
+        if (!block.rows) block.rows = [];
+        const colsCount = (block.headers && block.headers.length) || 2;
+        const newRow = new Array(colsCount).fill('-');
+        block.rows.push(newRow);
+      },
+
+      removeTableRow(block, index) {
+        if (block.rows && block.rows.length > 1) {
+          block.rows.splice(index, 1);
+        }
+      },
+
+      // Nested Container Grid Block Helpers
+      addChildBlock(block, colKey, type) {
+        if (!block[colKey]) block[colKey] = [];
+        const id = 'cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+
+        if (type === 'heading') {
+          block[colKey].push({ id, type, level: 'h3', text: 'Subjudul Kolom' });
+        } else if (type === 'paragraph') {
+          block[colKey].push({ id, type, format: 'html', text: 'Paragraf di dalam kolom...' });
+        } else if (type === 'metric') {
+          block[colKey].push({ id, type, value: '100%', label: 'Label Metrik' });
+        } else if (type === 'quote') {
+          block[colKey].push({ id, type, quote: 'Kutipan di dalam kolom...' });
+        } else if (type === 'callout') {
+          block[colKey].push({ id, type, title: 'Sorotan', text: 'Catatan sorotan di dalam kolom...' });
+        }
+      },
+
+      removeChildBlock(block, colKey, index) {
+        if (block[colKey]) {
+          block[colKey].splice(index, 1);
+        }
+      },
+
       saveArticle() {
         if (!this.form.title.trim()) {
           alert('Judul tulisan hasil kinerja wajib diisi!');
@@ -1108,11 +1857,15 @@
         const url = this.formMode === 'create' ? '{{ route("admin.kinerja.store") }}' : '/admin/kinerja/' + this.currentArticleId;
         const method = this.formMode === 'create' ? 'POST' : 'PUT';
 
+        // Bersihkan tag HTML untuk excerpt otomatis
+        const rawFirstParagraph = this.form.blocks.find(b => b.type === 'paragraph')?.text || '';
+        const cleanParagraph = rawFirstParagraph.replace(/<[^>]*>/g, '').trim();
+
         const payload = {
           title: this.form.title,
           date: this.form.date,
           coverImage: this.form.coverImage,
-          excerpt: this.form.excerpt || (this.form.blocks.find(b => b.type === 'paragraph')?.text || '').slice(0, 160) + '...',
+          excerpt: this.form.excerpt || (cleanParagraph ? cleanParagraph.slice(0, 160) + '...' : ''),
           isFeatured: this.form.isFeatured,
           status: this.form.status,
           blocks: this.form.blocks
@@ -1158,6 +1911,14 @@
           }
         }).then(r => r.json()).then(data => {
           if (data && data.success) {
+            if (data.is_featured) {
+              // Sorotan Utama hanya bisa 1 artikel: unfeature yang lain
+              this.articles.forEach(a => {
+                if (a.id !== item.id) {
+                  a.isFeatured = false;
+                }
+              });
+            }
             item.isFeatured = data.is_featured;
           }
         }).catch(() => {
@@ -1187,20 +1948,21 @@
         if (type === 'heading') {
           this.form.blocks.push({ id, type, level: 'h2', text: 'Subjudul Baru' });
         } else if (type === 'paragraph') {
-          this.form.blocks.push({ id, type, text: 'Tuliskan paragraf penjelasan rinci mengenai kegiatan atau advokasi yang dilakukan...' });
+          this.form.blocks.push({ id, type, format: 'html', text: 'Tuliskan paragraf penjelasan rinci mengenai kegiatan atau advokasi yang dilakukan...' });
         } else if (type === 'image') {
-          this.form.blocks.push({ id, type, url: '{{ asset("assets/banu/testi_dialog.jpg") }}', caption: 'Keterangan dokumentasi kegiatan lapangan.' });
+          this.form.blocks.push({ id, type, url: 'assets/banu/testi_dialog.jpg', caption: 'Keterangan dokumentasi kegiatan lapangan.' });
         } else if (type === 'list') {
           this.form.blocks.push({ id, type, items: ['Poin rincian capaian pertama', 'Poin rincian capaian kedua'] });
         } else if (type === 'grid') {
           this.form.blocks.push({
             id,
             type,
-            columns: '2',
-            col1Title: 'Rincian Aspek A',
-            col1Text: 'Keterangan ringkas mengenai aspek capaian pertama.',
-            col2Title: 'Rincian Aspek B',
-            col2Text: 'Keterangan ringkas mengenai aspek capaian kedua.'
+            col1Blocks: [
+              { id: 'cb_' + Date.now() + '_1', type: 'paragraph', format: 'html', text: 'Rincian aspek atau program pada kolom kiri.' }
+            ],
+            col2Blocks: [
+              { id: 'cb_' + Date.now() + '_2', type: 'paragraph', format: 'html', text: 'Rincian aspek atau program pada kolom kanan.' }
+            ]
           });
         } else if (type === 'quote') {
           this.form.blocks.push({
@@ -1208,6 +1970,41 @@
             type,
             quote: 'Tuliskan kutipan pernyataan penting atau janji advokasi rakyat di sini.',
             author: 'Banu Lesmana Bagaskara, S.M.'
+          });
+        } else if (type === 'metric') {
+          this.form.blocks.push({
+            id,
+            type,
+            value: '100%',
+            label: 'Tingkat Responsif Aduan',
+            description: 'Seluruh aduan tertangani dalam kurun waktu 1x24 jam.'
+          });
+        } else if (type === 'attachment') {
+          this.form.blocks.push({
+            id,
+            type,
+            title: 'Laporan Realisasi Program.pdf',
+            url: '',
+            fileType: 'PDF',
+            fileSize: '1.5 MB'
+          });
+        } else if (type === 'table') {
+          this.form.blocks.push({
+            id,
+            type,
+            title: 'Rincian Realisasi Program Kerja',
+            headers: ['No', 'Program Kegiatan', 'Lokasi', 'Status'],
+            rows: [
+              ['1', 'Ambulance Siaga 24 Jam', 'Tanah Sareal', 'Aktif'],
+              ['2', 'Legalitas NIB UMKM', 'Kebonpedes', 'Terealisasi']
+            ]
+          });
+        } else if (type === 'callout') {
+          this.form.blocks.push({
+            id,
+            type,
+            title: 'Catatan Pokok Pembahasan',
+            text: 'Tuliskan catatan penting atau arahan kebijakan yang perlu menjadi perhatian khusus di sini.'
           });
         }
       },

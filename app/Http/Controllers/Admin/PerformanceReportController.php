@@ -50,6 +50,12 @@ class PerformanceReportController extends Controller
         ]);
 
         $status = ($validated['status'] ?? 'Terbit') === 'Terbit' ? 'published' : 'draft';
+        $isFeatured = (bool) ($validated['isFeatured'] ?? false);
+
+        // Hanya boleh ada 1 artikel yang berstatus is_featured
+        if ($isFeatured) {
+            PerformanceReport::where('is_featured', true)->update(['is_featured' => false]);
+        }
 
         $report = PerformanceReport::create([
             'title' => $validated['title'],
@@ -57,7 +63,7 @@ class PerformanceReportController extends Controller
             'published_at' => $validated['date'] ?? now(),
             'cover_image' => $validated['coverImage'] ?? 'assets/banu/program_ambulance.jpg',
             'excerpt' => $validated['excerpt'] ?? Str::limit(collect($validated['blocks'] ?? [])->firstWhere('type', 'paragraph')['text'] ?? '', 160),
-            'is_featured' => (bool) ($validated['isFeatured'] ?? false),
+            'is_featured' => $isFeatured,
             'status' => $status,
             'content_blocks' => $validated['blocks'] ?? [],
         ]);
@@ -93,13 +99,19 @@ class PerformanceReportController extends Controller
         ]);
 
         $status = ($validated['status'] ?? 'Terbit') === 'Terbit' ? 'published' : 'draft';
+        $isFeatured = (bool) ($validated['isFeatured'] ?? false);
+
+        // Hanya boleh ada 1 artikel yang berstatus is_featured
+        if ($isFeatured) {
+            PerformanceReport::where('id', '!=', $report->id)->where('is_featured', true)->update(['is_featured' => false]);
+        }
 
         $report->update([
             'title' => $validated['title'],
             'published_at' => $validated['date'] ?? $report->published_at,
             'cover_image' => $validated['coverImage'] ?? $report->cover_image,
             'excerpt' => $validated['excerpt'] ?? $report->excerpt,
-            'is_featured' => (bool) ($validated['isFeatured'] ?? false),
+            'is_featured' => $isFeatured,
             'status' => $status,
             'content_blocks' => $validated['blocks'] ?? $report->content_blocks,
         ]);
@@ -146,7 +158,14 @@ class PerformanceReportController extends Controller
 
     public function toggleFeatured(Request $request, PerformanceReport $report): JsonResponse
     {
-        $report->is_featured = ! $report->is_featured;
+        $newFeatured = ! $report->is_featured;
+
+        // Jika akan diubah menjadi featured, unfeature semua artikel lain
+        if ($newFeatured) {
+            PerformanceReport::where('id', '!=', $report->id)->where('is_featured', true)->update(['is_featured' => false]);
+        }
+
+        $report->is_featured = $newFeatured;
         $report->save();
 
         return response()->json(['success' => true, 'is_featured' => $report->is_featured]);

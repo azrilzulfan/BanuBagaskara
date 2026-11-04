@@ -25,6 +25,7 @@ class NewsFactory extends Factory
             'title' => $title,
             'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(100, 999),
             'source' => fake()->randomElement(['Media Center', 'Radar Bogor', 'Antara', 'Pikiran Rakyat']),
+            'source_url' => fake()->url(),
             'description' => fake()->paragraph(),
             'cover_image' => 'assets/banu/news_1.jpg',
             'is_featured' => false,

@@ -87,17 +87,21 @@
                 </svg>
                 <span>{{ $featuredNews->published_at ? $featuredNews->published_at->translatedFormat('d F Y') : '28 Februari 2026' }}</span>
               </div>
-              <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-950 tracking-tight leading-snug">{{ $featuredNews->title }}</h2>
+              <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-950 tracking-tight leading-snug">
+                <a href="{{ $featuredNews->source_url ?: $featuredNews->source }}" target="_blank" rel="noopener noreferrer" class="hover:text-[#BC0202] transition-colors">
+                  {{ $featuredNews->title }}
+                </a>
+              </h2>
               <p class="text-xs sm:text-[14px] text-zinc-600 mt-3.5 leading-relaxed line-clamp-3">
                 {{ $featuredNews->description }}
               </p>
             </div>
 
             <div class="mt-7 pt-5 border-t border-zinc-100 flex items-center justify-start">
-              <a href="{{ route('berita.show', $featuredNews->slug) }}" class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 shadow-sm transition-colors gap-1.5 active:scale-98">
-                <span>Baca Selengkapnya</span>
+              <a href="{{ $featuredNews->source_url ?: $featuredNews->source }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 shadow-sm transition-colors gap-1.5 active:scale-98">
+                <span>Baca Selengkapnya di Sumber Asli</span>
                 <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>
             </div>
@@ -183,22 +187,28 @@
                   <span>{{ $item->published_at ? $item->published_at->translatedFormat('d F Y') : '24 Februari 2026' }}</span>
                 </div>
 
-                <h3 class="font-bold text-base sm:text-lg text-zinc-950 leading-snug tracking-tight">{{ $item->title }}</h3>
+                <h3 class="font-bold text-base sm:text-lg text-zinc-950 leading-snug tracking-tight">
+                  <a href="{{ $item->source_url ?: $item->source }}" target="_blank" rel="noopener noreferrer" class="hover:text-[#BC0202] transition-colors">
+                    {{ $item->title }}
+                  </a>
+                </h3>
                 <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed line-clamp-3">
                   {{ $item->description }}
                 </p>
               </div>
             </div>
 
-            <!-- Button: Baca Selengkapnya -->
+            <!-- Button: Baca di Sumber Asli -->
             <div class="px-5 sm:px-6 pb-5 sm:pb-6 pt-1">
               <a
-                href="{{ route('berita.show', $item->slug) }}"
+                href="{{ $item->source_url ?: $item->source }}"
+                target="_blank"
+                rel="noopener noreferrer"
                 class="w-full inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2.5 px-3.5 shadow-2xs transition-colors active:scale-98 gap-1.5 group/btn"
               >
-                <span>Baca Selengkapnya</span>
+                <span>Baca di Sumber Asli</span>
                 <svg class="w-3.5 h-3.5 text-zinc-500 group-hover/btn:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>
             </div>

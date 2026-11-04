@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class NewsController extends Controller
@@ -25,7 +26,7 @@ class NewsController extends Controller
         return view('public.berita.index', compact('featuredNews', 'newsList'));
     }
 
-    public function show(string $slug): View
+    public function show(string $slug): RedirectResponse
     {
         $news = News::published()
             ->where('slug', $slug)
@@ -33,12 +34,12 @@ class NewsController extends Controller
 
         $news->increment('view_count');
 
-        $relatedNews = News::published()
-            ->where('id', '!=', $news->id)
-            ->latest('published_at')
-            ->take(3)
-            ->get();
+        $targetUrl = $news->source_url ?: $news->source;
 
-        return view('public.berita.show', compact('news', 'relatedNews'));
+        if ($targetUrl && filter_var($targetUrl, FILTER_VALIDATE_URL)) {
+            return redirect()->away($targetUrl);
+        }
+
+        return redirect()->route('berita.index');
     }
 }

@@ -57,7 +57,9 @@
     <input type="hidden" name="_method" id="newsFormMethod" value="POST" />
     <input type="hidden" name="title" :value="form.title" />
     <input type="hidden" name="date" :value="form.date" />
-    <input type="hidden" name="source" :value="form.source" />
+    <input type="hidden" name="sourceUrl" :value="form.sourceUrl" />
+    <input type="hidden" name="source_url" :value="form.sourceUrl" />
+    <input type="hidden" name="source" :value="form.sourceUrl" />
     <input type="hidden" name="coverImage" :value="form.coverImage" />
     <input type="hidden" name="description" :value="form.description" />
     <input type="hidden" name="isFeatured" :value="form.isFeatured ? 1 : 0" />
@@ -69,7 +71,7 @@
     @foreach ($articles as $a)
       <div>
         <span>{{ $a['title'] }}</span>
-        <span>{{ $a['source'] }}</span>
+        <span>{{ $a['sourceUrl'] ?? $a['source'] }}</span>
       </div>
     @endforeach
   </div>
@@ -234,11 +236,15 @@
                 <div class="flex flex-wrap items-center gap-2 mb-2">
                   <span class="text-xs text-zinc-500 font-medium" x-text="item.dateFormatted"></span>
                   <span class="text-zinc-300">&bull;</span>
-                  <!-- Sumber Berita Badge -->
-                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-700 bg-zinc-100 px-2.5 py-0.5 rounded-md border border-zinc-200">
-                    <span class="text-[#BC0202] font-black mr-0.5">Sumber:</span>
-                    <span x-text="item.source"></span>
-                  </span>
+                  <!-- Tautan URL Sumber Badge / Link -->
+                  <template x-if="item.sourceUrl">
+                    <a :href="item.sourceUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#BC0202] hover:text-[#830000] bg-red-50 hover:bg-red-100 px-2.5 py-0.5 rounded-md border border-red-200 transition-colors">
+                      <span class="font-bold">Tautan Sumber</span>
+                      <svg class="w-3 h-3 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  </template>
                   <span class="text-zinc-300">&bull;</span>
                   <span
                     class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md border"
@@ -376,38 +382,31 @@
               />
             </div>
 
-            <!-- 2. Input Sumber Berita & Tautan URL Sumber -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div>
-                <label class="block text-xs font-bold text-zinc-900 mb-1.5 uppercase tracking-wider">Sumber Berita *</label>
-                <input
-                  type="text"
-                  x-model="form.source"
-                  placeholder="Contoh: Rilis Resmi Rumah Aspirasi / Radar Bogor"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-zinc-900 mb-1.5 uppercase tracking-wider">Tautan / URL Sumber (Opsional)</label>
+            <!-- 2. Input Tautan / URL Sumber Berita (Wajib, Sumber Berita Teks Dihapus) -->
+            <div class="pt-1">
+              <label class="block text-xs font-bold text-zinc-900 mb-1.5 uppercase tracking-wider">Tautan / URL Sumber Berita *</label>
+              <div class="relative">
                 <input
                   type="url"
                   x-model="form.sourceUrl"
-                  placeholder="https://..."
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                  placeholder="https://... (contoh: https://radarbogor.id/... atau https://kotabogor.go.id/...)"
+                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs font-mono"
+                  required
                 />
               </div>
+              <p class="text-[11px] text-zinc-500 mt-1.5">Tidak ada detail artikel yang disimpan secara lokal. Pembaca di halaman Berita akan langsung diarahkan ke tautan URL sumber ini.</p>
             </div>
 
-            <!-- 3. Input Deskripsi Berita Lengkap -->
-            <div class="pt-2">
+            <!-- 3. Input Ringkasan / Deskripsi Berita -->
+            <div class="pt-1">
               <div class="flex items-center justify-between mb-1.5">
-                <label class="block text-xs font-bold text-zinc-900 uppercase tracking-wider">Deskripsi / Isi Artikel Berita *</label>
-                <span class="text-[11px] text-zinc-400 font-medium">Mendukung format paragraf lengkap</span>
+                <label class="block text-xs font-bold text-zinc-900 uppercase tracking-wider">Ringkasan / Cuplikan Berita *</label>
+                <span class="text-[11px] text-zinc-400 font-medium">Ditampilkan pada kartu berita di Beranda &amp; Katalog</span>
               </div>
               <textarea
                 x-model="form.description"
-                rows="12"
-                placeholder="Tuliskan isi berita rilis lengkap, narasi agenda, keterangan narasumber, atau perkembangan advokasi di sini..."
+                rows="6"
+                placeholder="Tuliskan ringkasan cuplikan berita untuk pengantar pada kartu berita..."
                 class="w-full rounded-lg border border-zinc-300 bg-white p-4 text-xs sm:text-sm text-zinc-900 leading-relaxed focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
               ></textarea>
             </div>
@@ -454,7 +453,7 @@
               </div>
             </div>
 
-            <!-- Sorotan Berita Utama Checkbox -->
+            <!-- Sorotan Berita Utama Checkbox (Hanya Bisa 1 Artikel) -->
             <div class="pt-3 border-t border-zinc-100">
               <label class="flex items-start gap-3 cursor-pointer">
                 <input
@@ -465,7 +464,7 @@
                 <div>
                   <span class="font-bold text-xs text-zinc-950 block">Sorotan Berita Utama</span>
                   <span class="text-[11px] text-zinc-500 leading-normal block mt-0.5">
-                    Menjadikan berita ini sebagai headline besar di bagian atas halaman Berita publik.
+                    Hanya 1 artikel berita yang dapat dijadikan sorotan utama. Mengaktifkan ini akan otomatis menonaktifkan status sorotan pada artikel lain.
                   </span>
                 </div>
               </label>
@@ -483,28 +482,41 @@
             </div>
           </div>
 
-          <!-- Panel Cover Image -->
+          <!-- Panel Cover Image (Unggah File Langsung, Hapus Select) -->
           <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
             <h3 class="font-bold text-sm text-zinc-950 pb-3 border-b border-zinc-100 flex items-center tracking-tight">
               <span class="text-[#BC0202] font-black mr-2">|</span> Cover Image (Gambar Berita)
             </h3>
 
             <!-- Pratinjau Cover Image -->
-            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs">
-              <img :src="form.coverImage" alt="Cover Image Berita" class="w-full h-full object-cover" />
+            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs relative">
+              <img :src="form.coverImage ? (form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage) : '/assets/banu/testi_dialog.jpg'" alt="Cover Image Berita" class="w-full h-full object-cover" />
+              <div x-show="uploadingCover" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
+                Mengunggah Sampul...
+              </div>
             </div>
 
-            <!-- Pemilih Cover dari Aset Lokal -->
+            <!-- Tombol Upload File Sampul -->
             <div>
-              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Pilih Foto Dokumentasi Berita:</label>
-              <select
-                x-model="form.coverImage"
-                class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Unggah Foto Dokumentasi Berita:</label>
+              <input
+                type="file"
+                x-ref="coverFileInput"
+                @change="uploadCoverImage($event)"
+                accept="image/*"
+                class="hidden"
+              />
+              <button
+                type="button"
+                @click="$refs.coverFileInput.click()"
+                :disabled="uploadingCover"
+                class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 hover:border-[#BC0202] text-xs font-semibold px-3 py-2.5 text-zinc-800 transition-colors cursor-pointer shadow-2xs"
               >
-                <template x-for="c in availableCovers" :key="c.url">
-                  <option :value="c.url" x-text="c.label"></option>
-                </template>
-              </select>
+                <svg class="w-4 h-4 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span x-text="uploadingCover ? 'Mengunggah...' : 'Pilih & Unggah Gambar Sampul'"></span>
+              </button>
               <p class="text-[11px] text-zinc-500 mt-1.5">Rasio ideal 16:9 atau 16:10 untuk keseragaman kartu berita di tampilan publik.</p>
             </div>
           </div>
@@ -556,20 +568,26 @@
         </button>
       </div>
 
-      <!-- Modal Content: Simulasi Tampilan Baca Berita Publik -->
+      <!-- Modal Content: Simulasi Tampilan Kartu Berita Publik -->
       <div class="p-6 sm:p-10 overflow-y-auto space-y-6">
-        <!-- Metadata Tanggal & Sumber -->
+        <div class="p-4 rounded-xl border border-red-200 bg-[#faf5f5] text-zinc-800 text-xs flex items-start gap-3">
+          <div class="w-6 h-6 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            i
+          </div>
+          <div>
+            <span class="font-bold text-zinc-950 block mb-0.5">Alur Navigasi Berita Publik:</span>
+            <span>Artikel berita tidak memiliki halaman detail baca di website. Pengunjung yang mengklik berita ini akan langsung diarahkan ke Tautan / URL Sumber Asli di bawah.</span>
+          </div>
+        </div>
+
+        <!-- Metadata Tanggal & Tautan Sumber -->
         <div class="flex flex-wrap items-center text-xs font-medium text-zinc-500 gap-2">
           <span x-text="form.date"></span>
           <span>&bull;</span>
-          <span class="inline-flex items-center gap-1 text-zinc-800 bg-zinc-100 px-2.5 py-0.5 rounded-md border border-zinc-200">
-            <span class="text-[#BC0202] font-black">Sumber:</span>
-            <span x-text="form.source"></span>
-          </span>
           <template x-if="form.sourceUrl">
-            <a :href="form.sourceUrl" target="_blank" rel="noopener" class="text-[#BC0202] hover:underline flex items-center gap-1 font-semibold">
-              <span>(Buka Tautan Sumber)</span>
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <a :href="form.sourceUrl" target="_blank" rel="noopener noreferrer" class="text-[#BC0202] hover:underline inline-flex items-center gap-1 font-semibold">
+              <span x-text="form.sourceUrl"></span>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
@@ -580,19 +598,35 @@
         <h1 id="modal-preview-title" class="text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-950 leading-tight tracking-tight" x-text="form.title ? form.title : 'Judul Berita'"></h1>
 
         <!-- Gambar Berita -->
-        <div class="aspect-[16/9] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100">
-          <img :src="form.coverImage" :alt="form.title" class="w-full h-full object-cover" />
+        <div class="aspect-[16/9] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100 shadow-2xs">
+          <img :src="form.coverImage ? (form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage) : '/assets/banu/testi_dialog.jpg'" :alt="form.title" class="w-full h-full object-cover" />
         </div>
 
-        <!-- Deskripsi / Isi Berita -->
+        <!-- Deskripsi / Ringkasan Cuplikan Berita -->
         <div class="pt-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">Cuplikan Pengantar Berita:</span>
           <p class="text-xs sm:text-sm text-zinc-700 leading-relaxed whitespace-pre-line" x-text="form.description"></p>
+        </div>
+
+        <!-- Tombol Buka Tautan Sumber Asli -->
+        <div class="pt-4 border-t border-zinc-200">
+          <a
+            :href="form.sourceUrl || '#'"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors cursor-pointer"
+          >
+            <span>Buka Tautan Sumber Asli &rarr;</span>
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
       </div>
 
       <!-- Modal Footer -->
       <div class="px-6 py-3.5 bg-[#fafafa] border-t border-zinc-200 flex items-center justify-between shrink-0">
-        <span class="text-xs text-zinc-500">Tampilan disimulasikan sesuai struktur visual publik.</span>
+        <span class="text-xs text-zinc-500">Pratinjau disimulasikan sesuai struktur visual publik.</span>
         <button
           type="button"
           @click="closePreview()"
@@ -615,28 +649,19 @@
       statusFilter: 'all',
       previewModal: false,
       saveSuccessNotification: false,
+      uploadingCover: false,
 
       formMode: 'create',
       currentArticleId: null,
       form: {
         title: '',
         date: '',
-        source: 'Rilis Resmi Rumah Aspirasi',
         sourceUrl: '',
-        coverImage: '{{ asset("assets/banu/testi_dialog.jpg") }}',
+        coverImage: 'assets/banu/testi_dialog.jpg',
         description: '',
         isFeatured: false,
         status: 'Terbit'
       },
-
-      availableCovers: [
-        { label: 'Dialog Warga Kebon Pedes', url: '{{ asset("assets/banu/testi_dialog.jpg") }}' },
-        { label: 'Ambulance Siaga 24 Jam', url: '{{ asset("assets/banu/program_ambulance.jpg") }}' },
-        { label: 'Pelatihan UMKM RT/RW', url: '{{ asset("assets/banu/program_umkm.jpg") }}' },
-        { label: 'Sidang Parlemen & Paripurna', url: '{{ asset("assets/banu/hero_banu.jpg") }}' },
-        { label: 'Rembug Komunitas Warga', url: '{{ asset("assets/banu/footer_community.jpg") }}' },
-        { label: 'Banner Serbaguna', url: '{{ asset("assets/banu/banner_serbaguna.jpg") }}' }
-      ],
 
       articles: @json($initialArticles),
 
@@ -650,6 +675,7 @@
           const q = this.searchQuery.toLowerCase();
           return (
             (article.title && article.title.toLowerCase().includes(q)) ||
+            (article.sourceUrl && article.sourceUrl.toLowerCase().includes(q)) ||
             (article.source && article.source.toLowerCase().includes(q)) ||
             (article.description && article.description.toLowerCase().includes(q))
           );
@@ -662,9 +688,8 @@
         this.form = {
           title: '',
           date: new Date().toISOString().split('T')[0],
-          source: 'Rilis Resmi Rumah Aspirasi',
           sourceUrl: '',
-          coverImage: '{{ asset("assets/banu/testi_dialog.jpg") }}',
+          coverImage: 'assets/banu/testi_dialog.jpg',
           description: '',
           isFeatured: false,
           status: 'Terbit'
@@ -679,8 +704,7 @@
         this.form = {
           title: item.title,
           date: item.date,
-          source: item.source,
-          sourceUrl: item.sourceUrl || '',
+          sourceUrl: item.sourceUrl || item.source || '',
           coverImage: item.coverImage,
           description: item.description,
           isFeatured: item.isFeatured,
@@ -690,17 +714,48 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
 
+      uploadCoverImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        this.uploadingCover = true;
+        const fd = new FormData();
+        fd.append('file', file);
+
+        fetch('{{ route("admin.upload") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+          this.uploadingCover = false;
+          if (data && data.success) {
+            this.form.coverImage = data.path;
+          } else {
+            alert(data.message || 'Gagal mengunggah gambar sampul.');
+          }
+        })
+        .catch(() => {
+          this.uploadingCover = false;
+          alert('Terjadi kesalahan jaringan.');
+        });
+      },
+
       saveArticle() {
         if (!this.form.title.trim()) {
-          alert('Judul berita wajib diisi!');
+          alert('Judul artikel berita wajib diisi!');
           return;
         }
-        if (!this.form.source.trim()) {
-          alert('Sumber rilis / peliput berita wajib diisi!');
+        if (!this.form.sourceUrl.trim()) {
+          alert('Tautan / URL Sumber berita wajib diisi!');
           return;
         }
         if (!this.form.description.trim()) {
-          alert('Deskripsi berita wajib diisi!');
+          alert('Ringkasan / deskripsi berita wajib diisi!');
           return;
         }
 
@@ -736,6 +791,14 @@
           }
         }).then(r => r.json()).then(data => {
           if (data && data.success) {
+            if (data.is_featured) {
+              // Sorotan Utama hanya bisa 1 artikel: unfeature yang lain
+              this.articles.forEach(a => {
+                if (a.id !== item.id) {
+                  a.isFeatured = false;
+                }
+              });
+            }
             item.isFeatured = data.is_featured;
           }
         }).catch(() => {

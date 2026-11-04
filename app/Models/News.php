@@ -21,11 +21,20 @@ class News extends Model
         'published_at',
         'description',
         'cover_image',
+        'source_url',
         'source',
         'is_featured',
         'status',
         'view_count',
     ];
+
+    /**
+     * Get the source URL fallback.
+     */
+    public function getSourceUrlAttribute(?string $value): ?string
+    {
+        return $value ?: $this->attributes['source'] ?? null;
+    }
 
     /**
      * @return array<string, string>

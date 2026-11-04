@@ -212,7 +212,7 @@
                   class="aspect-[4/3] w-full bg-zinc-100 rounded-lg overflow-hidden relative border border-zinc-200 shadow-2xs cursor-pointer"
                   @click="openLightbox(item)"
                 >
-                  <img :src="item.cover" :alt="item.title" class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500" />
+                  <img :src="resolveImgUrl(item.cover)" :alt="item.title" class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500" />
                   <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
                     <div class="opacity-0 group-hover:opacity-100 transition-opacity bg-white/95 backdrop-blur-sm text-zinc-900 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5">
                       <svg class="w-3.5 h-3.5 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -371,16 +371,38 @@
                 <p class="text-xs text-zinc-500 mt-1">Total <strong class="text-zinc-900" x-text="form.photos.length"></strong> foto terpasang dalam album ini.</p>
               </div>
 
-              <button
-                type="button"
-                @click="addPhotoToForm()"
-                class="inline-flex items-center gap-1.5 rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold px-4 py-2 shadow-sm transition-colors active:scale-98 self-start sm:self-auto cursor-pointer"
-              >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                <span>Tambah Foto ke Album</span>
-              </button>
+              <div class="flex items-center gap-2 self-start sm:self-auto">
+                <input
+                  type="file"
+                  x-ref="batchPhotoInput"
+                  @change="uploadNewPhotos($event)"
+                  accept="image/*"
+                  multiple
+                  class="hidden"
+                />
+                <button
+                  type="button"
+                  @click="$refs.batchPhotoInput.click()"
+                  class="inline-flex items-center gap-1.5 rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold px-3.5 py-2 shadow-sm transition-colors active:scale-98 cursor-pointer"
+                >
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>Unggah Foto Baru</span>
+                </button>
+
+                <button
+                  type="button"
+                  @click="addPhotoToForm()"
+                  class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-semibold px-3 py-2 shadow-2xs transition-colors cursor-pointer"
+                  title="Tambah baris foto kosong"
+                >
+                  <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Tambah Baris</span>
+                </button>
+              </div>
             </div>
 
             <!-- Grid List Foto dalam Album -->
@@ -388,17 +410,30 @@
               <template x-for="(photo, pIdx) in form.photos" :key="photo.id">
                 <div class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white p-4 sm:p-5 transition-all flex flex-col sm:flex-row items-start gap-4 sm:gap-5 group">
                   <!-- Foto Thumbnail -->
-                  <div class="w-full sm:w-44 aspect-[4/3] rounded-lg overflow-hidden bg-zinc-200 border border-zinc-200 shrink-0 relative shadow-2xs">
-                    <img :src="photo.url" alt="Foto Dokumentasi" class="w-full h-full object-cover" />
+                  <div class="w-full sm:w-44 aspect-[4/3] rounded-lg overflow-hidden bg-zinc-200 border border-zinc-200 shrink-0 relative shadow-2xs flex items-center justify-center">
+                    <template x-if="photo.url">
+                      <img :src="resolveImgUrl(photo.url)" alt="Foto Dokumentasi" class="w-full h-full object-cover" />
+                    </template>
+                    <template x-if="!photo.url">
+                      <div class="text-zinc-400 flex flex-col items-center justify-center text-xs p-3 text-center">
+                        <svg class="w-7 h-7 mb-1 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-[11px]">Belum ada foto</span>
+                      </div>
+                    </template>
+                    <div x-show="photo.isUploading" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
+                      Mengunggah...
+                    </div>
                     <span
-                      x-show="form.cover === photo.url"
+                      x-show="form.cover === photo.url && photo.url"
                       class="absolute top-2 left-2 bg-[#BC0202] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-sm"
                     >
                       Cover Album
                     </span>
                   </div>
 
-                  <!-- Detail Form Foto (Pilihan Sumber & Keterangan) -->
+                  <!-- Detail Form Foto (Upload Berkas & Keterangan) -->
                   <div class="min-w-0 flex-1 w-full space-y-3">
                     <div class="flex items-center justify-between gap-2">
                       <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500" x-text="'Foto #' + (pIdx + 1)"></span>
@@ -408,8 +443,8 @@
                         <button
                           type="button"
                           @click="setAsCover(photo.url)"
-                          :disabled="form.cover === photo.url"
-                          :class="form.cover === photo.url ? 'opacity-40 cursor-default bg-zinc-200 text-zinc-600 border-zinc-200' : 'bg-white text-zinc-700 hover:text-zinc-950 border-zinc-300 hover:bg-zinc-50 cursor-pointer'"
+                          :disabled="!photo.url || form.cover === photo.url"
+                          :class="form.cover === photo.url ? 'opacity-40 cursor-default bg-zinc-200 text-zinc-600 border-zinc-200' : (!photo.url ? 'opacity-30 cursor-not-allowed bg-zinc-100 text-zinc-400 border-zinc-200' : 'bg-white text-zinc-700 hover:text-zinc-950 border-zinc-300 hover:bg-zinc-50 cursor-pointer')"
                           class="text-[11px] font-semibold px-2.5 py-1 rounded-md border shadow-2xs transition-colors"
                         >
                           <span x-text="form.cover === photo.url ? 'Sampul Aktif' : 'Jadikan Sampul'"></span>
@@ -429,17 +464,30 @@
                       </div>
                     </div>
 
-                    <!-- Pilih Foto Aset -->
+                    <!-- Upload Foto Berkas (Hapus Select) -->
                     <div>
-                      <label class="block text-[11px] font-bold text-zinc-700 mb-1">Pilih File Dokumentasi:</label>
-                      <select
-                        x-model="photo.url"
-                        class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
-                      >
-                        <template x-for="c in availablePhotos" :key="c.url">
-                          <option :value="c.url" x-text="c.label"></option>
-                        </template>
-                      </select>
+                      <label class="block text-[11px] font-bold text-zinc-700 mb-1">Berkas Foto Dokumentasi:</label>
+                      <div class="flex items-center gap-2.5">
+                        <input
+                          type="file"
+                          :id="'photo-file-' + photo.id"
+                          @change="uploadPhotoItem($event, photo)"
+                          accept="image/*"
+                          class="hidden"
+                        />
+                        <button
+                          type="button"
+                          @click="document.getElementById('photo-file-' + photo.id).click()"
+                          :disabled="photo.isUploading"
+                          class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 hover:border-[#BC0202] text-xs font-semibold px-3 py-2 text-zinc-800 transition-colors cursor-pointer shadow-2xs shrink-0"
+                        >
+                          <svg class="w-3.5 h-3.5 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span x-text="photo.isUploading ? 'Mengunggah...' : (photo.url ? 'Ganti Berkas Foto' : 'Pilih & Unggah Foto')"></span>
+                        </button>
+                        <span class="text-[11px] text-zinc-500 truncate" x-text="photo.url ? (photo.url.startsWith('http') || photo.url.startsWith('/') ? photo.url.split('/').pop() : photo.url) : 'Belum ada foto yang diunggah'"></span>
+                      </div>
                     </div>
 
                     <!-- Keterangan / Caption Foto -->
@@ -458,16 +506,27 @@
             </div>
 
             <!-- Tombol Tambah Foto di Bawah -->
-            <div class="mt-6 pt-5 border-t border-zinc-200/80 text-center">
+            <div class="mt-6 pt-5 border-t border-zinc-200/80 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                @click="$refs.batchPhotoInput.click()"
+                class="inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-zinc-300 hover:border-[#BC0202] hover:text-[#BC0202] bg-white text-zinc-700 text-xs font-semibold px-5 py-3 transition-colors w-full sm:w-auto cursor-pointer flex-1"
+              >
+                <svg class="w-4 h-4 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Unggah Foto Dokumentasi Baru (Bisa Banyak Sekaligus)</span>
+              </button>
+
               <button
                 type="button"
                 @click="addPhotoToForm()"
-                class="inline-flex items-center gap-1.5 rounded-lg border-2 border-dashed border-zinc-300 hover:border-[#BC0202] hover:text-[#BC0202] bg-white text-zinc-700 text-xs font-semibold px-5 py-3 transition-colors w-full justify-center cursor-pointer"
+                class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-300 hover:bg-zinc-50 bg-white text-zinc-700 text-xs font-semibold px-4 py-3 transition-colors w-full sm:w-auto cursor-pointer"
               >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                <span>Tambah Foto Dokumentasi Lainnya ke Album Ini</span>
+                <span>Tambah Baris Kosong</span>
               </button>
             </div>
           </div>
@@ -554,12 +613,48 @@
             </h3>
 
             <!-- Pratinjau Sampul Aktif -->
-            <div class="aspect-[4/3] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs">
-              <img :src="form.cover" alt="Sampul Album" class="w-full h-full object-cover" />
+            <div class="aspect-[4/3] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs relative flex items-center justify-center">
+              <template x-if="form.cover">
+                <img :src="resolveImgUrl(form.cover)" alt="Sampul Album" class="w-full h-full object-cover" />
+              </template>
+              <template x-if="!form.cover">
+                <div class="text-zinc-400 flex flex-col items-center justify-center text-xs p-4 text-center">
+                  <svg class="w-8 h-8 mb-2 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>Belum ada sampul album terpilih</span>
+                </div>
+              </template>
+              <div x-show="uploadingCover" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
+                Mengunggah Sampul...
+              </div>
+            </div>
+
+            <!-- Tombol Unggah Sampul Langsung -->
+            <div>
+              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Unggah Foto Sampul Khusus:</label>
+              <input
+                type="file"
+                x-ref="coverFileInput"
+                @change="uploadCoverImage($event)"
+                accept="image/*"
+                class="hidden"
+              />
+              <button
+                type="button"
+                @click="$refs.coverFileInput.click()"
+                :disabled="uploadingCover"
+                class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 hover:border-[#BC0202] text-xs font-semibold px-3 py-2.5 text-zinc-800 transition-colors cursor-pointer shadow-2xs"
+              >
+                <svg class="w-4 h-4 text-[#BC0202]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span x-text="uploadingCover ? 'Mengunggah Sampul...' : 'Pilih & Unggah Sampul Album'"></span>
+              </button>
             </div>
 
             <p class="text-[11px] text-zinc-500 leading-normal">
-              Sampul ini akan menjadi foto utama kartu album pada grid Galeri publik. Klik tombol <strong>"Jadikan Sampul"</strong> pada salah satu foto di sisi kiri untuk mengubahnya.
+              Sampul ini akan menjadi foto utama kartu album pada grid Galeri publik. Anda dapat mengunggah berkas di atas atau menekan tombol <strong>"Jadikan Sampul"</strong> pada salah satu foto di sisi kiri.
             </p>
           </div>
         </div>
@@ -614,32 +709,32 @@
       <div class="relative bg-black flex-1 min-h-[260px] sm:min-h-[400px] max-h-[56vh] flex items-center justify-center overflow-hidden">
         <template x-if="previewAlbumData && previewAlbumData.photos && previewAlbumData.photos.length > 0">
           <img
-            :src="previewAlbumData.photos[activePhotoIndex]?.url"
+            :src="resolveImgUrl(previewAlbumData.photos[activePhotoIndex]?.url)"
             :alt="previewAlbumData.title"
             class="w-full h-full max-h-[56vh] object-contain transition-all duration-200"
           />
         </template>
 
-        <!-- Prev Button -->
+        <!-- Prev Button (Strict Anti-Pill: rounded-lg) -->
         <button
           type="button"
           x-show="activePhotoIndex > 0"
           @click.stop="prevPhoto()"
           aria-label="Foto Sebelumnya"
-          class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-900 text-white flex items-center justify-center border border-zinc-700 transition-all shadow-md hover:scale-105 cursor-pointer"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg bg-zinc-900/80 hover:bg-zinc-900 text-white flex items-center justify-center border border-zinc-700 transition-all shadow-md hover:scale-105 cursor-pointer"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        <!-- Next Button -->
+        <!-- Next Button (Strict Anti-Pill: rounded-lg) -->
         <button
           type="button"
           x-show="previewAlbumData && activePhotoIndex < previewAlbumData.photos.length - 1"
           @click.stop="nextPhoto()"
           aria-label="Foto Berikutnya"
-          class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-900 text-white flex items-center justify-center border border-zinc-700 transition-all shadow-md hover:scale-105 cursor-pointer"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg bg-zinc-900/80 hover:bg-zinc-900 text-white flex items-center justify-center border border-zinc-700 transition-all shadow-md hover:scale-105 cursor-pointer"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -662,7 +757,7 @@
               class="relative w-16 h-12 sm:w-20 sm:h-14 shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200 focus:outline-none cursor-pointer"
               :class="activePhotoIndex === idx ? 'border-[#BC0202] scale-102 ring-1 ring-[#BC0202]' : 'border-zinc-800 opacity-60 hover:opacity-100 hover:border-zinc-600'"
             >
-              <img :src="photo.url" :alt="previewAlbumData?.title" class="w-full h-full object-cover" />
+              <img :src="resolveImgUrl(photo.url)" :alt="previewAlbumData?.title" class="w-full h-full object-cover" />
             </button>
           </template>
         </div>
@@ -687,23 +782,23 @@
 
       formMode: 'create',
       currentAlbumId: null,
+      uploadingCover: false,
       form: {
         title: '',
         date: '',
         desc: '',
-        cover: '{{ asset("assets/banu/testi_dialog.jpg") }}',
+        cover: '',
         status: 'Terbit',
         photos: []
       },
 
-      availablePhotos: [
-        { label: 'Dialog Warga Kebon Pedes', url: '{{ asset("assets/banu/testi_dialog.jpg") }}' },
-        { label: 'Ambulance Siaga 24 Jam', url: '{{ asset("assets/banu/program_ambulance.jpg") }}' },
-        { label: 'Pelatihan UMKM RT/RW', url: '{{ asset("assets/banu/program_umkm.jpg") }}' },
-        { label: 'Sidang Parlemen & Paripurna', url: '{{ asset("assets/banu/hero_banu.jpg") }}' },
-        { label: 'Rembug Komunitas Warga', url: '{{ asset("assets/banu/footer_community.jpg") }}' },
-        { label: 'Banner Serbaguna', url: '{{ asset("assets/banu/banner_serbaguna.jpg") }}' }
-      ],
+      resolveImgUrl(url) {
+        if (!url) return '';
+        if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:') || url.startsWith('/')) {
+          return url;
+        }
+        return '/' + url;
+      },
 
       albums: @json($initialAlbums),
 
@@ -721,6 +816,120 @@
         });
       },
 
+      uploadCoverImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        this.uploadingCover = true;
+        const fd = new FormData();
+        fd.append('file', file);
+
+        fetch('{{ route("admin.upload") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+          this.uploadingCover = false;
+          if (data && data.success) {
+            this.form.cover = data.path;
+          } else {
+            alert(data.message || 'Gagal mengunggah gambar sampul.');
+          }
+        })
+        .catch(() => {
+          this.uploadingCover = false;
+          alert('Terjadi kesalahan jaringan.');
+        });
+      },
+
+      uploadPhotoItem(event, photo) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        photo.isUploading = true;
+        const fd = new FormData();
+        fd.append('file', file);
+
+        fetch('{{ route("admin.upload") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+          photo.isUploading = false;
+          if (data && data.success) {
+            const oldUrl = photo.url;
+            photo.url = data.path;
+            if (!this.form.cover || this.form.cover === oldUrl) {
+              this.form.cover = data.path;
+            }
+          } else {
+            alert(data.message || 'Gagal mengunggah foto.');
+          }
+        })
+        .catch(() => {
+          photo.isUploading = false;
+          alert('Terjadi kesalahan jaringan.');
+        });
+      },
+
+      uploadNewPhotos(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        Array.from(files).forEach((file, index) => {
+          const newPhoto = {
+            id: 'p_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 4),
+            url: '',
+            caption: '',
+            isUploading: true
+          };
+          this.form.photos.push(newPhoto);
+
+          const fd = new FormData();
+          fd.append('file', file);
+
+          fetch('{{ route("admin.upload") }}', {
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}',
+              'Accept': 'application/json'
+            },
+            body: fd
+          })
+          .then(r => r.json())
+          .then(data => {
+            newPhoto.isUploading = false;
+            if (data && data.success) {
+              newPhoto.url = data.path;
+              if (!this.form.cover) {
+                this.form.cover = data.path;
+              }
+            } else {
+              alert(data.message || 'Gagal mengunggah foto: ' + file.name);
+              const idx = this.form.photos.indexOf(newPhoto);
+              if (idx !== -1) {
+                this.form.photos.splice(idx, 1);
+              }
+            }
+          })
+          .catch(() => {
+            newPhoto.isUploading = false;
+            alert('Terjadi kesalahan jaringan saat mengunggah: ' + file.name);
+          });
+        });
+        event.target.value = '';
+      },
+
       openCreate() {
         this.formMode = 'create';
         this.currentAlbumId = null;
@@ -728,11 +937,10 @@
           title: '',
           date: new Date().toISOString().split('T')[0],
           desc: '',
-          cover: '{{ asset("assets/banu/testi_dialog.jpg") }}',
+          cover: '',
           status: 'Terbit',
           photos: [
-            { id: 'p_' + Date.now() + '_1', url: '{{ asset("assets/banu/testi_dialog.jpg") }}', caption: 'Foto dokumentasi utama kegiatan.' },
-            { id: 'p_' + Date.now() + '_2', url: '{{ asset("assets/banu/hero_banu.jpg") }}', caption: 'Foto dokumentasi interaksi di lapangan.' }
+            { id: 'p_' + Date.now() + '_1', url: '', caption: '', isUploading: false }
           ]
         };
         this.currentView = 'editor';
@@ -748,18 +956,25 @@
           desc: item.desc,
           cover: item.cover,
           status: item.status,
-          photos: JSON.parse(JSON.stringify(item.photos || []))
+          photos: (item.photos && item.photos.length > 0)
+            ? item.photos.map(p => ({
+                id: p.id || ('p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+                url: p.url,
+                caption: p.caption || '',
+                isUploading: false
+              }))
+            : [{ id: 'p_' + Date.now() + '_1', url: '', caption: '', isUploading: false }]
         };
         this.currentView = 'editor';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
 
       addPhotoToForm() {
-        const defaultAsset = this.availablePhotos[this.form.photos.length % this.availablePhotos.length].url;
         this.form.photos.push({
-          id: 'p_' + Date.now() + '_' + (this.form.photos.length + 1),
-          url: defaultAsset,
-          caption: 'Dokumentasi kegiatan resmi'
+          id: 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          url: '',
+          caption: '',
+          isUploading: false
         });
       },
 
@@ -770,11 +985,16 @@
         }
         const removed = this.form.photos.splice(index, 1)[0];
         if (this.form.cover === removed.url && this.form.photos.length > 0) {
-          this.form.cover = this.form.photos[0].url;
+          const nextPhoto = this.form.photos.find(p => p.url);
+          this.form.cover = nextPhoto ? nextPhoto.url : '';
         }
       },
 
       setAsCover(url) {
+        if (!url) {
+          alert('Unggah foto terlebih dahulu sebelum menjadikannya sebagai sampul!');
+          return;
+        }
         this.form.cover = url;
       },
 
@@ -783,21 +1003,25 @@
           alert('Judul album wajib diisi!');
           return;
         }
-        if (!this.form.photos || this.form.photos.length === 0) {
-          alert('Album harus memiliki minimal 1 foto dokumentasi!');
+
+        const validPhotos = this.form.photos.filter(p => p.url && p.url.trim());
+        if (validPhotos.length === 0) {
+          alert('Album harus memiliki minimal 1 foto dokumentasi yang telah diunggah!');
           return;
         }
 
         const url = this.formMode === 'create' ? '{{ route("admin.galeri.store") }}' : '/admin/galeri/' + this.currentAlbumId;
         const method = this.formMode === 'create' ? 'POST' : 'PUT';
 
+        const coverUrl = this.form.cover || validPhotos[0].url;
+
         const payload = {
           title: this.form.title,
           date: this.form.date,
           desc: this.form.desc,
-          cover: this.form.cover || (this.form.photos[0] ? this.form.photos[0].url : ''),
+          cover: coverUrl,
           status: this.form.status,
-          photos: this.form.photos.map(p => ({ url: p.url, caption: p.caption || '' }))
+          photos: validPhotos.map(p => ({ url: p.url, caption: p.caption || '' }))
         };
 
         fetch(url, {
@@ -854,13 +1078,14 @@
       },
 
       openPreviewFromForm() {
-        if (!this.form.photos || this.form.photos.length === 0) {
-          alert('Silakan tambahkan minimal 1 foto untuk pratinjau teater!');
+        const validPhotos = this.form.photos.filter(p => p.url && p.url.trim());
+        if (validPhotos.length === 0) {
+          alert('Silakan unggah minimal 1 foto untuk pratinjau teater!');
           return;
         }
         this.previewAlbumData = {
           title: this.form.title || 'Pratinjau Album',
-          photos: this.form.photos
+          photos: validPhotos
         };
         this.activePhotoIndex = 0;
         this.lightboxModal = true;

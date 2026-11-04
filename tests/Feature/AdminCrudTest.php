@@ -109,6 +109,39 @@ it('allows admin to toggle featured status of a performance report via JSON API'
     expect($report->fresh()->is_featured)->toBeTrue();
 });
 
+it('enforces only one performance report can be featured at any time', function () {
+    $existingFeatured = PerformanceReport::factory()->create(['is_featured' => true]);
+    $newReport = PerformanceReport::factory()->create(['is_featured' => false]);
+
+    // 1. Toggling new report to featured un-features existing one
+    $response = $this->actingAs($this->admin)->patchJson(route('admin.kinerja.toggle-featured', $newReport));
+    $response->assertOk();
+
+    expect($newReport->fresh()->is_featured)->toBeTrue()
+        ->and($existingFeatured->fresh()->is_featured)->toBeFalse();
+
+    // 2. Creating another report with isFeatured = true un-features active one
+    $this->actingAs($this->admin)->post(route('admin.kinerja.store'), [
+        'title' => 'Laporan Featured Terbaru',
+        'isFeatured' => true,
+        'status' => 'Terbit',
+    ]);
+
+    expect($newReport->fresh()->is_featured)->toBeFalse();
+    $created = PerformanceReport::where('title', 'Laporan Featured Terbaru')->first();
+    expect($created->is_featured)->toBeTrue();
+
+    // 3. Updating existing report to isFeatured = true un-features others
+    $this->actingAs($this->admin)->put(route('admin.kinerja.update', $existingFeatured), [
+        'title' => 'Laporan Lama Dijadikan Featured Lagi',
+        'isFeatured' => true,
+        'status' => 'Terbit',
+    ]);
+
+    expect($existingFeatured->fresh()->is_featured)->toBeTrue()
+        ->and($created->fresh()->is_featured)->toBeFalse();
+});
+
 it('allows admin to toggle publication status of a performance report via JSON API', function () {
     $report = PerformanceReport::factory()->create(['status' => 'draft']);
 
@@ -217,6 +250,60 @@ it('allows admin to delete news', function () {
     $this->assertModelMissing($news);
 });
 
+it('enforces only one news article can be featured at any time', function () {
+    $existingFeatured = News::factory()->create(['is_featured' => true]);
+    $newNews = News::factory()->create(['is_featured' => false]);
+
+    // 1. Toggling new news to featured un-features existing one
+    $this->actingAs($this->admin)->patchJson(route('admin.berita.toggle-featured', $newNews))
+        ->assertOk();
+
+    expect($newNews->fresh()->is_featured)->toBeTrue()
+        ->and($existingFeatured->fresh()->is_featured)->toBeFalse();
+
+    // 2. Creating another news with isFeatured = true un-features active one
+    $this->actingAs($this->admin)->post(route('admin.berita.store'), [
+        'title' => 'Berita Featured Terbaru',
+        'date' => '2026-03-25',
+        'sourceUrl' => 'https://kotabogor.go.id/berita-baru',
+        'coverImage' => 'assets/banu/news_1.jpg',
+        'description' => 'Deskripsi rilis berita terbaru.',
+        'isFeatured' => true,
+        'status' => 'Terbit',
+    ]);
+
+    expect($newNews->fresh()->is_featured)->toBeFalse();
+    $created = News::where('title', 'Berita Featured Terbaru')->first();
+    expect($created->is_featured)->toBeTrue();
+
+    // 3. Updating existing news to isFeatured = true un-features others
+    $this->actingAs($this->admin)->put(route('admin.berita.update', $existingFeatured), [
+        'title' => 'Berita Lama Kembali Menjadi Sorotan',
+        'date' => '2026-03-26',
+        'sourceUrl' => 'https://kotabogor.go.id/berita-lama',
+        'coverImage' => 'assets/banu/news_2.jpg',
+        'description' => 'Deskripsi pembaruan berita.',
+        'isFeatured' => true,
+        'status' => 'Terbit',
+    ]);
+
+    expect($existingFeatured->fresh()->is_featured)->toBeTrue()
+        ->and($created->fresh()->is_featured)->toBeFalse();
+});
+
+it('requires sourceUrl when creating news article', function () {
+    $response = $this->actingAs($this->admin)->post(route('admin.berita.store'), [
+        'title' => 'Berita Tanpa URL Sumber',
+        'date' => '2026-03-25',
+        'sourceUrl' => '',
+        'coverImage' => 'assets/banu/news_1.jpg',
+        'description' => 'Deskripsi.',
+        'status' => 'Terbit',
+    ]);
+
+    $response->assertSessionHasErrors('sourceUrl');
+});
+
 // ==========================================
 // 3. GALLERY (ALBUM & PHOTOS)
 // ==========================================
@@ -266,6 +353,53 @@ it('allows admin to delete album and cascade delete its photos', function () {
     $response->assertRedirect(route('admin.galeri.index'));
     $this->assertModelMissing($album);
     expect(AlbumPhoto::where('album_id', $album->id)->count())->toBe(0);
+});
+
+it('ensures admin gallery page has direct upload buttons and no select tags for images', function () {
+    $response = $this->actingAs($this->admin)->get(route('admin.galeri.index'));
+
+    $response->assertOk();
+    $response->assertSee('Unggah Foto Baru');
+    $response->assertSee('Pilih & Unggah Sampul Album', false);
+    $response->assertDontSee('availablePhotos');
+    $response->assertDontSee('<select', false);
+});
+
+it('allows admin to upload image and create album with the uploaded file', function () {
+    Storage::fake('public');
+    $file = UploadedFile::fake()->image('kegiatan.jpg');
+
+    $uploadResponse = $this->actingAs($this->admin)->postJson(route('admin.upload'), [
+        'file' => $file,
+    ]);
+
+    $uploadResponse->assertOk();
+    $uploadResponse->assertJson(['success' => true]);
+    $uploadedPath = $uploadResponse->json('path');
+
+    $payload = [
+        'title' => 'Dokumentasi Kunjungan Lapangan Terbaru',
+        'date' => '2026-03-30',
+        'desc' => 'Dokumentasi kunjungan lapangan dengan berkas foto hasil unggahan.',
+        'cover' => $uploadedPath,
+        'status' => 'Terbit',
+        'photos' => [
+            ['url' => $uploadedPath, 'caption' => 'Foto hasil unggahan'],
+        ],
+    ];
+
+    $response = $this->actingAs($this->admin)->post(route('admin.galeri.store'), $payload);
+    $response->assertRedirect(route('admin.galeri.index'));
+
+    $this->assertDatabaseHas('albums', [
+        'title' => 'Dokumentasi Kunjungan Lapangan Terbaru',
+        'cover_image' => $uploadedPath,
+    ]);
+
+    $this->assertDatabaseHas('album_photos', [
+        'image_path' => $uploadedPath,
+        'caption' => 'Foto hasil unggahan',
+    ]);
 });
 
 // ==========================================
@@ -334,6 +468,39 @@ it('allows admin to bulk delete aspirations', function () {
     $response->assertJson(['success' => true]);
 
     expect(Aspiration::whereIn('id', $ids)->count())->toBe(0);
+});
+
+it('ensures admin aspirasi module does not have kelurahan, kategori, status or disposition notes', function () {
+    $aspiration = Aspiration::factory()->create([
+        'sender_name' => 'Budi Santoso',
+        'subject' => 'Lampu Jalan Rusak',
+        'description' => 'Tiga titik lampu jalan padam.',
+    ]);
+
+    $response = $this->actingAs($this->admin)->get(route('admin.aspirasi.index'));
+
+    $response->assertOk();
+    $response->assertSee('Budi Santoso');
+    $response->assertSee('Lampu Jalan Rusak');
+    // Ensure Kelurahan filter/column is removed
+    $response->assertDontSee('Semua Kelurahan (Dapil 4)');
+    $response->assertDontSee('kelurahanFilter');
+    // Ensure Category filter/column is removed
+    $response->assertDontSee('Semua Kategori');
+    $response->assertDontSee('categoryFilter');
+    // Ensure Status cards/tabs are removed
+    $response->assertDontSee('Perlu Tindakan (Baru)');
+    $response->assertDontSee('statusFilter');
+    $response->assertDontSee('Tandai Selesai');
+    // Ensure Tindak Lanjut & Catatan Internal Staf is removed
+    $response->assertDontSee('Tindak Lanjut &amp; Catatan Internal Staf', false);
+    $response->assertDontSee('Tindak Lanjut & Catatan Internal Staf', false);
+    $response->assertDontSee('Tambah Catatan Disposisi');
+    $response->assertDontSee('Ubah Status Tiket');
+    // Ensure only viewing, deleting, and opening WhatsApp are present
+    $response->assertSee('openDetail', false);
+    $response->assertSee('promptDelete', false);
+    $response->assertSee('openWhatsApp', false);
 });
 
 // ==========================================

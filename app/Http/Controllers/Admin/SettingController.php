@@ -73,19 +73,32 @@ class SettingController extends Controller
     public function upload(Request $request): JsonResponse
     {
         $request->validate([
-            'file' => ['required', 'file', 'mimes:jpeg,png,jpg,webp,svg,ico', 'max:5120'],
+            'file' => ['required', 'file', 'mimes:jpeg,png,jpg,webp,svg,ico,pdf,doc,docx,xls,xlsx,zip', 'max:10240'],
         ]);
 
         $file = $request->file('file');
-        $extension = $file->getClientOriginalExtension() ?: 'png';
+        $originalName = $file->getClientOriginalName();
+        $extension = strtolower($file->getClientOriginalExtension() ?: 'bin');
+        $sizeInBytes = $file->getSize();
+
+        // Format file size readable
+        if ($sizeInBytes >= 1048576) {
+            $formattedSize = round($sizeInBytes / 1048576, 1).' MB';
+        } elseif ($sizeInBytes >= 1024) {
+            $formattedSize = round($sizeInBytes / 1024).' KB';
+        } else {
+            $formattedSize = $sizeInBytes.' B';
+        }
+
+        $folder = in_array($extension, ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'zip'], true) ? 'documents' : 'settings';
         $filename = time().'_'.Str::random(10).'.'.$extension;
-        $path = $file->storeAs('settings', $filename, 'public');
+        $path = $file->storeAs($folder, $filename, 'public');
 
         $relativePath = 'storage/'.$path;
 
         $this->activityLog->log(
             action: 'UPLOAD_SETTING_ASSET',
-            description: "Mengunggah aset gambar pengaturan: {$filename}",
+            description: "Mengunggah aset berkas: {$filename}",
             userId: auth()->id(),
             ip: $request->ip()
         );
@@ -95,6 +108,9 @@ class SettingController extends Controller
             'message' => 'File berhasil diunggah.',
             'path' => $relativePath,
             'url' => asset($relativePath),
+            'filename' => $originalName,
+            'file_type' => strtoupper($extension),
+            'file_size' => $formattedSize,
         ]);
     }
 }

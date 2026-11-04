@@ -46,6 +46,7 @@ erDiagram
         timestamp published_at
         longtext description
         string cover_image
+        text source_url
         string source
         boolean is_featured
         enum status "draft, published"
@@ -152,9 +153,9 @@ Menyimpan artikel pertanggungjawaban kinerja kedewanan beserta struktur kanvas b
 | `title` | `VARCHAR(255)` | Tidak | Judul laporan kinerja. |
 | `slug` | `VARCHAR(255)` | Tidak | URL ramah SEO yang unik (*unique slug*). |
 | `excerpt` | `TEXT` | Ya | Ringkasan singkat untuk tampilan kartu di katalog. |
-| `cover_image` | `VARCHAR(255)` | Ya | Path file gambar sampul utama laporan. |
-| `content_blocks`| `JSON` | Tidak | Array JSON struktur blok kanvas (Heading, Paragraf, Grid, Image, Quote). |
-| `is_featured` | `BOOLEAN` | Tidak | Penanda apakah laporan menjadi sorotan utama di Beranda (`default: false`). |
+| `cover_image` | `VARCHAR(255)` | Ya | Path file gambar sampul utama laporan (hasil unggah berkas langsung). |
+| `content_blocks`| `JSON` | Tidak | Array JSON struktur blok kanvas modular (10 blok: *heading, paragraph, image, list, quote, metric, attachment, table, callout, grid*). |
+| `is_featured` | `BOOLEAN` | Tidak | Penanda laporan menjadi sorotan utama di Beranda (`default: false`). **Strictly Single Featured**: Hanya boleh tepat 1 artikel bernilai `true`. |
 | `status` | `ENUM('draft','published')` | Tidak | Status publikasi (`default: 'draft'`). |
 | `published_at` | `TIMESTAMP` | Ya | Tanggal & waktu laporan diterbitkan secara resmi. |
 | `view_count` | `BIGINT UNSIGNED` | Tidak | Jumlah pembaca artikel (`default: 0`). |
@@ -170,18 +171,19 @@ Menyimpan artikel pertanggungjawaban kinerja kedewanan beserta struktur kanvas b
 ---
 
 ### 2.3 Tabel `news` (Berita & Rilis Pers)
-Menyimpan siaran pers kegiatan dengan 5 parameter wajib sesuai spesifikasi proyek.
+Menyimpan siaran pers kegiatan dan rujukan media eksternal terpercaya.
 
 | Nama Kolom | Tipe Data | Nullable | Keterangan |
 | :--- | :--- | :---: | :--- |
 | `id` | `BIGINT UNSIGNED` | Tidak | Kunci Utama (*Auto Increment*) |
-| `title` | `VARCHAR(255)` | Tidak | **Input 1:** Judul berita. |
+| `title` | `VARCHAR(255)` | Tidak | Judul siaran pers / berita. |
 | `slug` | `VARCHAR(255)` | Tidak | URL ramah SEO yang unik. |
-| `published_at` | `DATE` | Tidak | **Input 2:** Tanggal rilis berita. |
-| `description` | `LONGTEXT` | Tidak | **Input 3:** Deskripsi / teks lengkap isi berita. |
-| `cover_image` | `VARCHAR(255)` | Tidak | **Input 4:** File foto sampul berita. |
-| `source` | `VARCHAR(150)` | Tidak | **Input 5:** Sumber berita (contoh: *Humas DPRD*, *Radar Bogor*, dll). |
-| `is_featured` | `BOOLEAN` | Tidak | Penanda apakah menjadi berita utama di Beranda (`default: false`). |
+| `published_at` | `DATE` | Tidak | Tanggal rilis berita. |
+| `description` | `LONGTEXT` | Tidak | Cuplikan / ringkasan isi berita rujukan. |
+| `cover_image` | `VARCHAR(255)` | Tidak | File foto sampul berita (hasil unggah berkas langsung). |
+| `source_url` | `TEXT` | Ya | **Tautan / URL Sumber Rujukan Asli**: Wajib diisi pada UI form admin. Mengarahkan pembaca langsung ke artikel sumber berita asli. |
+| `source` | `VARCHAR(255)` | Ya | Nama media atau rujukan sumber berita (*legacy / auto-extracted*). |
+| `is_featured` | `BOOLEAN` | Tidak | Penanda berita sorotan utama di Beranda (`default: false`). **Strictly Single Featured**: Hanya boleh tepat 1 artikel bernilai `true`. |
 | `status` | `ENUM('draft','published')` | Tidak | Status berita (`default: 'draft'`). |
 | `view_count` | `BIGINT UNSIGNED` | Tidak | Jumlah pembaca berita (`default: 0`). |
 | `created_at` | `TIMESTAMP` | Ya | Waktu pembuatan data. |
@@ -195,7 +197,7 @@ Menyimpan siaran pers kegiatan dengan 5 parameter wajib sesuai spesifikasi proye
 ---
 
 ### 2.4 Tabel `albums` (Album Dokumentasi Kegiatan)
-Mengelompokkan dokumentasi foto kegiatan warga.
+Mengelompokkan dokumentasi foto kegiatan warga di Dapil 4 Tanah Sareal.
 
 | Nama Kolom | Tipe Data | Nullable | Keterangan |
 | :--- | :--- | :---: | :--- |
@@ -204,8 +206,8 @@ Mengelompokkan dokumentasi foto kegiatan warga.
 | `slug` | `VARCHAR(255)` | Tidak | URL unik album. |
 | `event_date` | `DATE` | Tidak | Tanggal pelaksanaan kegiatan di lapangan. |
 | `description` | `TEXT` | Ya | Deskripsi rangkuman kegiatan. |
-| `cover_image` | `VARCHAR(255)` | Tidak | Foto utama yang mewakili sampul album. |
-| `status` | `ENUM('draft','published')` | Tidak | Status publikasi album. |
+| `cover_image` | `VARCHAR(255)` | Tidak | Foto utama sampul album (hasil unggah berkas langsung atau dipilih dari foto album via "Jadikan Sampul"). |
+| `status` | `ENUM('draft','published')` | Tidak | Status publikasi album (`draft`, `published`). |
 | `sort_order` | `INT` | Tidak | Urutan penataan album (`default: 0`). |
 | `created_at` | `TIMESTAMP` | Ya | Waktu pembuatan data. |
 | `updated_at` | `TIMESTAMP` | Ya | Waktu pembaruan data. |
@@ -217,13 +219,13 @@ Mengelompokkan dokumentasi foto kegiatan warga.
 ---
 
 ### 2.5 Tabel `album_photos` (Foto-Foto di Dalam Album)
-Menyimpan foto individu yang terasosiasi dengan album induk.
+Menyimpan foto individu yang diunggah langsung ke dalam album induk.
 
 | Nama Kolom | Tipe Data | Nullable | Keterangan |
 | :--- | :--- | :---: | :--- |
 | `id` | `BIGINT UNSIGNED` | Tidak | Kunci Utama (*Auto Increment*) |
 | `album_id` | `BIGINT UNSIGNED` | Tidak | Kunci Asing merujuk ke `albums(id)` dengan `ON DELETE CASCADE`. |
-| `image_path` | `VARCHAR(255)` | Tidak | Lokasi file gambar di direktori penyimpanan (*storage*). |
+| `image_path` | `VARCHAR(255)` | Tidak | Lokasi file gambar di direktori penyimpanan (*storage/albums/...*). |
 | `caption` | `VARCHAR(255)` | Ya | Keterangan takarir foto saat ditampilkan di *Lightbox*. |
 | `sort_order` | `INT` | Tidak | Urutan tampilan foto dalam album (`default: 0`). |
 | `created_at` | `TIMESTAMP` | Ya | Waktu pembuatan data. |
@@ -245,8 +247,8 @@ Menampung pengaduan dan permohonan layanan yang disampaikan warga melalui formul
 | `sender_name` | `VARCHAR(100)` | Tidak | Nama lengkap warga pelapor. |
 | `phone_number` | `VARCHAR(30)` | Tidak | Nomor telepon / WhatsApp aktif pelapor. |
 | `address` | `TEXT` | Tidak | Alamat tempat tinggal / lokasi masalah di Bogor. |
-| `kelurahan` | `VARCHAR(100)` | Ya | Nama Kelurahan di Dapil 4 Tanah Sareal. |
-| `category` | `VARCHAR(100)` | Ya | Kategori isu (Drainase, PJU, UMKM, Ambulance, Beasiswa, dll). |
+| `kelurahan` | `VARCHAR(100)` | Ya | Nama Kelurahan (*tetap ada di skema database untuk backward compatibility*). |
+| `category` | `VARCHAR(100)` | Ya | Kategori isu (*tetap ada di skema database untuk backward compatibility*). |
 | `subject` | `VARCHAR(200)` | Tidak | Inti perihal permohonan / aduan. |
 | `description` | `LONGTEXT` | Tidak | Uraian lengkap aspirasi yang disampaikan. |
 | `status` | `ENUM('Baru','Ditinjau','Selesai')`| Tidak | Status penanganan (`default: 'Baru'`). |
@@ -254,7 +256,11 @@ Menampung pengaduan dan permohonan layanan yang disampaikan warga melalui formul
 | `ip_address` | `VARCHAR(45)` | Ya | Alamat IP pelapor untuk audit keamanan & rate limiting. |
 | `user_agent` | `TEXT` | Ya | Browser header pelapor. |
 | `created_at` | `TIMESTAMP` | Ya | Waktu laporan dikirimkan. |
-| `updated_at` | `TIMESTAMP` | Ya | Waktu status/catatan terakhir diubah. |
+| `updated_at` | `TIMESTAMP` | Ya | Waktu pembaruan data. |
+
+> [!NOTE]
+> **Penyederhanaan Antarmuka Admin Aspirasi**:
+> Pada antarmuka Admin (`resources/views/admin/aspirasi.blade.php`), modul aspirasi telah disederhanakan: kolom kelurahan, kategori, dan status dihilangkan dari tabel admin, kartu KPI, dan modal detail. Staf admin hanya berfokus pada 3 aksi utama: **Melihat Detail Pengaduan**, **Menghapus Aspirasi**, dan **Membuka WhatsApp Warga Langsung** (`https://wa.me/...`).
 
 *Indeks:*
 - `PRIMARY KEY (id)`
@@ -265,14 +271,14 @@ Menampung pengaduan dan permohonan layanan yang disampaikan warga melalui formul
 ---
 
 ### 2.7 Tabel `aspiration_notes` (Catatan Internal Staf Dewan)
-Mencatat riwayat disposisi dan tindak lanjut laporan warga oleh tim dewan.
+Mencatat riwayat disposisi internal (dipertahankan pada skema basis data untuk stabilitas arsitektur).
 
 | Nama Kolom | Tipe Data | Nullable | Keterangan |
 | :--- | :--- | :---: | :--- |
 | `id` | `BIGINT UNSIGNED` | Tidak | Kunci Utama (*Auto Increment*) |
 | `aspiration_id` | `BIGINT UNSIGNED` | Tidak | Kunci Asing merujuk ke `aspirations(id)` dengan `ON DELETE CASCADE`. |
-| `author_name` | `VARCHAR(100)` | Tidak | Nama staf / akun yang mencatat disposisi. |
-| `note_text` | `TEXT` | Tidak | Isi catatan perkembangan lapangan atau koordinasi dinas. |
+| `author_name` | `VARCHAR(100)` | Tidak | Nama staf / akun pencatat. |
+| `note_text` | `TEXT` | Tidak | Isi catatan perkembangan atau koordinasi dinas. |
 | `created_at` | `TIMESTAMP` | Ya | Waktu catatan dibuat. |
 | `updated_at` | `TIMESTAMP` | Ya | Waktu catatan diperbarui. |
 
@@ -289,11 +295,17 @@ Menyimpan konfigurasi statis halaman publik yang dapat diubah dari dasbor admin.
 | :--- | :--- | :---: | :--- |
 | `id` | `BIGINT UNSIGNED` | Tidak | Kunci Utama (*Auto Increment*) |
 | `group` | `VARCHAR(50)` | Tidak | Kelompok pengaturan (`general`, `home`, `profile`, `seo`). |
-| `key` | `VARCHAR(100)` | Tidak | Kunci unik (contoh: `home_hero_headline`, `profile_vision`). |
-| `value` | `JSON` | Ya | Nilai pengaturan (teks, tautan, array list misi/isu, atau path aset). |
+| `key` | `VARCHAR(100)` | Tidak | Kunci unik (contoh: `general_logo`, `home_hero_image`, `profile_quotes`). |
+| `value` | `JSON` | Ya | Nilai pengaturan (teks, URL aset, array JSON testimoni/milestones/program). |
 | `type` | `VARCHAR(30)` | Tidak | Tipe data: `string`, `text`, `json`, `image`, `boolean`. |
 | `created_at` | `TIMESTAMP` | Ya | Waktu dibuat. |
 | `updated_at` | `TIMESTAMP` | Ya | Waktu diperbarui. |
+
+#### Daftar Kunci Pengaturan Inti (`site_settings` keys):
+- **Grup `general`**: `general_site_title`, `general_tagline`, `general_address`, `general_hotline`, `general_email`, `general_logo` (path file logo), `general_favicon` (path file icon browser), `general_socials`.
+- **Grup `home`**: `home_hero_headline`, `home_hero_description`, `home_hero_image` (path file hero), `home_banner_image` (path banner ambulance), `home_collage_images` (array path foto bento), `home_testimonials` (array JSON: `name`, `role`, `content`, `avatar`).
+- **Grup `profile`**: `profile_hero_image` (path file hero profil), `profile_collage_images` (array path foto profil), `profile_quotes` (JSON: `quote`, `author`, `signature_image`), `profile_milestones` (array JSON: `year`, `title`, `category`, `description`), `profile_vision`, `profile_missions`, `profile_issues`, `profile_programs` (tersinkronisasi dengan Beranda).
+- **Grup `seo`**: `seo_meta_title`, `seo_meta_description`, `seo_keywords`, `seo_canonical_url`, `seo_gsc_tag`, `seo_enable_indexing`.
 
 *Indeks:*
 - `PRIMARY KEY (id)`
@@ -303,13 +315,13 @@ Menyimpan konfigurasi statis halaman publik yang dapat diubah dari dasbor admin.
 ---
 
 ### 2.9 Tabel `activity_logs` (Log Audit Keamanan)
-Merekam jejak audit keamanan seluruh perubahan data penting di dasbor.
+Merekam jejak audit keamanan seluruh perubahan data penting di dasbor admin.
 
 | Nama Kolom | Tipe Data | Nullable | Keterangan |
 | :--- | :--- | :---: | :--- |
 | `id` | `BIGINT UNSIGNED` | Tidak | Kunci Utama (*Auto Increment*) |
 | `user_id` | `BIGINT UNSIGNED` | Ya | Kunci Asing merujuk ke `users(id)` dengan `ON DELETE SET NULL`. |
-| `action` | `VARCHAR(100)` | Tidak | Jenis aksi (misal: `LOGIN`, `UPDATE_SETTINGS`, `PUBLISH_REPORT`). |
+| `action` | `VARCHAR(100)` | Tidak | Jenis aksi (misal: `LOGIN`, `UPDATE_SETTINGS`, `PUBLISH_REPORT`, `DELETE_ASPIRATION`). |
 | `description` | `TEXT` | Ya | Rincian aktivitas yang dilakukan. |
 | `ip_address` | `VARCHAR(45)` | Ya | Alamat IP pelaksana aksi. |
 | `created_at` | `TIMESTAMP` | Ya | Waktu kejadian dicatat. |

@@ -106,18 +106,18 @@ it('renders berita index page and searches by query keyword', function () {
     $response->assertSee('Pembangunan Saluran Drainase Cibadak');
 });
 
-it('renders single berita detail page and increments view count', function () {
+it('redirects single berita to source url and increments view count', function () {
     $news = News::factory()->create([
         'title' => 'Sidang Paripurna DPRD Kota Bogor Terkait APBD Perubahan',
         'slug' => 'sidang-paripurna-dprd-apbd-perubahan',
+        'source_url' => 'https://kotabogor.go.id/berita-sidang-paripurna',
         'status' => PublicationStatus::Published->value,
         'view_count' => 0,
     ]);
 
     $response = $this->get(route('berita.show', $news->slug));
 
-    $response->assertOk();
-    $response->assertSee('Sidang Paripurna DPRD Kota Bogor Terkait APBD Perubahan');
+    $response->assertRedirect('https://kotabogor.go.id/berita-sidang-paripurna');
 
     expect($news->fresh()->view_count)->toBe(1);
 });

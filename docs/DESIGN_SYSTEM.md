@@ -11,20 +11,42 @@ Desain visual website ini mengusung estetika **Modern Editorial & Modernist Clea
 2. **Keterbacaan Informasi Maksimal**: Kontras tipografi tinggi yang memudahkan masyarakat dan jurnalis membaca laporan kinerja.
 3. **Integritas & Kewibawaan**: Warna merah resmi partai & dewan yang dipadukan dengan palet netral zinc/slate berkualitas tinggi.
 4. **Aturan Mutlak Anti-Pill Button**: **Dilarang keras menggunakan pill button (`rounded-full`) untuk tombol aksi dan input form**. Seluruh tombol wajib menggunakan `rounded-lg` sesuai standar purwarupa halaman publik.
+5. **Independensi Aset Mandiri**: Seluruh aset font dan script dibundel secara lokal via Vite tanpa ketergantungan pada CDN eksternal (menjamin performa, privasi, dan stabilitas jangka panjang).
 
 ---
 
 ## 2. Palet Warna & Token Semantik
 
-```
-  [ Primary #BC0202 ]       [ Dark Red #830000 ]      [ Focus Red #FF0000 ]
-  Brand Accent & Nav        Hover State Action        Focus Outline & Ring
+Sistem warna diintegrasikan melalui direktif modern **Tailwind CSS v4 `@theme`** pada berkas `resources/css/app.css`:
 
-  [ Tint Red #faf5f5 ]      [ Base Zinc #fafafa ]     [ Surface #ffffff ]
-  Active Nav Highlight      App Background Canvas     Card & Modal Surface
+```css
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand: #BC0202;
+    --color-brand-bright: #FF0000;
+    --color-brand-dark: #830000;
+    --color-brand-black: #000000;
+
+    --color-primary: #BC0202;
+    --color-primary-foreground: #ffffff;
+    --color-primary-hover: #830000;
+    --color-primary-bright: #FF0000;
+    --color-primary-subtle: #fee2e2;
+
+    --color-canvas: #fafafa;
+    --color-section: #f4f4f5;
+    --color-surface: #ffffff;
+
+    --radius-2xl: 1.25rem;
+    --radius-xl: 1rem;
+    --radius-lg: 0.625rem;
+    --radius-md: 0.5rem;
+    --radius-sm: 0.375rem;
+}
 ```
 
-### 2.1 Definisi Token Warna (Color Tokens)
+### 2.1 Definisi Token Warna Semantik
 
 | Token Semantik | Kode Warna Hex | Kelas Tailwind CSS | Fungsi & Penggunaan |
 | :--- | :---: | :--- | :--- |
@@ -43,21 +65,20 @@ Desain visual website ini mengusung estetika **Modern Editorial & Modernist Clea
 | `text-muted` | `#71717a` | `text-zinc-500` | Tanggal rilis, breadcrumb, dan catatan pendukung. |
 
 ### 2.2 Status Badges (Warna Indikator)
-- **Baru / Urgent**: `bg-red-50 text-[#BC0202] border border-red-200`
-- **Ditinjau / Dalam Proses**: `bg-amber-50 text-amber-800 border border-amber-200`
-- **Selesai / Teradvokasi**: `bg-emerald-50 text-emerald-800 border border-emerald-200`
-- **Draf / Arsip**: `bg-zinc-100 text-zinc-700 border border-zinc-200`
+- **Baru / Urgent / Alert**: `bg-red-50 text-[#BC0202] border border-red-200`
+- **Peringatan / Info Penting**: `bg-amber-50 text-amber-800 border border-amber-200`
+- **Selesai / Terverifikasi / Sukses**: `bg-emerald-50 text-emerald-800 border border-emerald-200`
+- **Netral / Draf / Info Teknis**: `bg-zinc-100 text-zinc-700 border border-zinc-200`
 
 ---
 
 ## 3. Sistem Tipografi (Typography)
 
-Sistem menggunakan satu keluarga jenis huruf: **Plus Jakarta Sans** (Google Fonts).
+Sistem menggunakan satu keluarga jenis huruf: **Plus Jakarta Sans**, yang dibundel secara lokal melalui pipeline kompilasi **Vite** tanpa ketergantungan pada Google Fonts CDN eksternal:
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<!-- Bundel Aset Lokal Terpadu via Vite -->
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 ```
 
 ### 3.1 Skala Ukuran Huruf (Type Scale)
@@ -68,7 +89,7 @@ Sistem menggunakan satu keluarga jenis huruf: **Plus Jakarta Sans** (Google Font
 | **Heading H2** | `text-xl sm:text-2xl` / `leading-snug` | `font-bold` (700) | Judul section, header modul admin |
 | **Heading H3** | `text-base sm:text-lg` / `leading-snug` | `font-bold` (700) | Judul kartu laporan kinerja & berita |
 | **Subheading** | `text-sm sm:text-base` / `leading-relaxed` | `font-semibold` (600) | Subjudul pengantar & teks kutipan |
-| **Body Regular**| `text-xs sm:text-sm` / `leading-relaxed` | `font-normal` (400) | Paragraf artikel & uraian aspirasi |
+| **Body Regular**| `text-xs sm:text-sm` / `leading-relaxed` | `font-normal` (400) | Paragraf artikel, rich text, & uraian aspirasi |
 | **Form Label** | `text-xs font-bold text-zinc-900` | `font-bold` (700) | Label input formulir |
 | **Caption / Meta**| `text-[11px] sm:text-xs` | `font-medium` (500) | Tanggal rilis, sumber media, takarir foto |
 | **Monospace** | `font-mono text-xs font-bold` | `font-bold` (700) | Nomor tiket `BLB-xxxxxx` & nomor kontak |
@@ -87,7 +108,7 @@ Untuk menjaga konsistensi arsitektur Shadcn UI, sudut lengkung dikelompokkan sec
 ```
 
 > [!CAUTION]
-> **Larangan Bentuk Pill**: Hindari penggunaan kelas `rounded-full` pada elemen tombol (`<button>` atau `<a>`). Tombol wajib menggunakan kelas `rounded-lg`.
+> **Larangan Bentuk Pill**: Hindari penggunaan kelas `rounded-full` pada elemen tombol (`<button>` atau `<a>`). Seluruh tombol wajib menggunakan kelas `rounded-lg` atau `rounded-xl`.
 
 ---
 
@@ -148,6 +169,6 @@ Untuk menjaga konsistensi arsitektur Shadcn UI, sudut lengkung dikelompokkan sec
 
 ## 7. Titik Henti Responsif (Responsive Breakpoints)
 
-- **Mobile Viewport** (`< 640px`): Navigasi atas dengan hamburger drawer menu, kartu tabel berubah menjadi *stacked card view*, rasio gambar `aspect-[16/10]`.
-- **Tablet Viewport** (`640px - 1023px`): Grid 2-kolom untuk katalog, navigasi drawer modal.
-- **Desktop Viewport** (`>= 1024px`): Fixed sidebar kiri 256px (`w-64`), tabel data dengan horizontal scroll aman, grid 3-kolom untuk katalog artikel, modal dialog terpusat.
+- **Mobile Small (`< 640px`)**: Single column layout, navigasi drawer hamburger, padding horizontal `px-4`.
+- **Tablet (`640px – 1024px`)**: 2-column card grid, sidebar admin collapsable, padding horizontal `px-6`.
+- **Desktop (`>= 1024px`)**: Multi-column bento grid, sidebar admin fixed terbentang, kanvas artikel terpusat (`max-w-7xl` atau `max-w-4xl`), padding horizontal `px-8`.

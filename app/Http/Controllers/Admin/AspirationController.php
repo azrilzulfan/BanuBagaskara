@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\AspirationStatus;
-use App\Enums\TanahSarealKelurahan;
 use App\Http\Controllers\Controller;
 use App\Models\Aspiration;
 use App\Models\AspirationNote;
@@ -22,8 +21,7 @@ class AspirationController extends Controller
 
     public function index(Request $request): View
     {
-        $aspirations = Aspiration::with('notes')
-            ->latest('created_at')
+        $aspirations = Aspiration::latest('created_at')
             ->get()
             ->map(function ($item) {
                 // Generate WhatsApp URL
@@ -36,7 +34,7 @@ class AspirationController extends Controller
                     $waPhone = '62'.$rawPhone;
                 }
 
-                $waText = "Halo Bapak/Ibu {$item->sender_name},\n\nTerima kasih telah menyampaikan aspirasi ke Rumah Aspirasi Banu Lesmana Bagaskara, S.M. (DPRD Kota Bogor Dapil 4 Tanah Sareal).\n\nNomor Tiket: *{$item->ticket_number}*\nPerihal: *{$item->subject}*\nStatus Saat Ini: *".($item->status instanceof AspirationStatus ? $item->status->value : $item->status)."*\n\nTim advokasi kami siap menindaklanjuti aspirasi ini lebih lanjut. Mohon konfirmasi kelengkapan data berikut jika diperlukan.";
+                $waText = "Halo Bapak/Ibu {$item->sender_name},\n\nTerima kasih telah menyampaikan aspirasi ke Rumah Aspirasi Banu Lesmana Bagaskara, S.M. (DPRD Kota Bogor Dapil 4 Tanah Sareal).\n\nNomor Tiket: *{$item->ticket_number}*\nPerihal: *{$item->subject}*\n\nTim kami siap menindaklanjuti aspirasi ini lebih lanjut. Mohon konfirmasi kelengkapan data berikut jika diperlukan.";
                 $waUrl = "https://wa.me/{$waPhone}?text=".rawurlencode($waText);
 
                 return [
@@ -46,27 +44,13 @@ class AspirationController extends Controller
                     'sender' => $item->sender_name,
                     'phone' => $item->phone_number,
                     'address' => $item->address,
-                    'kelurahan' => $item->kelurahan,
-                    'category' => $item->category,
                     'subject' => $item->subject,
                     'description' => $item->description,
-                    'status' => $item->status instanceof AspirationStatus ? $item->status->value : $item->status,
-                    'priority' => $item->priority ? (is_object($item->priority) ? $item->priority->value : (string) $item->priority) : 'Biasa',
                     'waUrl' => $waUrl,
-                    'notes' => $item->notes->map(function ($note) {
-                        return [
-                            'id' => $note->id,
-                            'date' => $note->created_at ? $note->created_at->format('d M Y, H:i').' WIB' : '-',
-                            'author' => $note->author_name,
-                            'text' => $note->note_text,
-                        ];
-                    })->values()->all(),
                 ];
             });
 
-        $kelurahans = TanahSarealKelurahan::values();
-
-        return view('admin.aspirasi', compact('aspirations', 'kelurahans'));
+        return view('admin.aspirasi', compact('aspirations'));
     }
 
     public function updateStatus(Request $request, Aspiration $aspiration): JsonResponse|RedirectResponse
@@ -203,31 +187,20 @@ class AspirationController extends Controller
                 'Nama Pengirim',
                 'Nomor Telepon / WA',
                 'Alamat Lengkap',
-                'Kelurahan',
-                'Kategori Usulan',
                 'Perihal Aspirasi',
                 'Deskripsi Usulan',
-                'Status Disposisi',
-                'Prioritas',
             ]);
 
             Aspiration::latest('created_at')->chunk(100, function ($aspirations) use ($handle) {
                 foreach ($aspirations as $a) {
-                    $status = $a->status instanceof AspirationStatus ? $a->status->value : $a->status;
-                    $priority = $a->priority ? (is_object($a->priority) ? $a->priority->value : (string) $a->priority) : 'Biasa';
-
                     fputcsv($handle, [
                         $a->ticket_number,
                         $a->created_at ? $a->created_at->format('Y-m-d H:i:s') : '',
                         $a->sender_name,
                         $a->phone_number,
                         $a->address,
-                        $a->kelurahan,
-                        $a->category,
                         $a->subject,
                         $a->description,
-                        $status,
-                        $priority,
                     ]);
                 }
             });

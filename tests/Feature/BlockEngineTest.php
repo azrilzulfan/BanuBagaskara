@@ -123,3 +123,150 @@ it('sanitizes malicious script tags and XSS injections across blocks', function 
         ->toContain('&lt;script&gt;alert(&quot;Hacked Heading&quot;)&lt;/script&gt;')
         ->toContain('&lt;img src=x onerror=alert(&quot;XSS&quot;)&gt;');
 });
+
+it('renders paragraph blocks with rich text formatting safely', function () {
+    $service = app(BlockEngineService::class);
+
+    $blocks = [
+        [
+            'type' => 'paragraph',
+            'format' => 'html',
+            'text' => 'Teks dengan <strong>huruf tebal</strong>, <em>miring</em>, dan <a href="https://banubagaskara.id">tautan resmi</a>.<script>alert("hack")</script>',
+        ],
+    ];
+
+    $html = $service->renderToHtml($blocks);
+
+    expect($html)
+        ->toContain('<strong>huruf tebal</strong>')
+        ->toContain('<em>miring</em>')
+        ->toContain('<a href="https://banubagaskara.id">tautan resmi</a>')
+        ->not->toContain('<script>');
+});
+
+it('renders metric blocks with large number and label', function () {
+    $service = app(BlockEngineService::class);
+
+    $blocks = [
+        [
+            'type' => 'metric',
+            'value' => '100%',
+            'label' => 'Tingkat Responsif Aduan',
+            'description' => 'Tertangani dalam 1x24 jam',
+        ],
+    ];
+
+    $html = $service->renderToHtml($blocks);
+
+    expect($html)
+        ->toContain('100%')
+        ->toContain('Tingkat Responsif Aduan')
+        ->toContain('Tertangani dalam 1x24 jam');
+});
+
+it('renders attachment blocks with file type, size, and download link', function () {
+    $service = app(BlockEngineService::class);
+
+    $blocks = [
+        [
+            'type' => 'attachment',
+            'title' => 'Laporan Pokir Tahun 2026',
+            'url' => 'storage/documents/laporan.pdf',
+            'fileType' => 'PDF',
+            'fileSize' => '2.5 MB',
+        ],
+    ];
+
+    $html = $service->renderToHtml($blocks);
+
+    expect($html)
+        ->toContain('Laporan Pokir Tahun 2026')
+        ->toContain('href="/storage/documents/laporan.pdf"')
+        ->toContain('PDF')
+        ->toContain('2.5 MB')
+        ->toContain('Unduh Berkas');
+});
+
+it('renders custom table blocks with headers and rows', function () {
+    $service = app(BlockEngineService::class);
+
+    $blocks = [
+        [
+            'type' => 'table',
+            'title' => 'Tabel Realisasi Aspirasi',
+            'headers' => ['Kelurahan', 'Program', 'Status'],
+            'rows' => [
+                ['Kedungbadak', 'Ambulance 24 Jam', 'Aktif'],
+                ['Kebonpedes', 'Legalitas UMKM', 'Selesai'],
+            ],
+        ],
+    ];
+
+    $html = $service->renderToHtml($blocks);
+
+    expect($html)
+        ->toContain('Tabel Realisasi Aspirasi')
+        ->toContain('Kelurahan')
+        ->toContain('Program')
+        ->toContain('Kedungbadak')
+        ->toContain('Ambulance 24 Jam')
+        ->toContain('Kebonpedes')
+        ->toContain('Legalitas UMKM');
+});
+
+it('renders callout and highlight blocks with accent styling', function () {
+    $service = app(BlockEngineService::class);
+
+    $blocks = [
+        [
+            'type' => 'callout',
+            'title' => 'Catatan Advokasi Anggaran',
+            'text' => 'Setiap rupiah APBD wajib diprioritaskan bagi layanan dasar warga.',
+        ],
+    ];
+
+    $html = $service->renderToHtml($blocks);
+
+    expect($html)
+        ->toContain('Catatan Advokasi Anggaran')
+        ->toContain('Setiap rupiah APBD wajib diprioritaskan bagi layanan dasar warga.')
+        ->toContain('border-l-4');
+});
+
+it('renders nested container grid blocks containing child blocks in each column', function () {
+    $service = app(BlockEngineService::class);
+
+    $blocks = [
+        [
+            'type' => 'grid',
+            'col1Blocks' => [
+                [
+                    'type' => 'heading',
+                    'level' => 'h3',
+                    'text' => 'Kolom Kiri Subjudul',
+                ],
+                [
+                    'type' => 'paragraph',
+                    'text' => 'Paragraf di kolom kiri.',
+                ],
+            ],
+            'col2Blocks' => [
+                [
+                    'type' => 'metric',
+                    'value' => '1.500+',
+                    'label' => 'Warga Terlayani',
+                    'description' => 'Total penerima manfaat langsung',
+                ],
+            ],
+        ],
+    ];
+
+    $html = $service->renderToHtml($blocks);
+
+    expect($html)
+        ->toContain('Kolom Kiri Subjudul')
+        ->toContain('Paragraf di kolom kiri.')
+        ->toContain('1.500+')
+        ->toContain('Warga Terlayani')
+        ->toContain('grid grid-cols-1 md:grid-cols-2');
+});

@@ -19,6 +19,8 @@ class SiteSettingSeeder extends Seeder
                 'type' => 'json',
                 'value' => [
                     'siteTitle' => 'Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024–2029',
+                    'logo' => null,
+                    'favicon' => null,
                     'slogan' => 'Bogor Lebih Baik',
                     'visionSlogan' => 'Kota Bogor yang Maju dan Nyaman untuk Semua',
                     'officeRole' => 'Anggota DPRD Kota Bogor (Dapil Kota Bogor 4 / Tanah Sareal, Komisi 1)',
@@ -40,13 +42,10 @@ class SiteSettingSeeder extends Seeder
                 'type' => 'json',
                 'value' => [
                     'hero' => [
-                        'badge' => 'Amanah Warga Tanah Sareal • Periode 2024–2029',
                         'headline' => 'Mengabdi dengan Integritas, Bekerja Nyata untuk Warga Bogor',
                         'description' => 'Kanal transparansi kinerja, advokasi aspirasi masyarakat, dan informasi program kerja kedewanan Banu Lesmana Bagaskara, S.M. di DPRD Kota Bogor.',
-                        'ctaPrimaryText' => 'Sampaikan Aspirasi',
-                        'ctaPrimaryLink' => '/kontak#aspirasi',
-                        'ctaSecondaryText' => 'Lihat Kinerja',
-                        'ctaSecondaryLink' => '/kinerja',
+                        'ctaSecondaryText' => 'Kenali Banu Bagaskara',
+                        'ctaSecondaryLink' => '/kenali',
                         'heroImage' => 'assets/banu/hero_banu.jpg',
                     ],
                     'banner' => [
@@ -63,6 +62,14 @@ class SiteSettingSeeder extends Seeder
                         ['label' => 'Bimbingan NIB & Usaha UMKM', 'image' => 'assets/banu/program_umkm.jpg', 'tag' => 'Ekonomi'],
                         ['label' => 'Guyub Gotong Royong Komunitas', 'image' => 'assets/banu/footer_community.jpg', 'tag' => 'Sosial'],
                     ],
+                    'programs' => [
+                        ['no' => 1, 'title' => 'Rumah Aspirasi Rakyat', 'desc' => 'Rumah singgah terbuka di Kedung Badak buat warga yang mau ngobrol santai, sampaikan unek-unek lingkungan, atau butuh bantuan advokasi dewan.'],
+                        ['no' => 2, 'title' => 'Ambulance Siaga 24 Jam', 'desc' => 'Layanan ambulance gratis bareng relawan yang siap antar jemput warga sakit atau darurat medis kapan saja tanpa dipungut biaya.'],
+                        ['no' => 3, 'title' => 'Transparansi APBD & E-Gov', 'desc' => 'Mendorong pengawasan publik terbuka dan digitalisasi administrasi Kota Bogor agar alokasi anggaran tepat sasaran dan terbebas dari kebocoran.'],
+                        ['no' => 4, 'title' => 'Wajib Belajar Anak Kota Bogor', 'desc' => 'Mencegah anak putus sekolah melalui advokasi alokasi beasiswa daerah serta perlindungan hak anak untuk menuntaskan pendidikan 12 tahun.'],
+                        ['no' => 5, 'title' => 'Kota Bogor Tanpa Tawuran', 'desc' => 'Membina generasi muda melalui wadah riset kreatif, pelatihan keahlian kerja, dan kompetisi olahraga lingkungan yang positif dan bebas kekerasan.'],
+                        ['no' => 6, 'title' => 'Digitalisasi UMKM RT/RW', 'desc' => 'Pendampingan izin NIB resmi, sertifikasi halal gratis, pelatihan pemasaran produk digital, serta akses kemitraan permodalan usaha keluarga.'],
+                    ],
                 ],
             ],
             [
@@ -71,7 +78,6 @@ class SiteSettingSeeder extends Seeder
                 'type' => 'json',
                 'value' => [
                     'hero' => [
-                        'title' => 'Kenali Banu Lesmana Bagaskara, S.M.',
                         'subtitle' => 'Pemuda berintegritas, wakil rakyat yang senantiasa hadir dan mendengarkan denyut suara warga Kota Bogor.',
                         'heroImage' => 'assets/banu/hero_banu.jpg',
                     ],
@@ -117,6 +123,13 @@ class SiteSettingSeeder extends Seeder
                         ['no' => 4, 'title' => 'Wajib Belajar Anak Kota Bogor', 'desc' => 'Mencegah anak putus sekolah melalui advokasi alokasi beasiswa daerah serta perlindungan hak anak untuk menuntaskan pendidikan 12 tahun.'],
                         ['no' => 5, 'title' => 'Kota Bogor Tanpa Tawuran', 'desc' => 'Membina generasi muda melalui wadah riset kreatif, pelatihan keahlian kerja, dan kompetisi olahraga lingkungan yang positif dan bebas kekerasan.'],
                         ['no' => 6, 'title' => 'Digitalisasi UMKM RT/RW', 'desc' => 'Pendampingan izin NIB resmi, sertifikasi halal gratis, pelatihan pemasaran produk digital, serta akses kemitraan permodalan usaha keluarga.'],
+                    ],
+                    'collage' => [
+                        ['label' => 'Dialog Aspirasi Warga Kebon Pedes', 'image' => 'assets/banu/testi_dialog.jpg'],
+                        ['label' => 'Sidang Paripurna & Pengawasan APBD di Parlemen', 'image' => 'assets/banu/hero_banu.jpg'],
+                        ['label' => 'Operasional Ambulance Siaga 24 Jam', 'image' => 'assets/banu/program_ambulance.jpg'],
+                        ['label' => 'Pelatihan Digitalisasi UMKM RT/RW', 'image' => 'assets/banu/program_umkm.jpg'],
+                        ['label' => 'Rembug Guyub Komunitas Warga', 'image' => 'assets/banu/footer_community.jpg'],
                     ],
                     'quote' => 'Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.',
                 ],

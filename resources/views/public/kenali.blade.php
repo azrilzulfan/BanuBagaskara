@@ -13,15 +13,19 @@
       <!-- Top Nav Header: Logo & Mobile Menu Toggle -->
       <header class="flex items-center justify-between z-10 w-full mb-8 sm:mb-10 gap-2">
         <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 text-zinc-950 group min-w-0 flex-1">
-          <!-- Official Parliamentary / Democratic Red Mark (No Pill, Rounded-lg) -->
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-sm shrink-0">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-          </div>
-          <div class="flex flex-col leading-tight min-w-0 flex-1">
-            <span class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
-          </div>
+          @if (!empty($generalSettings['logo']))
+            <img src="{{ asset($generalSettings['logo']) }}" alt="{{ $generalSettings['siteTitle'] ?? 'Banu Lesmana Bagaskara' }}" class="h-8 sm:h-9 w-auto object-contain" />
+          @else
+            <!-- Official Parliamentary / Democratic Red Mark (No Pill, Rounded-lg) -->
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-sm shrink-0">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <div class="flex flex-col leading-tight min-w-0 flex-1">
+              <span class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
+            </div>
+          @endif
         </a>
 
         <!-- Menu Button for Mobile & Tablet (< lg) - Shadcn Button (No Pill, Rounded-lg) -->
@@ -399,27 +403,27 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-5">
         <div class="lg:col-span-7 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/testi_dialog.jpg') }}" alt="Dialog Aspirasi Warga Kebon Pedes" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          <img src="{{ asset($profileSettings['collage'][0]['image'] ?? 'assets/banu/testi_dialog.jpg') }}" alt="{{ $profileSettings['collage'][0]['label'] ?? 'Dialog Aspirasi Warga Kebon Pedes' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
         </div>
 
         <div class="lg:col-span-5 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[250px] sm:min-h-[300px] lg:min-h-[420px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/hero_banu.jpg') }}" alt="Sidang Paripurna & Pengawasan APBD di Parlemen" class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          <img src="{{ asset($profileSettings['collage'][1]['image'] ?? 'assets/banu/hero_banu.jpg') }}" alt="{{ $profileSettings['collage'][1]['label'] ?? 'Sidang Paripurna & Pengawasan APBD di Parlemen' }}" class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
         </div>
 
         <div class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/program_ambulance.jpg') }}" alt="Operasional Ambulance Siaga 24 Jam" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          <img src="{{ asset($profileSettings['collage'][2]['image'] ?? 'assets/banu/program_ambulance.jpg') }}" alt="{{ $profileSettings['collage'][2]['label'] ?? 'Operasional Ambulance Siaga 24 Jam' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
         </div>
 
         <div class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/program_umkm.jpg') }}" alt="Pelatihan Digitalisasi UMKM RT/RW" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          <img src="{{ asset($profileSettings['collage'][3]['image'] ?? 'assets/banu/program_umkm.jpg') }}" alt="{{ $profileSettings['collage'][3]['label'] ?? 'Pelatihan Digitalisasi UMKM RT/RW' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
         </div>
 
         <div class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-          <img src="{{ asset('assets/banu/footer_community.jpg') }}" alt="Rembug Guyub Komunitas Warga" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          <img src="{{ asset($profileSettings['collage'][4]['image'] ?? 'assets/banu/footer_community.jpg') }}" alt="{{ $profileSettings['collage'][4]['label'] ?? 'Rembug Guyub Komunitas Warga' }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
         </div>
       </div>

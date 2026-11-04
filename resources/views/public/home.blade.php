@@ -46,15 +46,19 @@
       <!-- Top Nav Header: Logo & Mobile Menu Toggle -->
       <header class="flex items-center justify-between z-10 w-full mb-8 sm:mb-10 gap-2">
         <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 text-zinc-950 group min-w-0 flex-1">
-          <!-- Official Parliamentary / Democratic Red Mark (No Pill, Rounded-lg) -->
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-sm shrink-0">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-          </div>
-          <div class="flex flex-col leading-tight min-w-0 flex-1">
-            <span class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
-          </div>
+          @if (!empty($generalSettings['logo']))
+            <img src="{{ asset($generalSettings['logo']) }}" alt="{{ $generalSettings['siteTitle'] ?? 'Banu Lesmana Bagaskara' }}" class="h-8 sm:h-9 w-auto object-contain" />
+          @else
+            <!-- Official Parliamentary / Democratic Red Mark (No Pill, Rounded-lg) -->
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-sm shrink-0">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <div class="flex flex-col leading-tight min-w-0 flex-1">
+              <span class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
+            </div>
+          @endif
         </a>
 
         <!-- Menu Button for Mobile & Tablet (< lg) - Shadcn Button (No Pill) -->
@@ -332,6 +336,9 @@
       </div>
 
       <!-- 6 Program Cards Grid (1:1 with Template) -->
+      @php
+        $homePrograms = $homeSettings['programs'] ?? $profileSettings['programs'] ?? [];
+      @endphp
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
         <!-- Program 1: Rumah Aspirasi Rakyat -->
         <div class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white p-6 sm:p-7 shadow-xs hover:shadow-sm hover:border-zinc-300 transition-all flex flex-col justify-between group">
@@ -343,9 +350,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][0]['title'] ?? 'Rumah Aspirasi Rakyat' }}</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $homePrograms[0]['title'] ?? 'Rumah Aspirasi Rakyat' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              {{ $profileSettings['programs'][0]['desc'] ?? 'Pusat advokasi terbuka di Kedung Badak untuk menampung, memverifikasi, dan memperjuangkan seluruh keluhan serta usulan pembangunan warga Tanah Sareal ke instansi terkait.' }}
+              {{ $homePrograms[0]['desc'] ?? 'Pusat advokasi terbuka di Kedung Badak untuk menampung, memverifikasi, dan memperjuangkan seluruh keluhan serta usulan pembangunan warga Tanah Sareal ke instansi terkait.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -363,9 +370,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][1]['title'] ?? 'Ambulance Siaga 24 Jam' }}</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $homePrograms[1]['title'] ?? 'Ambulance Siaga 24 Jam' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              {{ $profileSettings['programs'][1]['desc'] ?? 'Armada ambulans operasional dan relawan pendamping medis darurat siaga 24 jam bebas biaya untuk mengantar pasien darurat serta mengawal administrasi BPJS di RSUD Kota Bogor.' }}
+              {{ $homePrograms[1]['desc'] ?? 'Armada ambulans operasional dan relawan pendamping medis darurat siaga 24 jam bebas biaya untuk mengantar pasien darurat serta mengawal administrasi BPJS di RSUD Kota Bogor.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -383,9 +390,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][2]['title'] ?? 'Mendorong E-Government' }}</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $homePrograms[2]['title'] ?? 'Mendorong E-Government' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              {{ $profileSettings['programs'][2]['desc'] ?? 'Mendorong integrasi layanan birokrasi digital dan transparansi anggaran APBD Kota Bogor agar akuntabel, efisien, serta terbebas dari pemborosan dan kebocoran dana rakyat.' }}
+              {{ $homePrograms[2]['desc'] ?? 'Mendorong integrasi layanan birokrasi digital dan transparansi anggaran APBD Kota Bogor agar akuntabel, efisien, serta terbebas dari pemborosan dan kebocoran dana rakyat.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -404,9 +411,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][3]['title'] ?? 'Wajib Belajar Anak' }}</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $homePrograms[3]['title'] ?? 'Wajib Belajar Anak' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              {{ $profileSettings['programs'][3]['desc'] ?? 'Memastikan tidak ada anak Kota Bogor yang putus sekolah melalui advokasi alokasi beasiswa siswa prasejahtera, tebus ijazah tertahan, serta pemerataan mutu pendidikan.' }}
+              {{ $homePrograms[3]['desc'] ?? 'Memastikan tidak ada anak Kota Bogor yang putus sekolah melalui advokasi alokasi beasiswa siswa prasejahtera, tebus ijazah tertahan, serta pemerataan mutu pendidikan.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -429,9 +436,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][4]['title'] ?? 'Kota Bogor Tanpa Tawuran' }}</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $homePrograms[4]['title'] ?? 'Kota Bogor Tanpa Tawuran' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              {{ $profileSettings['programs'][4]['desc'] ?? 'Pembinaan karakter pemuda berbasis komunitas melalui wadah keilmuan, riset, fasilitas olahraga positif, dan pelatihan ketenagakerjaan untuk membasmi tawuran antar pelajar.' }}
+              {{ $homePrograms[4]['desc'] ?? 'Pembinaan karakter pemuda berbasis komunitas melalui wadah keilmuan, riset, fasilitas olahraga positif, dan pelatihan ketenagakerjaan untuk membasmi tawuran antar pelajar.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">
@@ -449,9 +456,9 @@
                 </svg>
               </div>
             </div>
-            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $profileSettings['programs'][5]['title'] ?? 'Digitalisasi UMKM RT/RW' }}</h3>
+            <h3 class="font-bold text-base sm:text-lg text-zinc-950 flex items-center tracking-tight"><span class="text-[#BC0202] font-black mr-2">|</span> {{ $homePrograms[5]['title'] ?? 'Digitalisasi UMKM RT/RW' }}</h3>
             <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-              {{ $profileSettings['programs'][5]['desc'] ?? 'Mendorong kemandirian ekonomi warga melalui fasilitasi Nomor Induk Berusaha (NIB) gratis, sertifikasi produk, pelatihan foto digital, serta akses kemitraan modal usaha rakyat.' }}
+              {{ $homePrograms[5]['desc'] ?? 'Mendorong kemandirian ekonomi warga melalui fasilitasi Nomor Induk Berusaha (NIB) gratis, sertifikasi produk, pelatihan foto digital, serta akses kemitraan modal usaha rakyat.' }}
             </p>
           </div>
           <div class="mt-5 pt-4 border-t border-zinc-200/60 flex items-center text-[11px] font-semibold text-zinc-500">

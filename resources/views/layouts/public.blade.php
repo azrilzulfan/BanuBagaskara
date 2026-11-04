@@ -28,6 +28,7 @@
     <meta name="twitter:image" content="@yield('og_image', asset($seoSettings['ogImage'] ?? 'assets/banu/hero_banu.jpg'))" />
 
     <link rel="canonical" href="@yield('canonical', $seoSettings['canonicalUrl'] ?? url()->current())" />
+    <link rel="icon" href="{{ !empty($generalSettings['favicon']) ? asset($generalSettings['favicon']) : asset('favicon.ico') }}" />
 
     <!-- Font: Plus Jakarta Sans & Tailwind v4 via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -143,7 +144,11 @@
                 {{ $generalSettings['visionSlogan'] ?? 'Maju & Nyaman untuk Semua' }}
               </h3>
               <div class="flex items-center gap-3 text-white">
-                <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs">BLB</div>
+                @if (!empty($generalSettings['logo']))
+                  <img src="{{ asset($generalSettings['logo']) }}" alt="{{ $generalSettings['siteTitle'] ?? 'Banu Lesmana Bagaskara' }}" class="h-8 w-auto object-contain bg-white/10 p-1 rounded-lg" />
+                @else
+                  <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs">BLB</div>
+                @endif
                 <div class="flex flex-col leading-tight">
                   <span class="font-bold text-sm tracking-tight text-white">Banu Lesmana Bagaskara</span>
                 </div>

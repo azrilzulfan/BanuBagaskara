@@ -9,6 +9,8 @@ use App\Models\News;
 use App\Models\PerformanceReport;
 use App\Models\User;
 use App\Services\SiteSettingsService;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->admin = User::factory()->create([
@@ -435,4 +437,119 @@ it('reflects updated site settings on public frontend pages', function () {
     $contactResponse->assertSee('+62 811-9999-8888');
     $contactResponse->assertSee('aduan@banubagaskara.id');
     $contactResponse->assertSee('https://instagram.com/banubagaskara_official');
+});
+
+it('allows admin to upload image assets for settings', function () {
+    Storage::fake('public');
+
+    $file = UploadedFile::fake()->image('custom_hero.jpg', 800, 600);
+
+    $response = $this->actingAs($this->admin)->post(route('admin.upload'), [
+        'file' => $file,
+    ]);
+
+    $response->assertOk()
+        ->assertJson([
+            'success' => true,
+            'message' => 'File berhasil diunggah.',
+        ]);
+
+    $data = $response->json();
+    expect($data['path'])->toStartWith('storage/settings/')
+        ->and($data['url'])->toContain('storage/settings/');
+
+    $storedFileName = str_replace('storage/', '', $data['path']);
+    Storage::disk('public')->assertExists($storedFileName);
+});
+
+it('allows admin to configure logo and favicon and reflects in layout', function () {
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'general',
+        'data' => [
+            'siteTitle' => 'Portal Banu Bagaskara',
+            'logo' => 'storage/settings/official_logo.png',
+            'favicon' => 'storage/settings/favicon_custom.ico',
+            'slogan' => 'Bogor Lebih Baik',
+        ],
+    ])->assertRedirect();
+
+    $response = $this->get(route('home'));
+    $response->assertOk();
+    $response->assertSee('storage/settings/favicon_custom.ico');
+    $response->assertSee('storage/settings/official_logo.png');
+});
+
+it('synchronizes 6 programs bidirectionally between home and profile settings', function () {
+    $customPrograms = [
+        ['no' => 1, 'title' => 'Program Inovatif A', 'desc' => 'Deskripsi Program Inovatif A'],
+        ['no' => 2, 'title' => 'Program Inovatif B', 'desc' => 'Deskripsi Program Inovatif B'],
+        ['no' => 3, 'title' => 'Program Inovatif C', 'desc' => 'Deskripsi Program Inovatif C'],
+        ['no' => 4, 'title' => 'Program Inovatif D', 'desc' => 'Deskripsi Program Inovatif D'],
+        ['no' => 5, 'title' => 'Program Inovatif E', 'desc' => 'Deskripsi Program Inovatif E'],
+        ['no' => 6, 'title' => 'Program Inovatif F', 'desc' => 'Deskripsi Program Inovatif F'],
+    ];
+
+    // 1. Update programs through home group
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'home',
+        'data' => [
+            'hero' => ['headline' => 'Test Headline'],
+            'programs' => $customPrograms,
+        ],
+    ])->assertRedirect();
+
+    $settingsService = app(SiteSettingsService::class);
+    $profileSettings = $settingsService->getGroup('profile');
+    expect($profileSettings['programs'][0]['title'])->toBe('Program Inovatif A')
+        ->and($profileSettings['programs'][5]['title'])->toBe('Program Inovatif F');
+
+    // Both home and profile public pages should reflect the synchronized programs
+    $homeResponse = $this->get(route('home'));
+    $homeResponse->assertSee('Program Inovatif A');
+    $homeResponse->assertSee('Program Inovatif F');
+
+    $profileResponse = $this->get(route('profile'));
+    $profileResponse->assertSee('Program Inovatif A');
+    $profileResponse->assertSee('Program Inovatif F');
+
+    // 2. Update programs through profile group
+    $customPrograms[0]['title'] = 'Program Terupdate dari Profil';
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'profile',
+        'data' => [
+            'vision' => 'Visi Baru',
+            'programs' => $customPrograms,
+        ],
+    ])->assertRedirect();
+
+    $homeSettings = $settingsService->getGroup('home');
+    expect($homeSettings['programs'][0]['title'])->toBe('Program Terupdate dari Profil');
+
+    $homeResponseUpdated = $this->get(route('home'));
+    $homeResponseUpdated->assertSee('Program Terupdate dari Profil');
+});
+
+it('allows admin to manage dynamic education and experience entries in profile', function () {
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'profile',
+        'data' => [
+            'historyTrack' => [
+                'education' => [
+                    ['period' => '2022 – 2024', 'title' => 'Magister Manajemen (M.M.)', 'institution' => 'Universitas Indonesia'],
+                    ['period' => '2015 – 2019', 'title' => 'Sarjana Manajemen (S.M.)', 'institution' => 'IBI Kesatuan Bogor'],
+                ],
+                'experience' => [
+                    ['period' => '2024 – 2029', 'title' => 'Ketua Fraksi & Anggota Komisi 1', 'institution' => 'DPRD Kota Bogor'],
+                    ['period' => '2021 – 2024', 'title' => 'Ketua Yayasan Pemuda Bogor Maju', 'institution' => 'Bogor Lebih Baik'],
+                ],
+            ],
+        ],
+    ])->assertRedirect();
+
+    $profileResponse = $this->get(route('profile'));
+    $profileResponse->assertOk();
+    $profileResponse->assertSee('Magister Manajemen (M.M.)');
+    $profileResponse->assertSee('Universitas Indonesia');
+    $profileResponse->assertSee('Ketua Fraksi &amp; Anggota Komisi 1', false);
+    $profileResponse->assertSee('Ketua Yayasan Pemuda Bogor Maju');
 });

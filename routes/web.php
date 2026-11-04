@@ -93,4 +93,5 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // 6. Modul Pengaturan Halaman Website
     Route::get('/pengaturan', [AdminSettingController::class, 'index'])->name('pengaturan.index');
     Route::post('/pengaturan', [AdminSettingController::class, 'update'])->name('pengaturan.update');
+    Route::post('/upload', [AdminSettingController::class, 'upload'])->name('upload');
 });

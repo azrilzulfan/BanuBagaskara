@@ -10,8 +10,7 @@ class AspirationSubmissionController extends Controller
 {
     public function __construct(
         public SubmitAspirationAction $submitAspirationAction,
-    ) {
-    }
+    ) {}
 
     public function store(StoreAspirationRequest $request): RedirectResponse
     {

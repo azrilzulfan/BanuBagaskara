@@ -10,8 +10,7 @@ class PerformanceReportController extends Controller
 {
     public function __construct(
         public BlockEngineService $blockEngine,
-    ) {
-    }
+    ) {}
 
     public function index(): View
     {

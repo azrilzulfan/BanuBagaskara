@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 class SiteSettingsService
 {
     protected const CACHE_KEY = 'site_settings';
+
     protected const CACHE_TTL = 86400; // 24 jam
 
     /**

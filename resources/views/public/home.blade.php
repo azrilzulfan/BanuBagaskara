@@ -6,7 +6,7 @@
 @push('schema')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "{{ '@context' }}": "https://schema.org",
   "@type": "Person",
   "name": "Banu Lesmana Bagaskara, S.M.",
   "jobTitle": "Anggota DPRD Kota Bogor",

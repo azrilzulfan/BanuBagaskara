@@ -13,8 +13,7 @@ class SubmitAspirationAction
     public function __construct(
         public TicketGeneratorService $ticketGenerator,
         public ActivityLogService $activityLog,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data

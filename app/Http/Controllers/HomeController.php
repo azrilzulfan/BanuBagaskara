@@ -11,8 +11,7 @@ class HomeController extends Controller
 {
     public function __construct(
         public SiteSettingsService $settingsService,
-    ) {
-    }
+    ) {}
 
     public function index(): View
     {

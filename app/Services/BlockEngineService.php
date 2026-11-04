@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\View;
-
 class BlockEngineService
 {
     /**

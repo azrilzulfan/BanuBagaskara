@@ -8,7 +8,7 @@
 @push('schema')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "{{ '@context' }}": "https://schema.org",
   "@type": "NewsArticle",
   "headline": "{{ addslashes($news->title) }}",
   "image": ["{{ asset($news->cover_image) }}"],

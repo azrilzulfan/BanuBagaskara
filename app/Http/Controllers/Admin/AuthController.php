@@ -15,8 +15,7 @@ class AuthController extends Controller
 {
     public function __construct(
         public ActivityLogService $activityLog,
-    ) {
-    }
+    ) {}
 
     public function showLogin(): View|RedirectResponse
     {

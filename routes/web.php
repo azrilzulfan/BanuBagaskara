@@ -44,6 +44,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 | Authentication Routes (Single Admin)
 |--------------------------------------------------------------------------
 */
+Route::redirect('/login', '/admin/login')->name('login');
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');

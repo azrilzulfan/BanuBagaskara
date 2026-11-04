@@ -524,6 +524,25 @@
   <!-- ======================================================== -->
   <!-- 6. TESTIMONI -> SUARA & ASPIRASI WARGA                   -->
   <!-- ======================================================== -->
+  @php
+    $testimonials = $homeSettings['testimonials'] ?? [
+      [
+        'name' => 'Ibu Suryati Ningsih',
+        'role' => 'Warga Kel. Kedung Badak, Tanah Sareal',
+        'quote' => 'Waktu keluarga kami membutuhkan rujukan darurat tengah malam, tim Ambulance Siaga Rumah Aspirasi langsung sigap datang menjemput dan mengawal proses administrasi di RSUD tanpa biaya sepeser pun. Nyata manfaatnya bagi warga kecil.',
+      ],
+      [
+        'name' => 'Bpk. Rahmat Hidayat',
+        'role' => 'Ketua RW 05, Kel. Kebon Pedes',
+        'quote' => 'Saat kami menyampaikan masalah drainase gang yang kerap meluap ketika hujan lebat di Kebon Pedes, beliau langsung turun meninjau bersama dinas terkait. Responnya cepat dan komunikasinya sangat terbuka tanpa birokrasi berbelit.',
+      ],
+      [
+        'name' => 'Bpk. Hendra Gunawan',
+        'role' => 'Tokoh Masyarakat Kel. Sukadamai',
+        'quote' => 'Usulan perbaikan drainase lingkungan dan penerangan jalan gang yang kami sampaikan di reses dewan benar-benar dikawal serius hingga masuk prioritas realisasi APBD Kota Bogor. Komunikatif dan tidak berjarak dengan warga.',
+      ],
+    ];
+  @endphp
   <section id="suara-warga" class="w-full bg-white py-16 sm:py-20 lg:py-24 border-b border-zinc-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
       <!-- Section Header -->
@@ -531,46 +550,21 @@
         <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight">Testimoni <span class="text-[#BC0202]">Banu</span> Lesmana <span class="text-[#BC0202]">Bagaskara</span></h2>
       </div>
 
-      <!-- 3 Testimonial Cards Grid -->
+      <!-- Testimonial Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
-        <!-- Card 1: Warga Kedung Badak -->
-        <div class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white p-6 sm:p-7 shadow-xs hover:shadow-sm hover:border-zinc-300 transition-all flex flex-col justify-between min-h-[240px]">
-          <p class="text-xs sm:text-[13px] text-zinc-700 leading-relaxed">
-            &ldquo;Waktu keluarga kami membutuhkan rujukan darurat tengah malam, tim Ambulance Siaga Rumah Aspirasi langsung sigap datang menjemput dan mengawal proses administrasi di RSUD tanpa biaya sepeser pun. Nyata manfaatnya bagi warga kecil.&rdquo;
-          </p>
-          <div class="flex items-center gap-3 mt-6 pt-5 border-t border-zinc-200/60">
-            <div class="flex flex-col">
-              <span class="font-bold text-xs sm:text-sm text-zinc-950">Ibu Suryati Ningsih</span>
-              <span class="text-[11px] text-zinc-500">Warga Kel. Kedung Badak, Tanah Sareal</span>
+        @foreach ($testimonials as $testi)
+          <div class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white p-6 sm:p-7 shadow-xs hover:shadow-sm hover:border-zinc-300 transition-all flex flex-col justify-between min-h-[240px]">
+            <p class="text-xs sm:text-[13px] text-zinc-700 leading-relaxed">
+              &ldquo;{{ $testi['quote'] }}&rdquo;
+            </p>
+            <div class="flex items-center gap-3 mt-6 pt-5 border-t border-zinc-200/60">
+              <div class="flex flex-col">
+                <span class="font-bold text-xs sm:text-sm text-zinc-950">{{ $testi['name'] }}</span>
+                <span class="text-[11px] text-zinc-500">{{ $testi['role'] }}</span>
+              </div>
             </div>
           </div>
-        </div>
-
-        <!-- Card 2: Bpk. Rahmat Hidayat -->
-        <div class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white p-6 sm:p-7 shadow-xs hover:shadow-sm hover:border-zinc-300 transition-all flex flex-col justify-between min-h-[240px]">
-          <p class="text-xs sm:text-[13px] text-zinc-700 leading-relaxed">
-            &ldquo;Saat kami menyampaikan masalah drainase gang yang kerap meluap ketika hujan lebat di Kebon Pedes, beliau langsung turun meninjau bersama dinas terkait. Responnya cepat dan komunikasinya sangat terbuka tanpa birokrasi berbelit.&rdquo;
-          </p>
-          <div class="flex items-center gap-3 mt-6 pt-5 border-t border-zinc-200/60">
-            <div class="flex flex-col">
-              <span class="font-bold text-xs sm:text-sm text-zinc-950">Bpk. Rahmat Hidayat</span>
-              <span class="text-[11px] text-zinc-500">Ketua RW 05, Kel. Kebon Pedes</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3: Warga Sukadamai -->
-        <div class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white p-6 sm:p-7 shadow-xs hover:shadow-sm hover:border-zinc-300 transition-all flex flex-col justify-between min-h-[240px]">
-          <p class="text-xs sm:text-[13px] text-zinc-700 leading-relaxed">
-            &ldquo;Usulan perbaikan drainase lingkungan dan penerangan jalan gang yang kami sampaikan di reses dewan benar-benar dikawal serius hingga masuk prioritas realisasi APBD Kota Bogor. Komunikatif dan tidak berjarak dengan warga.&rdquo;
-          </p>
-          <div class="flex items-center gap-3 mt-6 pt-5 border-t border-zinc-200/60">
-            <div class="flex flex-col">
-              <span class="font-bold text-xs sm:text-sm text-zinc-950">Bpk. Hendra Gunawan</span>
-              <span class="text-[11px] text-zinc-500">Tokoh Masyarakat Kel. Sukadamai</span>
-            </div>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </section>

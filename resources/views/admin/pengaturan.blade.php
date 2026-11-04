@@ -52,12 +52,34 @@
       ['no' => 5, 'title' => 'Kota Bogor Tanpa Tawuran', 'desc' => 'Membina generasi muda melalui wadah riset kreatif, pelatihan keahlian kerja, dan kompetisi olahraga lingkungan yang positif dan bebas kekerasan.'],
       ['no' => 6, 'title' => 'Digitalisasi UMKM RT/RW', 'desc' => 'Pendampingan izin NIB resmi, sertifikasi halal gratis, pelatihan pemasaran produk digital, serta akses kemitraan permodalan usaha keluarga.'],
     ],
+    'testimonials' => [
+      [
+        'name' => 'Ibu Suryati Ningsih',
+        'role' => 'Warga Kel. Kedung Badak, Tanah Sareal',
+        'quote' => 'Waktu keluarga kami membutuhkan rujukan darurat tengah malam, tim Ambulance Siaga Rumah Aspirasi langsung sigap datang menjemput dan mengawal proses administrasi di RSUD tanpa biaya sepeser pun. Nyata manfaatnya bagi warga kecil.',
+      ],
+      [
+        'name' => 'Bpk. Rahmat Hidayat',
+        'role' => 'Ketua RW 05, Kel. Kebon Pedes',
+        'quote' => 'Saat kami menyampaikan masalah drainase gang yang kerap meluap ketika hujan lebat di Kebon Pedes, beliau langsung turun meninjau bersama dinas terkait. Responnya cepat dan komunikasinya sangat terbuka tanpa birokrasi berbelit.',
+      ],
+      [
+        'name' => 'Bpk. Hendra Gunawan',
+        'role' => 'Tokoh Masyarakat Kel. Sukadamai',
+        'quote' => 'Usulan perbaikan drainase lingkungan dan penerangan jalan gang yang kami sampaikan di reses dewan benar-benar dikawal serius hingga masuk prioritas realisasi APBD Kota Bogor. Komunikatif dan tidak berjarak dengan warga.',
+      ],
+    ],
   ];
 
   $defaultProfil = [
     'hero' => [
       'subtitle' => 'Pemuda berintegritas, wakil rakyat yang senantiasa hadir dan mendengarkan denyut suara warga Kota Bogor.',
       'heroImage' => 'assets/banu/hero_banu.jpg',
+    ],
+    'quote' => [
+      'text' => 'Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.',
+      'author' => 'Banu Lesmana Bagaskara, S.M.',
+      'role' => 'Anggota DPRD Kota Bogor &bull; Dapil 4 Tanah Sareal',
     ],
     'vision' => 'Mewujudkan Kota Bogor yang maju, berkeadilan sosial, dan nyaman untuk semua warga melalui tata kelola kebijakan publik yang transparan dan akuntabel.',
     'mission' => [
@@ -131,9 +153,23 @@
   if (empty($initialBeranda['programs']) && !empty($initialProfil['programs'])) {
       $initialBeranda['programs'] = $initialProfil['programs'];
   }
+  // Pastikan testimonials ada pada beranda
+  if (empty($initialBeranda['testimonials'])) {
+      $initialBeranda['testimonials'] = $defaultBeranda['testimonials'];
+  }
   // Pastikan collage ada pada profil bila belum tersimpan
   if (empty($initialProfil['collage'])) {
       $initialProfil['collage'] = $defaultProfil['collage'];
+  }
+  // Pastikan quote pada profil berbentuk terstruktur
+  if (isset($initialProfil['quote']) && is_string($initialProfil['quote'])) {
+      $initialProfil['quote'] = [
+          'text' => $initialProfil['quote'],
+          'author' => 'Banu Lesmana Bagaskara, S.M.',
+          'role' => 'Anggota DPRD Kota Bogor &bull; Dapil 4 Tanah Sareal',
+      ];
+  } elseif (empty($initialProfil['quote'])) {
+      $initialProfil['quote'] = $defaultProfil['quote'];
   }
 @endphp
 
@@ -199,7 +235,7 @@
           Pengaturan Halaman Website &bull; <span class="text-[#BC0202]">Konfigurasi Konten</span>
         </h1>
         <p class="text-xs sm:text-sm text-zinc-600 mt-1 max-w-2xl leading-relaxed">
-          Kelola data informasi umum, logo, favicon, narasi hero, upload foto, rekam jejak pendidikan/pengalaman, 6 program kerja terpadu, dan konfigurasi optimasi mesin pencari (SEO).
+          Kelola data informasi umum, logo, favicon, narasi hero, upload foto, rekam jejak pendidikan/pengalaman, testimoni warga, kutipan dewan, dan optimasi SEO.
         </p>
       </div>
 
@@ -536,37 +572,27 @@
             ></textarea>
           </div>
 
-          <!-- Hero Image Upload & Selection -->
+          <!-- Hero Image Upload (Tanpa Select) -->
           <div class="md:col-span-2 pt-2 border-t border-zinc-100">
             <label class="block text-xs font-bold text-zinc-900 mb-1.5">Hero Image (Foto Profil Utama Beranda)</label>
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div class="w-32 h-36 rounded-xl border border-zinc-200 bg-zinc-100 overflow-hidden shrink-0">
                 <img :src="assetUrl(beranda.hero.heroImage)" alt="Hero Preview" class="w-full h-full object-cover object-top" />
               </div>
-              <div class="flex-1 space-y-2.5">
-                <div class="flex items-center gap-2">
-                  <label class="inline-flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold px-3.5 py-2 cursor-pointer shadow-2xs transition-colors gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                    <span>Unggah Foto Hero Beranda</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      @change="uploadFile($event, (path) => beranda.hero.heroImage = path)"
-                      class="hidden"
-                    />
-                  </label>
-                </div>
-                <select
-                  x-model="beranda.hero.heroImage"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2 text-xs font-medium text-zinc-800 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-                >
-                  <template x-for="asset in availableAssets" :key="asset.path">
-                    <option :value="asset.path" x-text="asset.label"></option>
-                  </template>
-                </select>
-                <p class="text-[11px] text-zinc-500">Unggah file foto baru atau pilih dari katalog foto lokal terverifikasi.</p>
+              <div class="flex-1 space-y-2">
+                <label class="inline-flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold px-3.5 py-2 cursor-pointer shadow-2xs transition-colors gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  <span>Unggah Foto Hero Beranda</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    @change="uploadFile($event, (path) => beranda.hero.heroImage = path)"
+                    class="hidden"
+                  />
+                </label>
+                <p class="text-[11px] text-zinc-500">Unggah file foto potret resolusi tinggi (format JPG, PNG, atau WebP).</p>
               </div>
             </div>
           </div>
@@ -606,13 +632,13 @@
             />
           </div>
 
-          <!-- Banner Image Upload & Selection -->
+          <!-- Banner Image Upload (Tanpa Select) -->
           <div class="md:col-span-2">
             <label class="block text-xs font-bold text-zinc-900 mb-1.5">File Banner Visual (Panorama)</label>
             <div class="aspect-[21/9] max-h-48 rounded-xl border border-zinc-200 bg-zinc-100 overflow-hidden mb-3">
               <img :src="assetUrl(beranda.banner.image)" alt="Banner Preview" class="w-full h-full object-cover" />
             </div>
-            <div class="flex items-center gap-2 mb-2">
+            <div>
               <label class="inline-flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold px-3.5 py-2 cursor-pointer shadow-2xs transition-colors gap-1.5">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -626,19 +652,12 @@
                 />
               </label>
             </div>
-            <select
-              x-model="beranda.banner.image"
-              class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs font-medium text-zinc-800 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-            >
-              <template x-for="asset in availableAssets" :key="asset.path">
-                <option :value="asset.path" x-text="asset.label"></option>
-              </template>
-            </select>
+            <p class="text-[11px] text-zinc-500 mt-1.5">Unggah foto berdimensi panorama (lebar) untuk banner sorotan.</p>
           </div>
         </div>
       </div>
 
-      <!-- 3. Kolase Foto Bento Grid Beranda -->
+      <!-- 3. Kolase Foto Bento Grid Beranda (Tanpa Select) -->
       <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
         <div>
           <h2 class="text-base sm:text-lg font-bold text-zinc-950">Kolase Foto Bento Grid Beranda</h2>
@@ -662,7 +681,7 @@
                   class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs text-zinc-900 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202]"
                 />
               </div>
-              <div class="space-y-2">
+              <div>
                 <label class="inline-flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-semibold px-2.5 py-1.5 cursor-pointer shadow-2xs transition-colors gap-1.5 w-full">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -675,14 +694,6 @@
                     class="hidden"
                   />
                 </label>
-                <select
-                  x-model="card.image"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-[11px] text-zinc-800 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202]"
-                >
-                  <template x-for="asset in availableAssets" :key="asset.path">
-                    <option :value="asset.path" x-text="asset.label"></option>
-                  </template>
-                </select>
               </div>
             </div>
           </template>
@@ -719,13 +730,79 @@
           </template>
         </div>
       </div>
+
+      <!-- 5. Kelola Testimoni Warga (Suara & Aspirasi) -->
+      <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
+        <div class="flex items-center justify-between pb-1">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-zinc-950">Testimoni Warga (Suara &amp; Aspirasi)</h2>
+            <p class="text-xs text-zinc-500 mt-0.5">Kelola kartu testimoni apresiasi masyarakat Tanah Sareal yang tampil pada Bagian 6 Halaman Beranda.</p>
+          </div>
+          <button
+            type="button"
+            @click="addTestimonial()"
+            class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#BC0202] hover:bg-[#830000] px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer"
+          >
+            + Tambah Testimoni
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <template x-for="(testi, tIdx) in (beranda.testimonials || [])" :key="tIdx">
+            <div class="p-4 rounded-xl border border-zinc-200 bg-[#fafafa] space-y-3 relative group flex flex-col justify-between">
+              <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-zinc-700" x-text="'Testimoni #' + (tIdx + 1)"></span>
+                  <button
+                    type="button"
+                    @click="removeTestimonial(tIdx)"
+                    class="p-1 rounded text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    title="Hapus Testimoni Ini"
+                  >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-zinc-700 mb-1">Nama Warga / Tokoh:</label>
+                  <input
+                    type="text"
+                    x-model="testi.name"
+                    placeholder="Contoh: Ibu Suryati Ningsih"
+                    class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs text-zinc-900 font-bold focus:outline-none focus:border-[#BC0202]"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-zinc-700 mb-1">Keterangan / Kelurahan:</label>
+                  <input
+                    type="text"
+                    x-model="testi.role"
+                    placeholder="Contoh: Warga Kel. Kedung Badak, Tanah Sareal"
+                    class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs text-zinc-600 focus:outline-none focus:border-[#BC0202]"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-zinc-700 mb-1">Isi Kutipan Testimoni:</label>
+                  <textarea
+                    rows="4"
+                    x-model="testi.quote"
+                    placeholder="Tulis kutipan testimoni warga..."
+                    class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:border-[#BC0202] leading-relaxed"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
 
     <!-- ======================================================== -->
     <!-- TAB 3: PENGATURAN HALAMAN PROFIL (KENALI SAYA)           -->
     <!-- ======================================================== -->
     <div x-show="activeTab === 'profil'" x-cloak class="space-y-6">
-      <!-- 1. Hero Profil & Foto Profil Utama -->
+      <!-- 1. Hero Profil & Foto Profil Utama (Tanpa Select) -->
       <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
         <div>
           <h2 class="text-base sm:text-lg font-bold text-zinc-950">Hero Section Profil</h2>
@@ -742,44 +819,75 @@
             ></textarea>
           </div>
 
-          <!-- Hero Image Profil Upload & Selection -->
+          <!-- Hero Image Profil Upload (Tanpa Select) -->
           <div class="pt-4 border-t border-zinc-100">
             <label class="block text-xs font-bold text-zinc-900 mb-1.5">Foto Hero Profil Resmi</label>
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div class="w-32 h-36 rounded-xl border border-zinc-200 bg-zinc-100 overflow-hidden shrink-0">
                 <img :src="assetUrl(profil.hero.heroImage)" alt="Hero Profil Preview" class="w-full h-full object-cover object-top" />
               </div>
-              <div class="flex-1 space-y-2.5">
-                <div class="flex items-center gap-2">
-                  <label class="inline-flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold px-3.5 py-2 cursor-pointer shadow-2xs transition-colors gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                    <span>Unggah Foto Profil</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      @change="uploadFile($event, (path) => profil.hero.heroImage = path)"
-                      class="hidden"
-                    />
-                  </label>
-                </div>
-                <select
-                  x-model="profil.hero.heroImage"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2 text-xs font-medium text-zinc-800 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
-                >
-                  <template x-for="asset in availableAssets" :key="asset.path">
-                    <option :value="asset.path" x-text="asset.label"></option>
-                  </template>
-                </select>
-                <p class="text-[11px] text-zinc-500">Unggah foto potret resmi dewan atau pilih dari galeri aset lokal.</p>
+              <div class="flex-1 space-y-2">
+                <label class="inline-flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold px-3.5 py-2 cursor-pointer shadow-2xs transition-colors gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  <span>Unggah Foto Profil</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    @change="uploadFile($event, (path) => profil.hero.heroImage = path)"
+                    class="hidden"
+                  />
+                </label>
+                <p class="text-[11px] text-zinc-500">Unggah foto potret resmi dewan beresolusi tinggi (format JPG, PNG, atau WebP).</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. Visi & Misi Resmi -->
+      <!-- 2. Kelola Kutipan Banu Lesmana Bagaskara, S.M. -->
+      <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-zinc-950">Kutipan Banu Lesmana Bagaskara, S.M.</h2>
+          <p class="text-xs text-zinc-500 mt-0.5">Kelola pernyataan kutipan integritas dan komitmen moral pengabdian dewan yang tampil pada Bagian 7 Halaman Profil.</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-zinc-900 mb-1.5">Teks Kutipan Integritas</label>
+            <textarea
+              rows="3"
+              x-model="profil.quote.text"
+              placeholder="Tulis kalimat kutipan komitmen dewan..."
+              class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs leading-relaxed"
+            ></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Nama Tokoh</label>
+              <input
+                type="text"
+                x-model="profil.quote.author"
+                placeholder="Banu Lesmana Bagaskara, S.M."
+                class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Keterangan / Jabatan</label>
+              <input
+                type="text"
+                x-model="profil.quote.role"
+                placeholder="Anggota DPRD Kota Bogor &bull; Dapil 4 Tanah Sareal"
+                class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Visi & Misi Resmi -->
       <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
         <div>
           <h2 class="text-base sm:text-lg font-bold text-zinc-950">Visi &amp; Misi Resmi</h2>
@@ -839,7 +947,7 @@
         </div>
       </div>
 
-      <!-- 3. Rekam Jejak (Pendidikan & Pengalaman - Dapat Ditambah & Dikurang) -->
+      <!-- 4. Rekam Jejak (Pendidikan & Pengalaman - Dapat Ditambah & Dikurang) -->
       <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
         <div>
           <h2 class="text-base sm:text-lg font-bold text-zinc-950">Rekam Jejak Pengalaman &amp; Riwayat Pendidikan</h2>
@@ -947,7 +1055,7 @@
         </div>
       </div>
 
-      <!-- 4. Kolase Foto Bento Grid Profil (5 Slot) -->
+      <!-- 5. Kolase Foto Bento Grid Profil (5 Slot - Tanpa Select) -->
       <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
         <div>
           <h2 class="text-base sm:text-lg font-bold text-zinc-950">Kolase Foto Dokumentasi Lapangan (Bento UI Profil)</h2>
@@ -971,7 +1079,7 @@
                   class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs text-zinc-900 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202]"
                 />
               </div>
-              <div class="space-y-2">
+              <div>
                 <label class="inline-flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-semibold px-2.5 py-1.5 cursor-pointer shadow-2xs transition-colors gap-1.5 w-full">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -984,21 +1092,13 @@
                     class="hidden"
                   />
                 </label>
-                <select
-                  x-model="card.image"
-                  class="w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-[11px] text-zinc-800 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202]"
-                >
-                  <template x-for="asset in availableAssets" :key="asset.path">
-                    <option :value="asset.path" x-text="asset.label"></option>
-                  </template>
-                </select>
               </div>
             </div>
           </template>
         </div>
       </div>
 
-      <!-- 5. 12 Isu Penting Strategis -->
+      <!-- 6. 12 Isu Penting Strategis -->
       <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
         <div>
           <h2 class="text-base sm:text-lg font-bold text-zinc-950">12 Isu Penting Strategis</h2>
@@ -1026,7 +1126,7 @@
         </div>
       </div>
 
-      <!-- 6. 6 Program Fokus -->
+      <!-- 7. 6 Program Fokus -->
       <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
         <div>
           <div class="flex items-center gap-2">
@@ -1183,15 +1283,6 @@
       profil: @json($initialProfil),
       seo: @json($initialSeo),
 
-      availableAssets: [
-        { label: 'Foto Resmi Profil Banu (Portrait)', path: 'assets/banu/hero_banu.jpg' },
-        { label: 'Banner Serbaguna Ambulance 24 Jam', path: 'assets/banu/banner_serbaguna.jpg' },
-        { label: 'Dokumentasi Dialog Reses Warga', path: 'assets/banu/testi_dialog.jpg' },
-        { label: 'Armada Ambulance Siaga & Relawan', path: 'assets/banu/program_ambulance.jpg' },
-        { label: 'Pendampingan Usaha Mikro UMKM', path: 'assets/banu/program_umkm.jpg' },
-        { label: 'Gotong Royong Guyub Komunitas', path: 'assets/banu/footer_community.jpg' }
-      ],
-
       assetUrl(path) {
         if (!path) return '';
         if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -1286,6 +1377,23 @@
       removeExperience(index) {
         if (confirm('Apakah Anda yakin ingin menghapus rekam jejak pengalaman ini?')) {
           this.profil.historyTrack.experience.splice(index, 1);
+        }
+      },
+
+      addTestimonial() {
+        if (!Array.isArray(this.beranda.testimonials)) {
+          this.beranda.testimonials = [];
+        }
+        this.beranda.testimonials.push({
+          name: 'Nama Warga Baru',
+          role: 'Warga Kelurahan / Komunitas',
+          quote: 'Tuliskan pengalaman atau manfaat nyata yang dirasakan oleh warga di sini...'
+        });
+      },
+
+      removeTestimonial(index) {
+        if (confirm('Apakah Anda yakin ingin menghapus testimoni ini?')) {
+          this.beranda.testimonials.splice(index, 1);
         }
       },
 

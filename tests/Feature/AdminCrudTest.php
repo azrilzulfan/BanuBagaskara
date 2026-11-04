@@ -553,3 +553,54 @@ it('allows admin to manage dynamic education and experience entries in profile',
     $profileResponse->assertSee('Ketua Fraksi &amp; Anggota Komisi 1', false);
     $profileResponse->assertSee('Ketua Yayasan Pemuda Bogor Maju');
 });
+
+it('allows admin to manage testimonials in home page settings', function () {
+    $customTestimonials = [
+        [
+            'name' => 'Bpk. Ahmad Sobari',
+            'role' => 'Ketua RT 02 Kedung Jaya',
+            'quote' => 'Pelayanan ambulans siaga 24 jam sangat cepat membantu warga yang membutuhkan pertolongan.',
+        ],
+        [
+            'name' => 'Ibu Nurhayati',
+            'role' => 'Pelaku UMKM Cibadak',
+            'quote' => 'Fasilitasi penerbitan legalitas NIB dan sertifikasi halal gratis sangat bermanfaat untuk usaha kecil kami.',
+        ],
+    ];
+
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'home',
+        'data' => [
+            'testimonials' => $customTestimonials,
+        ],
+    ])->assertRedirect();
+
+    $response = $this->get(route('home'));
+    $response->assertOk();
+    $response->assertSee('Bpk. Ahmad Sobari');
+    $response->assertSee('Ketua RT 02 Kedung Jaya');
+    $response->assertSee('Pelayanan ambulans siaga 24 jam sangat cepat');
+    $response->assertSee('Ibu Nurhayati');
+    $response->assertSee('Pelaku UMKM Cibadak');
+});
+
+it('allows admin to manage quote of Banu Lesmana Bagaskara in profile settings', function () {
+    $customQuote = [
+        'text' => 'Bekerja dengan kejujuran dan keberanian untuk kesejahteraan nyata rakyat Kota Bogor.',
+        'author' => 'Banu Lesmana Bagaskara, S.M.',
+        'role' => 'Fraksi PDI Perjuangan &bull; DPRD Kota Bogor',
+    ];
+
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'profile',
+        'data' => [
+            'quote' => $customQuote,
+        ],
+    ])->assertRedirect();
+
+    $response = $this->get(route('profile'));
+    $response->assertOk();
+    $response->assertSee('Bekerja dengan kejujuran dan keberanian untuk kesejahteraan nyata rakyat Kota Bogor.');
+    $response->assertSee('Banu Lesmana Bagaskara, S.M.');
+    $response->assertSee('Fraksi PDI Perjuangan');
+});

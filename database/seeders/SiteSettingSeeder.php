@@ -70,6 +70,23 @@ class SiteSettingSeeder extends Seeder
                         ['no' => 5, 'title' => 'Kota Bogor Tanpa Tawuran', 'desc' => 'Membina generasi muda melalui wadah riset kreatif, pelatihan keahlian kerja, dan kompetisi olahraga lingkungan yang positif dan bebas kekerasan.'],
                         ['no' => 6, 'title' => 'Digitalisasi UMKM RT/RW', 'desc' => 'Pendampingan izin NIB resmi, sertifikasi halal gratis, pelatihan pemasaran produk digital, serta akses kemitraan permodalan usaha keluarga.'],
                     ],
+                    'testimonials' => [
+                        [
+                            'name' => 'Ibu Suryati Ningsih',
+                            'role' => 'Warga Kel. Kedung Badak, Tanah Sareal',
+                            'quote' => 'Waktu keluarga kami membutuhkan rujukan darurat tengah malam, tim Ambulance Siaga Rumah Aspirasi langsung sigap datang menjemput dan mengawal proses administrasi di RSUD tanpa biaya sepeser pun. Nyata manfaatnya bagi warga kecil.',
+                        ],
+                        [
+                            'name' => 'Bpk. Rahmat Hidayat',
+                            'role' => 'Ketua RW 05, Kel. Kebon Pedes',
+                            'quote' => 'Saat kami menyampaikan masalah drainase gang yang kerap meluap ketika hujan lebat di Kebon Pedes, beliau langsung turun meninjau bersama dinas terkait. Responnya cepat dan komunikasinya sangat terbuka tanpa birokrasi berbelit.',
+                        ],
+                        [
+                            'name' => 'Bpk. Hendra Gunawan',
+                            'role' => 'Tokoh Masyarakat Kel. Sukadamai',
+                            'quote' => 'Usulan perbaikan drainase lingkungan dan penerangan jalan gang yang kami sampaikan di reses dewan benar-benar dikawal serius hingga masuk prioritas realisasi APBD Kota Bogor. Komunikatif dan tidak berjarak dengan warga.',
+                        ],
+                    ],
                 ],
             ],
             [
@@ -131,7 +148,11 @@ class SiteSettingSeeder extends Seeder
                         ['label' => 'Pelatihan Digitalisasi UMKM RT/RW', 'image' => 'assets/banu/program_umkm.jpg'],
                         ['label' => 'Rembug Guyub Komunitas Warga', 'image' => 'assets/banu/footer_community.jpg'],
                     ],
-                    'quote' => 'Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.',
+                    'quote' => [
+                        'text' => 'Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.',
+                        'author' => 'Banu Lesmana Bagaskara, S.M.',
+                        'role' => 'Anggota DPRD Kota Bogor &bull; Dapil 4 Tanah Sareal',
+                    ],
                 ],
             ],
             [

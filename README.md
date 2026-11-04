@@ -24,7 +24,7 @@ Dokumen spesifikasi teknis dan perancangan terinci telah disusun secara komprehe
 | **Design System & UI Guidelines** | Filosofi visual Shadcn-inspired, palet warna resmi (`#BC0202`, `#830000`, `#fafafa`), tipografi _Plus Jakarta Sans_, hirarki sudut lengkung, dan **aturan mutlak larangan pill button**.                               | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)                                                                             |
 | **Keamanan & Optimasi SEO**       | Kebijakan proteksi akun tunggal, _brute-force rate limiting_, formulir anti-spam via teknik _Honeypot_ tanpa CAPTCHA, sanitasi XSS pada blok modular, formula metadata SEO, dan data terstruktur _Schema.org JSON-LD_. | [docs/SECURITY_AND_SEO.md](docs/SECURITY_AND_SEO.md)                                                                       |
 | **Standar Koding & Alur Kerja**   | Standar PSR-12 & Laravel Pint, konvensi penamaan komponen, aturan _thin controller_, strategi pengujian otomatis (Pest/PHPUnit), format Conventional Commits, dan QA checklist.                                        | [docs/CODING_STANDARDS_AND_WORKFLOW.md](docs/CODING_STANDARDS_AND_WORKFLOW.md)                                             |
-| **Studi Audit Perencanaan**       | Catatan audit purwarupa statis eksisting dan verifikasi silang data Goodkind KPU (ID: 176559).                                                                                                                         | [studi_perencanaan_proyek.md](file:///C:/Users/azrilzulfan/.gemini/antigravity-cli/brain/33dc70f0-7bd1-454e-83c7-f5ab31bc7f56/studi_perencanaan_proyek.md) |
+| **Studi Audit Perencanaan**       | Catatan audit purwarupa statis eksisting dan verifikasi silang data Goodkind KPU (ID: 176559).                                                                                                                         | [docs/PRD.md](docs/PRD.md)                                                                                                |
 
 ---
 
@@ -45,7 +45,7 @@ Dokumen spesifikasi teknis dan perancangan terinci telah disusun secara komprehe
 2. **Hasil Kinerja** (`/admin/kinerja`): Manajemen laporan + **Editor Kanvas Blok Modular (Gutenberg-style)**: Menambah, menghapus, dan mengatur urutan blok (Heading, Paragraf, Gambar & Caption, List, Grid 2-Kolom, Kutipan) + modal pratinjau publik langsung.
 3. **Kelola Berita** (`/admin/berita`): Mengelola rilis berita dengan **5 input wajib** (Judul, Tanggal, Deskripsi, Cover Image, Sumber) + switch status Terbit/Draf dan fitur Berita Utama (_Featured_).
 4. **Kelola Galeri & Album** (`/admin/galeri`): Manajemen album kegiatan beserta foto-foto di dalamnya, penentuan sampul (_cover_), keterangan foto (_caption_), dan _Photo Theater Lightbox_.
-5. **Kotak Aspirasi Warga** (`/admin/aspirasi`): Menampung pengaduan publik, filter status (_Baru, Ditinjau, Selesai_), filter 8 kelurahan di Tanah Sareal, pencarian nomor tiket `BLB-xxxxxx`, modal inspeksi aduan, riwayat catatan disposisi tim dewan, integrasi WhatsApp _click-to-chat_ langsung ke warga, dan ekspor data CSV.
+5. **Kotak Aspirasi Warga** (`/admin/aspirasi`): Menampung pengaduan publik, filter status (_Baru, Ditinjau, Selesai_), filter 11 kelurahan di Tanah Sareal (*Cibadak, Kayumanis, Kebonpedes, Kedungbadak, Kedungjaya, Kedungwaringin, Kencana, Mekarwangi, Sukadamai, Sukaresmi, Tanah Sareal*), pencarian nomor tiket `BLB-xxxxxx`, modal inspeksi aduan, riwayat catatan disposisi tim dewan, integrasi WhatsApp _click-to-chat_ langsung ke warga, dan ekspor data CSV.
 6. **Pengaturan Halaman Website** (`/admin/pengaturan`): Mengelola seluruh data statis dalam 4 kategori (Umum & Kontak, Halaman Beranda, Halaman Profil, serta Konfigurasi SEO & SERP Preview Google).
 7. **Otentikasi Masuk Admin** (`/admin/login`): Portal masuk akun tunggal (_Single Admin Account_) terproteksi sandi kuat dan _brute-force rate limiting_.
 
@@ -96,6 +96,64 @@ Pastikan perangkat lokal Anda telah terpasang:
 
 ---
 
-## 6. Hak Cipta & Integritas Informasi
+## 6. Petunjuk Instalasi & Menjalankan Aplikasi
+
+### 6.1 Persiapan Awal
+```bash
+# 1. Pasang dependensi PHP
+composer install
+
+# 2. Pasang dependensi Frontend (termasuk Alpine.js)
+npm install
+
+# 3. Salin environment file dan konfigurasi MySQL
+cp .env.example .env
+php artisan key:generate
+```
+
+Pastikan variabel database pada `.env` telah disesuaikan:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=banu_bagaskara
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 6.2 Eksekusi Migrasi & Data Seeder
+```bash
+php artisan migrate --seed
+```
+Seeder akan membuat akun Administrator resmi:
+- **Email**: `admin@banubagaskara.id`
+- **Kata Sandi**: `BanuBogor2024!*`
+
+### 6.3 Kompilasi Aset Frontend
+```bash
+# Untuk kompilasi produksi:
+npm run build
+
+# Atau untuk live-reloading dalam pengembangan:
+npm run dev
+```
+
+### 6.4 Menjalankan Server Aplikasi
+```bash
+php artisan serve
+```
+Akses aplikasi melalui peramban web:
+- **Portal Publik**: `http://localhost:8000`
+- **Portal Admin**: `http://localhost:8000/admin/login`
+
+### 6.5 Menjalankan Pengujian Otomatis (Pest)
+```bash
+php artisan test --compact
+```
+Seluruh 56 pengujian mencakup halaman publik, pengiriman aspirasi (validasi & honeypot anti-bot), otentikasi admin & rate limiting, sanitasi mesin blok modular, dan modul CRUD admin.
+
+---
+
+## 7. Hak Cipta & Integritas Informasi
 
 Seluruh materi publikasi, riwayat pendidikan, visi-misi, serta foto kegiatan resmi merujuk pada profil sah **Banu Lesmana Bagaskara, S.M.** (KPU ID: 176559 / Goodkind). Pengembangan sistem ini dilarang keras memuat atau menyebarkan data fiktif (_no dummy data in production_).

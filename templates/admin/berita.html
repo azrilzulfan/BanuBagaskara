@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelola Artikel Berita | Dasbor Admin Banu Lesmana Bagaskara, S.M.</title>
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!-- Font: Plus Jakarta Sans (Clean, Modern, Disciplined Sans-Serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js CDN for Lightweight Reactive UI -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+
+    <!-- Alpine Component for Kelola Artikel Berita -->
+    <script>
+      function adminBerita() {
+        return {
+          mobileMenu: false,
+          currentView: 'list', // 'list' atau 'editor'
+          searchQuery: '',
+          statusFilter: 'all', // 'all', 'published', 'draft', 'featured'
+          previewModal: false,
+          saveSuccessNotification: false,
+
+          // Form State
+          formMode: 'create', // 'create' atau 'edit'
+          currentArticleId: null,
+          form: {
+            title: '',
+            date: '',
+            source: 'Rilis Resmi Rumah Aspirasi',
+            sourceUrl: '',
+            coverImage: '../assets/banu/testi_dialog.jpg',
+            description: '',
+            isFeatured: false,
+            status: 'Terbit' // 'Terbit' atau 'Draf'
+          },
+
+          // Preset pilihan cover dari aset lokal
+          availableCovers: [
+            { label: 'Dialog Warga Kebon Pedes', url: '../assets/banu/testi_dialog.jpg' },
+            { label: 'Ambulance Siaga 24 Jam', url: '../assets/banu/program_ambulance.jpg' },
+            { label: 'Pelatihan UMKM RT/RW', url: '../assets/banu/program_umkm.jpg' },
+            { label: 'Sidang Parlemen & Paripurna', url: '../assets/banu/hero_banu.jpg' },
+            { label: 'Rembug Komunitas Warga', url: '../assets/banu/footer_community.jpg' },
+            { label: 'Banner Serbaguna', url: '../assets/banu/banner_serbaguna.jpg' }
+          ],
+
+          // Data Awal Artikel Berita (Sesuai dengan Konten Resmi di Template Publik)
+          articles: [
+            {
+              id: 1,
+              title: 'Serap Aspirasi di Kebon Pedes: Banu Lesmana Pastikan Usulan Drainase & PJU Masuk Prioritas APBD Perubahan',
+              date: '2026-02-28',
+              dateFormatted: '28 Februari 2026',
+              source: 'Rilis Resmi Sekretariat Dapil 4',
+              sourceUrl: 'https://kotabogor.go.id',
+              coverImage: '../assets/banu/testi_dialog.jpg',
+              description: 'Dalam agenda tatap muka bersama puluhan ketua RT, RW, dan tokoh masyarakat di Kelurahan Kebon Pedes, Anggota DPRD Kota Bogor Banu Lesmana Bagaskara menegaskan komitmennya untuk langsung mengawal kendala banjir genangan ke dinas terkait agar penanganannya masuk dokumen pokok pikiran dewan tahun 2026. Pertemuan ini turut membahas pengadaan penerangan jalan gang di titik-titik rawan guna meningkatkan keamanan lingkungan warga saat malam hari.',
+              isFeatured: true,
+              status: 'Terbit'
+            },
+            {
+              id: 2,
+              title: 'Ambulance Siaga Banu Bagaskara Respon Cepat Rujukan Pasien Darurat di Kedung Badak',
+              date: '2026-02-24',
+              dateFormatted: '24 Februari 2026',
+              source: 'Relawan Kesehatan 24 Jam',
+              sourceUrl: '',
+              coverImage: '../assets/banu/program_ambulance.jpg',
+              description: 'Tim relawan siaga bergerak cepat pada tengah malam untuk menjemput dan mengantarkan seorang warga lansia yang membutuhkan tindakan medis intensif ke RSUD Kota Bogor. Selain armada transportasi medis gratis, tim relawan turut mengawal kelengkapan berkas administrasi kepesertaan jaminan kesehatan agar pasien langsung mendapatkan kamar perawatan tanpa hambatan biaya.',
+              isFeatured: false,
+              status: 'Terbit'
+            },
+            {
+              id: 3,
+              title: 'Rumah Aspirasi Fasilitasi 120+ NIB Gratis dan Pelatihan Foto Produk Bagi Pelaku Usaha',
+              date: '2026-02-19',
+              dateFormatted: '19 Februari 2026',
+              source: 'Divisi Advokasi UMKM RT/RW',
+              sourceUrl: '',
+              coverImage: '../assets/banu/program_umkm.jpg',
+              description: 'Sebanyak lebih dari 120 pedagang kecil dan produsen olahan rumahan di Kecamatan Tanah Sareal telah menerima dokumen Nomor Induk Berusaha (NIB) resmi. Kegiatan yang diselenggarakan secara berkala di Rumah Aspirasi ini juga dibekali materi praktik fotografi produk katalog menggunakan telepon genggam agar produk lokal mampu bersaing di pasar digital.',
+              isFeatured: false,
+              status: 'Terbit'
+            },
+            {
+              id: 4,
+              title: 'Rapat Badan Anggaran: Banu Soroti Alokasi Bantuan Pendidikan Agar Tepat Sasaran',
+              date: '2026-02-14',
+              dateFormatted: '14 Februari 2026',
+              source: 'Fraksi PDI Perjuangan DPRD Kota Bogor',
+              sourceUrl: 'https://kotabogor.go.id',
+              coverImage: '../assets/banu/hero_banu.jpg',
+              description: 'Dalam rapat pembahasan evaluasi anggaran daerah, Banu Lesmana Bagaskara secara tegas meminta eksekutif merasionalisasi pos belanja seremonial dan memprioritaskan penambahan alokasi beasiswa bagi siswa dari keluarga prasejahtera serta penuntasan masalah ijazah tertahan di Kota Bogor.',
+              isFeatured: false,
+              status: 'Terbit'
+            },
+            {
+              id: 5,
+              title: 'Pernyataan Sikap: Kebijakan Tata Ruang Harus Prioritaskan Keselamatan Lingkungan Warga',
+              date: '2026-02-08',
+              dateFormatted: '08 Februari 2026',
+              source: 'Liputan Media Parlemen Kota',
+              sourceUrl: '',
+              coverImage: '../assets/banu/footer_community.jpg',
+              description: 'Menanggapi maraknya pembangunan komersial di kawasan padat pemukiman, Banu menekankan pentingnya transparansi perizinan dan kajian dampak lingkungan yang menyeluruh agar tidak menimbulkan ancaman banjir maupun penurunan kualitas hidup masyarakat di sekitarnya.',
+              isFeatured: false,
+              status: 'Terbit'
+            },
+            {
+              id: 6,
+              title: 'Draf Liputan Kunjungan Kerja Lapangan Peninjauan Turap Longsor',
+              date: '2026-03-01',
+              dateFormatted: '01 Maret 2026',
+              source: 'Catatan Lapangan Sekretariat',
+              sourceUrl: '',
+              coverImage: '../assets/banu/testi_dialog.jpg',
+              description: 'Draf awal catatan hasil peninjauan titik tebing rawan longsor di sempadan sungai bersama dinas terkait dan pengurus RT setempat. Laporan rilis pers masih menunggu rekap data teknis perbaikan dari BPBD.',
+              isFeatured: false,
+              status: 'Draf'
+            }
+          ],
+
+          get filteredArticles() {
+            return this.articles.filter(item => {
+              const matchesSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                                    item.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                                    item.source.toLowerCase().includes(this.searchQuery.toLowerCase());
+              if (this.statusFilter === 'all') return matchesSearch;
+              if (this.statusFilter === 'published') return matchesSearch && item.status === 'Terbit';
+              if (this.statusFilter === 'draft') return matchesSearch && item.status === 'Draf';
+              if (this.statusFilter === 'featured') return matchesSearch && item.isFeatured;
+              return matchesSearch;
+            });
+          },
+
+          // Buka Form Tambah Berita Baru
+          openCreate() {
+            this.formMode = 'create';
+            this.currentArticleId = null;
+            this.form = {
+              title: '',
+              date: new Date().toISOString().split('T')[0],
+              source: 'Rilis Resmi Rumah Aspirasi',
+              sourceUrl: '',
+              coverImage: '../assets/banu/testi_dialog.jpg',
+              description: '',
+              isFeatured: false,
+              status: 'Terbit'
+            };
+            this.currentView = 'editor';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          },
+
+          // Buka Form Sunting Berita
+          openEdit(item) {
+            this.formMode = 'edit';
+            this.currentArticleId = item.id;
+            this.form = {
+              title: item.title,
+              date: item.date,
+              source: item.source,
+              sourceUrl: item.sourceUrl || '',
+              coverImage: item.coverImage,
+              description: item.description,
+              isFeatured: item.isFeatured,
+              status: item.status
+            };
+            this.currentView = 'editor';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          },
+
+          // Simpan Berita
+          saveArticle() {
+            if (!this.form.title.trim()) {
+              alert('Judul berita wajib diisi!');
+              return;
+            }
+            if (!this.form.source.trim()) {
+              alert('Sumber rilis / peliput berita wajib diisi!');
+              return;
+            }
+            if (!this.form.description.trim()) {
+              alert('Deskripsi berita wajib diisi!');
+              return;
+            }
+
+            const formattedDate = new Date(this.form.date).toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            });
+
+            if (this.formMode === 'create') {
+              const newArticle = {
+                id: Date.now(),
+                title: this.form.title,
+                date: this.form.date,
+                dateFormatted: formattedDate,
+                source: this.form.source,
+                sourceUrl: this.form.sourceUrl,
+                coverImage: this.form.coverImage,
+                description: this.form.description,
+                isFeatured: this.form.isFeatured,
+                status: this.form.status
+              };
+              this.articles.unshift(newArticle);
+            } else {
+              const idx = this.articles.findIndex(a => a.id === this.currentArticleId);
+              if (idx !== -1) {
+                this.articles[idx].title = this.form.title;
+                this.articles[idx].date = this.form.date;
+                this.articles[idx].dateFormatted = formattedDate;
+                this.articles[idx].source = this.form.source;
+                this.articles[idx].sourceUrl = this.form.sourceUrl;
+                this.articles[idx].coverImage = this.form.coverImage;
+                this.articles[idx].description = this.form.description;
+                this.articles[idx].isFeatured = this.form.isFeatured;
+                this.articles[idx].status = this.form.status;
+              }
+            }
+
+            this.saveSuccessNotification = true;
+            setTimeout(() => { this.saveSuccessNotification = false; }, 3500);
+            this.currentView = 'list';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          },
+
+          // Hapus Berita
+          deleteArticle(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus artikel berita ini?')) {
+              this.articles = this.articles.filter(a => a.id !== id);
+            }
+          },
+
+          // Toggle Sorotan Berita Utama
+          toggleFeatured(item) {
+            item.isFeatured = !item.isFeatured;
+          },
+
+          // Modal Pratinjau
+          openPreview() {
+            this.previewModal = true;
+            document.body.style.overflow = 'hidden';
+          },
+
+          closePreview() {
+            this.previewModal = false;
+            document.body.style.overflow = '';
+          }
+        };
+      }
+    </script>
+
+    <!-- Tailwind & Shadcn Configuration (100% Identik dengan Public Templates) -->
+    <script>
+      tailwind.config = {
+        darkMode: ['class'],
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              border: 'hsl(240 5.9% 90%)',
+              input: 'hsl(240 5.9% 90%)',
+              ring: '#FF0000',
+              background: '#ffffff',
+              foreground: '#000000',
+              brand: {
+                bright: '#FF0000',
+                DEFAULT: '#BC0202', // Warna Utama Merah
+                dark: '#830000',
+                black: '#000000',
+              },
+              primary: {
+                DEFAULT: '#BC0202', // Warna Utama Merah
+                foreground: '#ffffff',
+                hover: '#830000',
+                bright: '#FF0000',
+                dark: '#830000',
+                subtle: '#fee2e2',
+              },
+              secondary: {
+                DEFAULT: 'hsl(240 4.8% 95.9%)',
+                foreground: 'hsl(240 5.9% 10%)',
+              },
+              muted: {
+                DEFAULT: 'hsl(240 4.8% 95.9%)',
+                foreground: 'hsl(240 3.8% 46.1%)',
+              },
+              accent: {
+                DEFAULT: 'hsl(240 4.8% 95.9%)',
+                foreground: 'hsl(240 5.9% 10%)',
+              },
+              card: {
+                DEFAULT: 'hsl(0 0% 100%)',
+                foreground: '#000000',
+              },
+            },
+            borderRadius: {
+              '2xl': '1.25rem' /* 20px */,
+              xl: '1rem' /* 16px */,
+              lg: '0.625rem' /* 10px */,
+              md: '0.5rem' /* 8px */,
+              sm: '0.375rem' /* 6px */,
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Clean custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f4f4f5;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d4d4d8;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a1a1aa;
+      }
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen w-full bg-white text-zinc-950 overflow-x-hidden"
+    x-data="adminBerita()"
+    @keydown.escape.window="if (previewModal) closePreview(); else mobileMenu = false;"
+  >
+    <div class="min-h-screen w-full flex flex-col lg:flex-row">
+      <!-- ======================================================== -->
+      <!-- DESKTOP SIDEBAR NAVIGATION (Identik dengan Dashboard)     -->
+      <!-- ======================================================== -->
+      <aside class="hidden lg:flex lg:w-64 xl:w-72 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-zinc-200 z-40 select-none">
+        <!-- Brand Logo Header -->
+        <div class="px-6 pt-7 pb-6 border-b border-zinc-200 bg-[#faf5f5]">
+          <a href="dashboard.html" class="flex items-center gap-3 text-zinc-950 group min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <div class="flex flex-col leading-tight min-w-0">
+              <span class="font-bold text-base tracking-tight text-zinc-950 truncate">banubagaskara.</span>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-[#830000] mt-0.5">Dasbor Admin</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Navigation Links (6 Core Admin Modules) -->
+        <nav aria-label="Menu Utama Dasbor" class="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
+          <!-- Group 1: Pengelolaan Konten -->
+          <div>
+            <span class="px-3 text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2.5">Menu Utama</span>
+            <ul class="space-y-1">
+              <!-- 1. Ringkasan -->
+              <li>
+                <a
+                  href="dashboard.html"
+                  class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 text-xs font-semibold transition-colors group"
+                >
+                  <span class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                      />
+                    </svg>
+                    <span>Ringkasan</span>
+                  </span>
+                </a>
+              </li>
+
+              <!-- 2. Hasil Kinerja -->
+              <li>
+                <a
+                  href="kinerja.html"
+                  class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 text-xs font-semibold transition-colors group"
+                >
+                  <span class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    <span>Hasil Kinerja</span>
+                  </span>
+                </a>
+              </li>
+
+              <!-- 3. Berita (Active) -->
+              <li>
+                <a
+                  href="berita.html"
+                  aria-current="page"
+                  class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg bg-zinc-100 text-zinc-950 text-xs font-bold transition-colors"
+                >
+                  <span class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-[#BC0202] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                      />
+                    </svg>
+                    <span>Berita</span>
+                  </span>
+                  <span class="w-1.5 h-4 rounded-sm bg-[#BC0202]"></span>
+                </a>
+              </li>
+
+              <!-- 4. Galeri -->
+              <li>
+                <a
+                  href="galeri.html"
+                  class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 text-xs font-semibold transition-colors group"
+                >
+                  <span class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>Galeri</span>
+                  </span>
+                </a>
+              </li>
+
+              <!-- 5. Kotak Aspirasi -->
+              <li>
+                <a
+                  href="aspirasi.html"
+                  class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 text-xs font-semibold transition-colors group"
+                >
+                  <span class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                      />
+                    </svg>
+                    <span>Kotak Aspirasi</span>
+                  </span>
+                  <span class="inline-block text-[11px] font-bold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">2</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Group 2: Pengaturan Halaman Website -->
+          <div class="pt-4 border-t border-zinc-200/80">
+            <span class="px-3 text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2.5">Konfigurasi Portal</span>
+            <ul class="space-y-1">
+              <li>
+                <a
+                  href="pengaturan.html"
+                  class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 text-xs font-semibold transition-colors group"
+                >
+                  <span class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                      />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>Pengaturan Halaman</span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Single Admin Profile & Quick Exit -->
+        <div class="p-4 border-t border-zinc-200 bg-[#fafafa] space-y-3">
+          <div class="flex items-center gap-3 px-2 py-1.5">
+            <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-xs shrink-0">BLB</div>
+            <div class="min-w-0 flex-1">
+              <span class="font-bold text-xs text-zinc-950 block truncate">Administrator Utama</span>
+              <span class="text-[11px] text-zinc-500 block truncate">Akun Tunggal Resmi</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <a
+              href="../berita.html"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-[11px] font-semibold px-3 py-2 shadow-2xs transition-colors gap-1"
+            >
+              <span>Lihat Publik</span>
+              <svg class="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+            <a
+              href="login.html"
+              class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-red-50 hover:text-[#BC0202] hover:border-red-200 text-zinc-700 text-[11px] font-semibold px-3 py-2 shadow-2xs transition-colors gap-1"
+            >
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Keluar</span>
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ======================================================== -->
+      <!-- MAIN CONTENT WRAPPER                                     -->
+      <!-- ======================================================== -->
+      <div class="flex-1 flex flex-col min-w-0 lg:pl-64 xl:pl-72">
+        <!-- Mobile Top Bar (< lg) -->
+        <div class="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-2">
+          <a href="dashboard.html" class="flex items-center gap-2.5 text-zinc-950 group min-w-0 flex-1">
+            <div class="w-8 h-8 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="font-bold text-sm sm:text-base tracking-tight text-zinc-950 truncate">banubagaskara.</span>
+              <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100 shrink-0">Admin</span>
+            </div>
+          </a>
+
+          <button
+            @click="mobileMenu = !mobileMenu"
+            aria-label="Buka Menu Admin"
+            class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200 shrink-0"
+          >
+            <svg class="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <span class="hidden sm:inline ml-1.5">Menu</span>
+          </button>
+        </div>
+
+        <!-- Mobile Drawer Navigation -->
+        <div x-show="mobileMenu" x-cloak @click.away="mobileMenu = false" class="lg:hidden fixed top-16 left-4 right-4 bg-white border border-zinc-200 rounded-xl p-5 shadow-xl z-50">
+          <nav class="flex flex-col space-y-2.5 text-sm font-medium text-zinc-800">
+            <a href="dashboard.html" @click="mobileMenu = false" class="py-2 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Ringkasan (Beranda Dasbor)</a>
+            <a href="kinerja.html" @click="mobileMenu = false" class="py-2 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Hasil Kinerja (Kanvas Blok)</a>
+            <a href="berita.html" @click="mobileMenu = false" class="py-2 px-3 rounded-lg bg-zinc-100 font-bold text-zinc-950 transition-colors flex items-center justify-between">
+              <span>Berita Resmi</span>
+              <span class="w-1.5 h-4 rounded-sm bg-[#BC0202]"></span>
+            </a>
+            <a href="galeri.html" @click="mobileMenu = false" class="py-2 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Galeri Album &amp; Foto</a>
+            <a href="aspirasi.html" @click="mobileMenu = false" class="py-2 px-3 rounded-lg hover:bg-zinc-100 transition-colors flex items-center justify-between">
+              <span>Kotak Aspirasi</span>
+              <span class="inline-block text-[11px] font-bold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">2 Baru</span>
+            </a>
+            <a href="pengaturan.html" @click="mobileMenu = false" class="py-2 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Pengaturan Halaman Website</a>
+            <div class="pt-3 mt-1 border-t border-zinc-100 grid grid-cols-2 gap-2.5">
+              <a href="../berita.html" target="_blank" rel="noopener" class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white text-zinc-900 py-2 text-xs font-semibold">
+                Lihat Halaman Publik
+              </a>
+              <a href="login.html" class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] text-white py-2 text-xs font-semibold">Keluar</a>
+            </div>
+          </nav>
+        </div>
+
+        <main class="w-full flex-1 flex flex-col">
+          <!-- Notification Toast -->
+          <div
+            x-show="saveSuccessNotification"
+            x-transition
+            x-cloak
+            class="fixed top-5 right-5 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-lg flex items-center gap-3 text-xs text-emerald-950"
+          >
+            <div class="w-6 h-6 rounded-md bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">&check;</div>
+            <div>
+              <span class="font-bold block">Artikel Berita Berhasil Disimpan!</span>
+              <span class="text-emerald-800">Pembaruan telah tersimpan dan siap ditampilkan.</span>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- 1. EDITORIAL HEADER SECTION (#faf5f5)      -->
+          <!-- ========================================== -->
+          <header class="w-full bg-[#faf5f5] border-b border-zinc-200 py-8 sm:py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
+              <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                <div class="max-w-2xl">
+                  <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#830000] mb-2.5">
+                    <span>Modul Artikel Berita &bull; Publikasi Media</span>
+                  </div>
+                  <h1 class="text-2xl sm:text-4xl lg:text-[38px] text-zinc-950 font-bold leading-[1.16] tracking-tight">
+                    Kelola <span class="text-[#BC0202]">Artikel Berita</span>
+                  </h1>
+                  <p class="text-xs sm:text-sm text-zinc-600 mt-2.5 leading-relaxed">
+                    Kelola rilis pers resmi, publikasi aktivitas reses parlemen, dan dokumentasi liputan media dengan kolom data lengkap (Judul, Tanggal, Deskripsi, Cover Image, dan Sumber).
+                  </p>
+                </div>
+
+                <!-- Action Button in Header -->
+                <div class="shrink-0 flex items-center gap-3">
+                  <template x-if="currentView === 'list'">
+                    <button
+                      type="button"
+                      @click="openCreate()"
+                      class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 shadow-sm transition-colors active:scale-98 gap-2"
+                    >
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span>Tambah Berita Baru</span>
+                    </button>
+                  </template>
+
+                  <template x-if="currentView === 'editor'">
+                    <button
+                      type="button"
+                      @click="currentView = 'list'"
+                      class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs sm:text-sm font-semibold px-4 py-2.5 shadow-2xs transition-colors gap-1.5"
+                    >
+                      <svg class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                      </svg>
+                      <span>Kembali ke Daftar</span>
+                    </button>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- ======================================================== -->
+          <!-- 2. VIEW A: DAFTAR ARTIKEL BERITA (LIST VIEW)             -->
+          <!-- ======================================================== -->
+          <div x-show="currentView === 'list'" class="w-full flex-1 flex flex-col">
+            <!-- Filter & Search Toolbar -->
+            <section class="w-full bg-[#fafafa] py-6 border-b border-zinc-200">
+              <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <!-- Search Input -->
+                <div class="relative w-full md:w-80">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    x-model="searchQuery"
+                    placeholder="Cari judul, deskripsi, atau sumber..."
+                    class="w-full pl-9 pr-3.5 py-2 rounded-lg border border-zinc-300 bg-white text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                  />
+                </div>
+
+                <!-- Status Filter Buttons (Strictly No Pill) -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+                  <button
+                    type="button"
+                    @click="statusFilter = 'all'"
+                    :class="statusFilter === 'all' ? 'bg-[#BC0202] text-white border-[#BC0202] font-bold shadow-sm' : 'bg-white text-zinc-700 hover:bg-zinc-100 border-zinc-200 font-semibold'"
+                    class="rounded-lg border px-3 py-1.5 text-xs transition-colors shrink-0"
+                  >
+                    Semua (<span x-text="articles.length"></span>)
+                  </button>
+                  <button
+                    type="button"
+                    @click="statusFilter = 'published'"
+                    :class="statusFilter === 'published' ? 'bg-[#BC0202] text-white border-[#BC0202] font-bold shadow-sm' : 'bg-white text-zinc-700 hover:bg-zinc-100 border-zinc-200 font-semibold'"
+                    class="rounded-lg border px-3 py-1.5 text-xs transition-colors shrink-0"
+                  >
+                    Terbit (<span x-text="articles.filter(a => a.status === 'Terbit').length"></span>)
+                  </button>
+                  <button
+                    type="button"
+                    @click="statusFilter = 'draft'"
+                    :class="statusFilter === 'draft' ? 'bg-[#BC0202] text-white border-[#BC0202] font-bold shadow-sm' : 'bg-white text-zinc-700 hover:bg-zinc-100 border-zinc-200 font-semibold'"
+                    class="rounded-lg border px-3 py-1.5 text-xs transition-colors shrink-0"
+                  >
+                    Draf (<span x-text="articles.filter(a => a.status === 'Draf').length"></span>)
+                  </button>
+                  <button
+                    type="button"
+                    @click="statusFilter = 'featured'"
+                    :class="statusFilter === 'featured' ? 'bg-[#BC0202] text-white border-[#BC0202] font-bold shadow-sm' : 'bg-white text-zinc-700 hover:bg-zinc-100 border-zinc-200 font-semibold'"
+                    class="rounded-lg border px-3 py-1.5 text-xs transition-colors shrink-0"
+                  >
+                    Sorotan Utama (<span x-text="articles.filter(a => a.isFeatured).length"></span>)
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Articles List Container -->
+            <section class="w-full bg-[#f4f4f5] py-10 sm:py-12 flex-1">
+              <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12 space-y-4">
+                <template x-for="(item, idx) in filteredArticles" :key="item.id">
+                  <div class="rounded-xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-sm hover:border-zinc-300 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6 group">
+                    <!-- Left: Thumbnail & Details -->
+                    <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 min-w-0 flex-1">
+                      <div class="w-full sm:w-44 md:w-48 aspect-[16/10] rounded-lg overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0 relative">
+                        <img :src="item.coverImage" :alt="item.title" class="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300" />
+                        <span
+                          x-show="item.isFeatured"
+                          class="absolute top-2 left-2 bg-[#BC0202] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-sm"
+                        >
+                          Sorotan
+                        </span>
+                      </div>
+
+                      <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                          <span class="text-xs text-zinc-500 font-medium" x-text="item.dateFormatted"></span>
+                          <span class="text-zinc-300">&bull;</span>
+                          <!-- Sumber Berita Badge -->
+                          <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-700 bg-zinc-100 px-2.5 py-0.5 rounded-md border border-zinc-200">
+                            <span class="text-[#BC0202] font-black mr-0.5">Sumber:</span>
+                            <span x-text="item.source"></span>
+                          </span>
+                          <span class="text-zinc-300">&bull;</span>
+                          <span
+                            class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md border"
+                            :class="item.status === 'Terbit' ? 'bg-[#fafafa] text-zinc-800 border-zinc-200' : 'bg-amber-50 text-amber-800 border-amber-200'"
+                            x-text="item.status"
+                          ></span>
+                        </div>
+
+                        <h2 class="text-base sm:text-lg font-bold text-zinc-950 leading-snug tracking-tight group-hover:text-[#BC0202] transition-colors" x-text="item.title"></h2>
+                        <p class="text-xs text-zinc-600 mt-2 line-clamp-2 leading-relaxed" x-text="item.description"></p>
+                      </div>
+                    </div>
+
+                    <!-- Right: Quick Actions -->
+                    <div class="flex items-center gap-2 w-full md:w-auto justify-end pt-4 md:pt-0 border-t md:border-t-0 border-zinc-100 shrink-0">
+                      <!-- Toggle Sorotan -->
+                      <button
+                        type="button"
+                        @click="toggleFeatured(item)"
+                        :title="item.isFeatured ? 'Batalkan Sorotan Berita Utama' : 'Jadikan Sorotan Berita Utama'"
+                        class="p-2 rounded-lg border text-xs font-semibold transition-colors"
+                        :class="item.isFeatured ? 'bg-red-50 text-[#BC0202] border-red-200' : 'bg-white text-zinc-500 hover:text-zinc-900 border-zinc-200'"
+                      >
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </button>
+
+                      <!-- Tombol Sunting Berita -->
+                      <button
+                        type="button"
+                        @click="openEdit(item)"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold shadow-sm transition-colors active:scale-98"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span>Sunting</span>
+                      </button>
+
+                      <!-- Tombol Hapus -->
+                      <button
+                        type="button"
+                        @click="deleteArticle(item.id)"
+                        title="Hapus Berita"
+                        class="p-2 rounded-lg border border-zinc-200 bg-white text-zinc-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-colors"
+                      >
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Empty State -->
+                <div x-show="filteredArticles.length === 0" class="text-center py-16 bg-white rounded-xl border border-zinc-200 p-8">
+                  <div class="w-12 h-12 rounded-xl bg-zinc-100 text-zinc-400 mx-auto flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                  </div>
+                  <h3 class="font-bold text-base text-zinc-950">Tidak ada artikel berita yang ditemukan</h3>
+                  <p class="text-xs text-zinc-500 mt-1">Coba kata kunci pencarian lain atau pilih filter status yang berbeda.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ======================================================== -->
+          <!-- 3. VIEW B: FORM EDITOR ARTIKEL BERITA                    -->
+          <!-- ======================================================== -->
+          <div x-show="currentView === 'editor'" x-cloak class="w-full flex-1 flex flex-col bg-[#f4f4f5]">
+            <!-- Top Form Toolbar -->
+            <div class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-zinc-200 px-4 sm:px-8 lg:px-10 py-3.5 flex flex-wrap items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <button
+                  type="button"
+                  @click="currentView = 'list'"
+                  class="rounded-lg p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+                  title="Kembali ke Daftar"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                </button>
+                <div>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-[#BC0202]" x-text="formMode === 'create' ? 'Tambah Berita Baru' : 'Menyunting Berita'"></span>
+                  <h2 class="text-sm sm:text-base font-bold text-zinc-950 tracking-tight leading-none" x-text="form.title ? form.title : 'Judul Berita Belum Diisi'"></h2>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2.5">
+                <!-- Tombol Pratinjau Publik -->
+                <button
+                  type="button"
+                  @click="openPreview()"
+                  class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs font-semibold px-3.5 py-2 shadow-2xs transition-colors gap-1.5"
+                >
+                  <svg class="w-3.5 h-3.5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span>Pratinjau Publik</span>
+                </button>
+
+                <!-- Tombol Simpan -->
+                <button
+                  type="button"
+                  @click="saveArticle()"
+                  class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold px-4 py-2 shadow-sm transition-colors active:scale-98 gap-1.5"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Simpan Berita</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Form Body: 2 Kolom Layout (Konten Utama 8 Cols + Pengaturan Samping 4 Cols) -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12 py-8 sm:py-10 w-full flex-1">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- ============================================== -->
+                <!-- LEFT/CENTER: FORM INPUT BERITA UTAMA (8 COLS)  -->
+                <!-- ============================================== -->
+                <div class="lg:col-span-8 space-y-6">
+                  <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+                    <!-- 1. Input Judul Berita -->
+                    <div>
+                      <label class="block text-xs font-bold text-zinc-900 mb-1.5 uppercase tracking-wider">Judul Artikel Berita *</label>
+                      <input
+                        type="text"
+                        x-model="form.title"
+                        placeholder="Masukkan judul rilis berita yang lugas & informatif..."
+                        class="w-full text-lg sm:text-xl font-bold rounded-lg border border-zinc-300 bg-white px-4 py-3 text-zinc-950 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs leading-snug"
+                      />
+                    </div>
+
+                    <!-- 2. Input Sumber Berita & Tautan URL Sumber -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                      <div>
+                        <label class="block text-xs font-bold text-zinc-900 mb-1.5 uppercase tracking-wider">Sumber Berita *</label>
+                        <input
+                          type="text"
+                          x-model="form.source"
+                          placeholder="Contoh: Rilis Resmi Rumah Aspirasi / Radar Bogor"
+                          class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-bold text-zinc-900 mb-1.5 uppercase tracking-wider">Tautan / URL Sumber (Opsional)</label>
+                        <input
+                          type="url"
+                          x-model="form.sourceUrl"
+                          placeholder="https://..."
+                          class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- 3. Input Deskripsi Berita Lengkap -->
+                    <div class="pt-2">
+                      <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold text-zinc-900 uppercase tracking-wider">Deskripsi / Isi Artikel Berita *</label>
+                        <span class="text-[11px] text-zinc-400 font-medium">Mendukung format paragraf lengkap</span>
+                      </div>
+                      <textarea
+                        x-model="form.description"
+                        rows="12"
+                        placeholder="Tuliskan isi berita rilis lengkap, narasi agenda, keterangan narasumber, atau perkembangan advokasi di sini..."
+                        class="w-full rounded-lg border border-zinc-300 bg-white p-4 text-xs sm:text-sm text-zinc-900 leading-relaxed focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- RIGHT: PENGATURAN STATUS & COVER (4 COLS)      -->
+                <!-- ============================================== -->
+                <div class="lg:col-span-4 space-y-6">
+                  <!-- Panel Status & Tanggal -->
+                  <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm space-y-5">
+                    <h3 class="font-bold text-sm text-zinc-950 pb-3 border-b border-zinc-100 flex items-center tracking-tight">
+                      <span class="text-[#BC0202] font-black mr-2">|</span> Status &amp; Tanggal
+                    </h3>
+
+                    <!-- Tanggal Rilis Berita -->
+                    <div>
+                      <label class="block text-xs font-bold text-zinc-900 mb-1.5">Tanggal Berita:</label>
+                      <input
+                        type="date"
+                        x-model="form.date"
+                        class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+                      />
+                    </div>
+
+                    <!-- Pilihan Status: Terbit vs Draf -->
+                    <div>
+                      <label class="block text-xs font-bold text-zinc-900 mb-1.5">Status Publikasi:</label>
+                      <div class="grid grid-cols-2 gap-2">
+                        <label
+                          :class="form.status === 'Terbit' ? 'bg-[#BC0202] text-white border-[#BC0202]' : 'bg-white text-zinc-700 border-zinc-200'"
+                          class="rounded-lg border px-3 py-2 text-xs font-semibold cursor-pointer text-center transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <input type="radio" value="Terbit" x-model="form.status" class="hidden" />
+                          <span>&bull; Terbit</span>
+                        </label>
+
+                        <label
+                          :class="form.status === 'Draf' ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-700 border-zinc-200'"
+                          class="rounded-lg border px-3 py-2 text-xs font-semibold cursor-pointer text-center transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <input type="radio" value="Draf" x-model="form.status" class="hidden" />
+                          <span>Draf</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Sorotan Berita Utama Checkbox -->
+                    <div class="pt-3 border-t border-zinc-100">
+                      <label class="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          x-model="form.isFeatured"
+                          class="w-4 h-4 mt-0.5 rounded text-[#BC0202] focus:ring-[#FF0000] border-zinc-300"
+                        />
+                        <div>
+                          <span class="font-bold text-xs text-zinc-950 block">Sorotan Berita Utama</span>
+                          <span class="text-[11px] text-zinc-500 leading-normal block mt-0.5">
+                            Menjadikan berita ini sebagai headline besar di bagian atas halaman Berita publik.
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Tombol Simpan di Sidebar -->
+                    <div class="pt-3 border-t border-zinc-100">
+                      <button
+                        type="button"
+                        @click="saveArticle()"
+                        class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold py-2.5 shadow-sm transition-colors active:scale-98"
+                      >
+                        Simpan Artikel Berita
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Panel Cover Image -->
+                  <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
+                    <h3 class="font-bold text-sm text-zinc-950 pb-3 border-b border-zinc-100 flex items-center tracking-tight">
+                      <span class="text-[#BC0202] font-black mr-2">|</span> Cover Image (Gambar Berita)
+                    </h3>
+
+                    <!-- Pratinjau Cover Image -->
+                    <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs">
+                      <img :src="form.coverImage" alt="Cover Image Berita" class="w-full h-full object-cover" />
+                    </div>
+
+                    <!-- Pemilih Cover dari Aset Lokal -->
+                    <div>
+                      <label class="block text-xs font-bold text-zinc-900 mb-1.5">Pilih Foto Dokumentasi Berita:</label>
+                      <select
+                        x-model="form.coverImage"
+                        class="w-full rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
+                      >
+                        <template x-for="c in availableCovers" :key="c.url">
+                          <option :value="c.url" x-text="c.label"></option>
+                        </template>
+                      </select>
+                      <p class="text-[11px] text-zinc-500 mt-1.5">Rasio ideal 16:9 atau 16:10 untuk keseragaman kartu berita di tampilan publik.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- ========================================== -->
+        <!-- 4. MINIMALIST ADMIN FOOTER (#000000)       -->
+        <!-- ========================================== -->
+        <footer class="w-full bg-[#000000] text-white py-8 border-t border-zinc-800">
+          <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-7 h-7 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-[11px]">BLB</div>
+              <span class="text-xs font-semibold text-zinc-300">Modul Pengelolaan Berita Resmi &bull; Banu Lesmana Bagaskara, S.M.</span>
+            </div>
+            <div class="text-xs text-zinc-500">&copy; 2026 banubagaskara.</div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODAL PRATINJAU PUBLIK BERITA                            -->
+    <!-- ======================================================== -->
+    <div
+      x-show="previewModal"
+      x-cloak
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-preview-title"
+      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-zinc-950/85 backdrop-blur-sm overflow-y-auto"
+    >
+      <div @click.away="closePreview()" class="bg-white border border-zinc-200 text-zinc-950 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden my-auto">
+        <!-- Modal Top Bar -->
+        <div class="px-6 py-4 bg-[#faf5f5] border-b border-zinc-200 flex items-center justify-between gap-4 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#BC0202]"></span>
+            <span class="font-bold text-xs sm:text-sm text-zinc-900 tracking-tight">Pratinjau Artikel Berita (Mode Tampilan Publik)</span>
+          </div>
+          <button
+            type="button"
+            @click="closePreview()"
+            aria-label="Tutup Pratinjau"
+            class="rounded-lg p-1.5 text-zinc-500 hover:text-zinc-950 hover:bg-zinc-200/60 transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Content: Simulasi Tampilan Baca Berita Publik -->
+        <div class="p-6 sm:p-10 overflow-y-auto space-y-6">
+          <!-- Metadata Tanggal & Sumber -->
+          <div class="flex flex-wrap items-center text-xs font-medium text-zinc-500 gap-2">
+            <span x-text="form.date"></span>
+            <span>&bull;</span>
+            <span class="inline-flex items-center gap-1 text-zinc-800 bg-zinc-100 px-2.5 py-0.5 rounded-md border border-zinc-200">
+              <span class="text-[#BC0202] font-black">Sumber:</span>
+              <span x-text="form.source"></span>
+            </span>
+            <template x-if="form.sourceUrl">
+              <a :href="form.sourceUrl" target="_blank" rel="noopener" class="text-[#BC0202] hover:underline flex items-center gap-1 font-semibold">
+                <span>(Buka Tautan Sumber)</span>
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </template>
+          </div>
+
+          <!-- Judul Berita -->
+          <h1 id="modal-preview-title" class="text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-950 leading-tight tracking-tight" x-text="form.title ? form.title : 'Judul Berita'"></h1>
+
+          <!-- Gambar Berita -->
+          <div class="aspect-[16/9] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100">
+            <img :src="form.coverImage" :alt="form.title" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Deskripsi / Isi Berita -->
+          <div class="pt-2">
+            <p class="text-xs sm:text-sm text-zinc-700 leading-relaxed whitespace-pre-line" x-text="form.description"></p>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-3.5 bg-[#fafafa] border-t border-zinc-200 flex items-center justify-between shrink-0">
+          <span class="text-xs text-zinc-500">Tampilan disimulasikan sesuai struktur visual publik.</span>
+          <button
+            type="button"
+            @click="closePreview()"
+            class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold px-4 py-2 shadow-sm transition-colors"
+          >
+            Tutup Pratinjau
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
@@ -25,7 +25,7 @@
           activeTab: 'kinerja',
           previewModal: false,
           selectedAspiration: null,
-          aspirations: [
+          aspirations: @if(isset($recentAspirations) && $recentAspirations->isNotEmpty()) {{ Js::from($recentAspirations) }} @else [
             {
               ticket: 'BLB-842910',
               date: '04 November 2026',
@@ -70,7 +70,7 @@
                 'Ingin menanyakan jadwal konsultasi di Rumah Aspirasi terkait kelengkapan dokumen advokasi bantuan pendidikan bagi anak kami yang sedang menempuh pendidikan tingkat SMA di Kota Bogor.',
               status: 'Selesai',
             },
-          ],
+          ] @endif,
           openAspiration(item) {
             this.selectedAspiration = item;
             this.previewModal = true;
@@ -491,7 +491,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 <!-- Metric Card 1: Hasil Kinerja -->
                 <a
-                  href="/kinerja"
+                  href="/admin/kinerja"
                   class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group"
                 >
                   <div>
@@ -508,11 +508,11 @@
                       </div>
                       <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Kanvas Blok</span>
                     </div>
-                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">18</div>
+                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalReports'] ?? 18 }}</div>
                     <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                       <span class="text-[#BC0202] font-black mr-2">|</span> Hasil Kinerja
                     </h2>
-                    <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">18 laporan terbit di halaman publik &bull; 1 konsep tersimpan.</p>
+                    <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">{{ $metrics['publishedReports'] ?? 18 }} laporan terbit di halaman publik &bull; {{ max(0, ($metrics['totalReports'] ?? 18) - ($metrics['publishedReports'] ?? 18)) }} konsep tersimpan.</p>
                   </div>
                   <div class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
                     <span>Kelola Artikel Kinerja</span>
@@ -522,7 +522,7 @@
 
                 <!-- Metric Card 2: Berita Resmi -->
                 <a
-                  href="/berita"
+                  href="/admin/berita"
                   class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group"
                 >
                   <div>
@@ -539,7 +539,7 @@
                       </div>
                       <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Rilis &amp; Media</span>
                     </div>
-                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">18</div>
+                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalNews'] ?? 18 }}</div>
                     <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                       <span class="text-[#BC0202] font-black mr-2">|</span> Artikel Berita
                     </h2>
@@ -553,7 +553,7 @@
 
                 <!-- Metric Card 3: Galeri Dokumentasi -->
                 <a
-                  href="/galeri"
+                  href="/admin/galeri"
                   class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group"
                 >
                   <div>
@@ -568,9 +568,9 @@
                           />
                         </svg>
                       </div>
-                      <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">72 Foto</span>
+                      <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Album Foto</span>
                     </div>
-                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">18</div>
+                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAlbums'] ?? 18 }}</div>
                     <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                       <span class="text-[#BC0202] font-black mr-2">|</span> Album Galeri
                     </h2>
@@ -599,13 +599,13 @@
                           />
                         </svg>
                       </div>
-                      <span class="inline-block text-[11px] font-bold px-2.5 py-1 rounded-md bg-red-50 text-[#BC0202] border border-red-100">2 Baru</span>
+                      <span class="inline-block text-[11px] font-bold px-2.5 py-1 rounded-md bg-red-50 text-[#BC0202] border border-red-100">{{ $metrics['newAspirations'] ?? 2 }} Baru</span>
                     </div>
-                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">24</div>
+                    <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAspirations'] ?? 24 }}</div>
                     <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                       <span class="text-[#BC0202] font-black mr-2">|</span> Kotak Aspirasi
                     </h2>
-                    <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">2 aspirasi warga menunggu tinjauan tindak lanjut tim.</p>
+                    <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">{{ $metrics['newAspirations'] ?? 2 }} aspirasi warga menunggu tinjauan tindak lanjut tim.</p>
                   </div>
                   <div class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
                     <span>Buka Kotak Aspirasi</span>

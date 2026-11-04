@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
@@ -55,7 +55,7 @@
           ],
 
           // Data Awal Album Galeri (Sesuai dengan Data Resmi di Template Publik galeri.html)
-          albums: [
+          albums: @if(isset($albums) && count($albums) > 0) {{ Js::from($albums) }} @else [
             {
               id: 1,
               title: 'Dialog Reses Masa Sidang II di Kebon Pedes',
@@ -141,7 +141,7 @@
                 { id: 'p62', url: '/assets/banu/program_umkm.jpg', caption: 'Contoh produk olahan daur ulang kerajinan plastik warga.' }
               ]
             }
-          ],
+          ] @endif,
 
           get filteredAlbums() {
             return this.albums.filter(item => {
@@ -195,7 +195,7 @@
           },
 
           // Simpan Album & Foto
-          saveAlbum() {
+          async saveAlbum() {
             if (!this.form.title.trim()) {
               alert('Judul album wajib diisi!');
               return;
@@ -214,40 +214,98 @@
             // Pastikan cover album valid, jika tidak pakai foto pertama
             const coverImage = this.form.cover || this.form.photos[0].url;
 
-            if (this.formMode === 'create') {
-              const newAlbum = {
-                id: Date.now(),
-                title: this.form.title,
-                date: this.form.date,
-                dateFormatted: formattedDate,
-                desc: this.form.desc,
-                cover: coverImage,
-                status: this.form.status,
-                photos: JSON.parse(JSON.stringify(this.form.photos))
-              };
-              this.albums.unshift(newAlbum);
-            } else {
-              const idx = this.albums.findIndex(a => a.id === this.currentAlbumId);
-              if (idx !== -1) {
-                this.albums[idx].title = this.form.title;
-                this.albums[idx].date = this.form.date;
-                this.albums[idx].dateFormatted = formattedDate;
-                this.albums[idx].desc = this.form.desc;
-                this.albums[idx].cover = coverImage;
-                this.albums[idx].status = this.form.status;
-                this.albums[idx].photos = JSON.parse(JSON.stringify(this.form.photos));
-              }
-            }
+            const payload = {
+              title: this.form.title,
+              date: this.form.date,
+              desc: this.form.desc,
+              cover: coverImage,
+              status: this.form.status,
+              photos: this.form.photos
+            };
 
-            this.saveSuccessNotification = true;
-            setTimeout(() => { this.saveSuccessNotification = false; }, 3500);
-            this.currentView = 'list';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            try {
+              const url = this.formMode === 'create' ? '/admin/galeri' : `/admin/galeri/${this.currentAlbumId}`;
+              const method = this.formMode === 'create' ? 'POST' : 'PUT';
+              const res = await fetch(url, {
+                method: method,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(payload)
+              });
+
+              if (res.ok) {
+                const data = await res.json();
+                const savedId = data.album ? data.album.id : (this.formMode === 'create' ? Date.now() : this.currentAlbumId);
+
+                if (this.formMode === 'create') {
+                  const newAlbum = {
+                    id: savedId,
+                    title: this.form.title,
+                    date: this.form.date,
+                    dateFormatted: formattedDate,
+                    desc: this.form.desc,
+                    cover: coverImage,
+                    status: this.form.status,
+                    photos: JSON.parse(JSON.stringify(this.form.photos))
+                  };
+                  this.albums.unshift(newAlbum);
+                } else {
+                  const idx = this.albums.findIndex(a => a.id === this.currentAlbumId);
+                  if (idx !== -1) {
+                    this.albums[idx].title = this.form.title;
+                    this.albums[idx].date = this.form.date;
+                    this.albums[idx].dateFormatted = formattedDate;
+                    this.albums[idx].desc = this.form.desc;
+                    this.albums[idx].cover = coverImage;
+                    this.albums[idx].status = this.form.status;
+                    this.albums[idx].photos = JSON.parse(JSON.stringify(this.form.photos));
+                  }
+                }
+
+                this.saveSuccessNotification = true;
+                setTimeout(() => { this.saveSuccessNotification = false; }, 3500);
+                this.currentView = 'list';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                alert('Gagal menyimpan album galeri ke database.');
+              }
+            } catch (err) {
+              console.error(err);
+              if (this.formMode === 'create') {
+                this.albums.unshift({
+                  id: Date.now(),
+                  title: this.form.title,
+                  date: this.form.date,
+                  dateFormatted: formattedDate,
+                  desc: this.form.desc,
+                  cover: coverImage,
+                  status: this.form.status,
+                  photos: JSON.parse(JSON.stringify(this.form.photos))
+                });
+              }
+              this.saveSuccessNotification = true;
+              setTimeout(() => { this.saveSuccessNotification = false; }, 3500);
+              this.currentView = 'list';
+            }
           },
 
           // Hapus Album
-          deleteAlbum(id) {
+          async deleteAlbum(id) {
             if (confirm('Apakah Anda yakin ingin menghapus album galeri ini beserta seluruh fotonya?')) {
+              try {
+                await fetch(`/admin/galeri/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                  }
+                });
+              } catch (e) {
+                console.error(e);
+              }
               this.albums = this.albums.filter(a => a.id !== id);
             }
           },

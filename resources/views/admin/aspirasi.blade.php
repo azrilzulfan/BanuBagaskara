@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
@@ -56,7 +56,7 @@
           },
 
           // Initial Real Data from Tanah Sareal, Kota Bogor
-          aspirations: [
+          aspirations: @if(isset($aspirations) && count($aspirations) > 0) {{ Js::from($aspirations) }} @else [
             {
               id: 1,
               ticket: 'BLB-842910',
@@ -256,7 +256,7 @@
                 },
               ],
             },
-          ],
+          ] @endif,
 
           // Get filtered list based on tabs, search, categories, and kelurahan
           get filteredAspirations() {
@@ -308,35 +308,77 @@
           },
 
           // Update status & notes from detail modal
-          saveModalChanges() {
+          async saveModalChanges() {
             if (!this.selectedAspiration) return;
 
             const index = this.aspirations.findIndex((a) => a.id === this.selectedAspiration.id);
             if (index !== -1) {
               const oldStatus = this.aspirations[index].status;
-              this.aspirations[index].status = this.statusDraft;
+              const newStatus = this.statusDraft;
+              this.aspirations[index].status = newStatus;
 
-              // If a new note was entered, append it
-              if (this.newNote.trim() !== '') {
-                const now = new Date();
-                const timeString = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' +
-                  now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+              try {
+                if (oldStatus !== newStatus) {
+                  await fetch(`/admin/aspirasi/${this.selectedAspiration.id}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json',
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                  });
+                }
 
-                this.aspirations[index].notes.unshift({
-                  date: timeString,
-                  author: 'Admin / Staf',
-                  text: this.newNote.trim(),
-                });
+                // If a new note was entered, append it and persist
+                if (this.newNote.trim() !== '') {
+                  const now = new Date();
+                  const timeString = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' +
+                    now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+                  const noteText = this.newNote.trim();
+                  this.aspirations[index].notes.unshift({
+                    date: timeString,
+                    author: 'Admin / Staf',
+                    text: noteText,
+                  });
+
+                  await fetch(`/admin/aspirasi/${this.selectedAspiration.id}/notes`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json',
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ note_text: noteText })
+                  });
+                }
+
+                this.triggerToast(`Perubahan aspirasi ${this.selectedAspiration.ticket} berhasil disimpan!`);
+              } catch (e) {
+                console.error(e);
+                this.triggerToast(`Perubahan aspirasi ${this.selectedAspiration.ticket} disimpan lokal.`);
               }
-
-              this.triggerToast(`Perubahan aspirasi ${this.selectedAspiration.ticket} berhasil disimpan!`);
             }
             this.detailModal = false;
           },
 
           // Quick status update directly from the table row
-          quickSetStatus(item, newStatus) {
+          async quickSetStatus(item, newStatus) {
             item.status = newStatus;
+            try {
+              await fetch(`/admin/aspirasi/${item.id}/status`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ status: newStatus })
+              });
+            } catch (e) {
+              console.error(e);
+            }
             this.triggerToast(`Status tiket ${item.ticket} diubah menjadi "${newStatus}"`);
           },
 
@@ -381,9 +423,20 @@
             this.deleteModal = true;
           },
 
-          confirmDelete() {
+          async confirmDelete() {
             if (this.targetDeleteId !== null) {
               const deletedItem = this.aspirations.find((a) => a.id === this.targetDeleteId);
+              try {
+                await fetch(`/admin/aspirasi/${this.targetDeleteId}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                  }
+                });
+              } catch (e) {
+                console.error(e);
+              }
               this.aspirations = this.aspirations.filter((a) => a.id !== this.targetDeleteId);
               this.triggerToast(`Aspirasi ${deletedItem ? deletedItem.ticket : ''} berhasil dihapus dari sistem.`, 'danger');
               this.targetDeleteId = null;

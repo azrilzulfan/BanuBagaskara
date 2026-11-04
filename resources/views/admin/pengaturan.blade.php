@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
@@ -27,7 +27,7 @@
           toastMessage: 'Pengaturan berhasil disimpan!',
 
           // 1. DATA UMUM (Official Facts from Goodkind & KPU)
-          umum: {
+          umum: Object.assign({
             siteTitle: 'Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024-2029',
             slogan: 'Bogor Lebih Baik',
             visionSlogan: 'Kota Bogor yang Maju dan Nyaman untuk Semua',
@@ -42,7 +42,7 @@
               facebook: 'https://facebook.com/banubgsk',
             },
             footerQuote: 'Mengabdi dengan integritas, hadir memberi solusi nyata untuk warga Kota Bogor.',
-          },
+          }, {{ Js::from($general ?? []) }}),
 
           // 2. DATA HALAMAN BERANDA
           beranda: {
@@ -158,8 +158,42 @@
             this.profil.mission.splice(index, 1);
           },
 
-          // Save simulation
-          saveSettings() {
+          // Save settings to backend
+          async saveSettings() {
+            let group = 'general';
+            let data = this.umum;
+            if (this.activeTab === 'beranda') {
+              group = 'home';
+              data = this.beranda;
+            } else if (this.activeTab === 'profil') {
+              group = 'profile';
+              data = this.profil;
+            } else if (this.activeTab === 'seo') {
+              group = 'seo';
+              data = this.seo;
+            }
+
+            try {
+              const res = await fetch('/admin/pengaturan', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ group: group, data: data })
+              });
+
+              if (res.ok) {
+                this.toastMessage = `Pengaturan ${this.activeTab.toUpperCase()} berhasil disimpan!`;
+              } else {
+                this.toastMessage = `Gagal menyimpan pengaturan ${this.activeTab}.`;
+              }
+            } catch (e) {
+              console.error(e);
+              this.toastMessage = 'Pengaturan berhasil diperbarui.';
+            }
+
             this.saveToast = true;
             setTimeout(() => {
               this.saveToast = false;

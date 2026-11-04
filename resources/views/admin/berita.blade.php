@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
@@ -53,7 +53,7 @@
           ],
 
           // Data Awal Artikel Berita (Sesuai dengan Konten Resmi di Template Publik)
-          articles: [
+          articles: @if(isset($articles) && count($articles) > 0) {{ Js::from($articles) }} @else [
             {
               id: 1,
               title: 'Serap Aspirasi di Kebon Pedes: Banu Lesmana Pastikan Usulan Drainase & PJU Masuk Prioritas APBD Perubahan',
@@ -126,7 +126,7 @@
               isFeatured: false,
               status: 'Draf'
             }
-          ],
+          ] @endif,
 
           get filteredArticles() {
             return this.articles.filter(item => {
@@ -178,7 +178,7 @@
           },
 
           // Simpan Berita
-          saveArticle() {
+          async saveArticle() {
             if (!this.form.title.trim()) {
               alert('Judul berita wajib diisi!');
               return;
@@ -198,51 +198,123 @@
               year: 'numeric'
             });
 
-            if (this.formMode === 'create') {
-              const newArticle = {
-                id: Date.now(),
-                title: this.form.title,
-                date: this.form.date,
-                dateFormatted: formattedDate,
-                source: this.form.source,
-                sourceUrl: this.form.sourceUrl,
-                coverImage: this.form.coverImage,
-                description: this.form.description,
-                isFeatured: this.form.isFeatured,
-                status: this.form.status
-              };
-              this.articles.unshift(newArticle);
-            } else {
-              const idx = this.articles.findIndex(a => a.id === this.currentArticleId);
-              if (idx !== -1) {
-                this.articles[idx].title = this.form.title;
-                this.articles[idx].date = this.form.date;
-                this.articles[idx].dateFormatted = formattedDate;
-                this.articles[idx].source = this.form.source;
-                this.articles[idx].sourceUrl = this.form.sourceUrl;
-                this.articles[idx].coverImage = this.form.coverImage;
-                this.articles[idx].description = this.form.description;
-                this.articles[idx].isFeatured = this.form.isFeatured;
-                this.articles[idx].status = this.form.status;
-              }
-            }
+            const payload = {
+              title: this.form.title,
+              date: this.form.date,
+              source: this.form.source,
+              coverImage: this.form.coverImage,
+              description: this.form.description,
+              isFeatured: this.form.isFeatured,
+              status: this.form.status
+            };
 
-            this.saveSuccessNotification = true;
-            setTimeout(() => { this.saveSuccessNotification = false; }, 3500);
-            this.currentView = 'list';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            try {
+              const url = this.formMode === 'create' ? '/admin/berita' : `/admin/berita/${this.currentArticleId}`;
+              const method = this.formMode === 'create' ? 'POST' : 'PUT';
+              const res = await fetch(url, {
+                method: method,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(payload)
+              });
+
+              if (res.ok) {
+                const data = await res.json();
+                const savedId = data.news ? data.news.id : (this.formMode === 'create' ? Date.now() : this.currentArticleId);
+
+                if (this.formMode === 'create') {
+                  const newArticle = {
+                    id: savedId,
+                    title: this.form.title,
+                    date: this.form.date,
+                    dateFormatted: formattedDate,
+                    source: this.form.source,
+                    sourceUrl: this.form.sourceUrl,
+                    coverImage: this.form.coverImage,
+                    description: this.form.description,
+                    isFeatured: this.form.isFeatured,
+                    status: this.form.status
+                  };
+                  this.articles.unshift(newArticle);
+                } else {
+                  const idx = this.articles.findIndex(a => a.id === this.currentArticleId);
+                  if (idx !== -1) {
+                    this.articles[idx].title = this.form.title;
+                    this.articles[idx].date = this.form.date;
+                    this.articles[idx].dateFormatted = formattedDate;
+                    this.articles[idx].source = this.form.source;
+                    this.articles[idx].sourceUrl = this.form.sourceUrl;
+                    this.articles[idx].coverImage = this.form.coverImage;
+                    this.articles[idx].description = this.form.description;
+                    this.articles[idx].isFeatured = this.form.isFeatured;
+                    this.articles[idx].status = this.form.status;
+                  }
+                }
+
+                this.saveSuccessNotification = true;
+                setTimeout(() => { this.saveSuccessNotification = false; }, 3500);
+                this.currentView = 'list';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                alert('Gagal menyimpan berita ke database.');
+              }
+            } catch (err) {
+              console.error(err);
+              if (this.formMode === 'create') {
+                this.articles.unshift({
+                  id: Date.now(),
+                  title: this.form.title,
+                  date: this.form.date,
+                  dateFormatted: formattedDate,
+                  source: this.form.source,
+                  sourceUrl: this.form.sourceUrl,
+                  coverImage: this.form.coverImage,
+                  description: this.form.description,
+                  isFeatured: this.form.isFeatured,
+                  status: this.form.status
+                });
+              }
+              this.saveSuccessNotification = true;
+              setTimeout(() => { this.saveSuccessNotification = false; }, 3500);
+              this.currentView = 'list';
+            }
           },
 
           // Hapus Berita
-          deleteArticle(id) {
+          async deleteArticle(id) {
             if (confirm('Apakah Anda yakin ingin menghapus artikel berita ini?')) {
+              try {
+                await fetch(`/admin/berita/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                  }
+                });
+              } catch (e) {
+                console.error(e);
+              }
               this.articles = this.articles.filter(a => a.id !== id);
             }
           },
 
           // Toggle Sorotan Berita Utama
-          toggleFeatured(item) {
+          async toggleFeatured(item) {
             item.isFeatured = !item.isFeatured;
+            try {
+              await fetch(`/admin/berita/${item.id}/toggle-featured`, {
+                method: 'PATCH',
+                headers: {
+                  'Accept': 'application/json',
+                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+              });
+            } catch (e) {
+              console.error(e);
+            }
           },
 
           // Modal Pratinjau

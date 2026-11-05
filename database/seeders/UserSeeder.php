@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@banubagaskara.id'],
             [
-                'name' => 'Banu Lesmana Bagaskara, S.M.',
-                'password' => Hash::make('BanuBogor2024!*'),
+                'name' => 'Admin Banu Bagaskara',
+                'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
             ]
         );

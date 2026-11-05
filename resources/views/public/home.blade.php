@@ -188,10 +188,12 @@
     <!-- ======================================================== -->
     <!-- 3. HASIL KINERJA & BERITA TERKINI (Gabungan 4 Artikel)    -->
     <!-- ======================================================== -->
+    <!-- 3. HASIL KINERJA & BERITA TERKINI (FEATURED CARD STYLE)  -->
+    <!-- ======================================================== -->
     <section id="kinerja" class="w-full bg-[#f4f4f5] py-16 sm:py-20 lg:py-24 border-b border-zinc-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 flex flex-col items-center">
             <!-- Section Header -->
-            <div class="text-center max-w-2xl mb-10">
+            <div class="text-center max-w-2xl mb-10 sm:mb-14">
                 <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight">Hasil
                     <span class="text-[#BC0202]">Kinerja</span> &amp;<br /><span class="text-[#BC0202]">Berita</span>
                     Terkini</h2>
@@ -202,25 +204,12 @@
                     Belum ada publikasi hasil kinerja dan berita terkini.
                 </div>
             @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch w-full">
+                <div class="space-y-6 sm:space-y-8 w-full">
                     @foreach ($latestArticles as $item)
-                        <div class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-                            <div>
-                                <!-- Cover Image -->
-                                <div class="aspect-[16/10] sm:aspect-[16/9] w-full bg-zinc-100 overflow-hidden relative">
-                                    @if ($item->image)
-                                        <img src="{{ asset($item->image) }}" alt="{{ $item->title }}"
-                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                                    @else
-                                        <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
-                                            <span class="text-white font-bold mb-1">banubagaskara.</span>
-                                            <span class="text-[11px] text-zinc-400">{{ $item->badge }}</span>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <!-- Body -->
-                                <div class="p-5 sm:p-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch w-full">
+                            <!-- Left: Narrative (Tanggal, Badge, Judul, Deskripsi, Tombol Aksi) -->
+                            <div class="lg:col-span-7 rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 lg:p-10 shadow-sm flex flex-col justify-between">
+                                <div>
                                     <div class="flex items-center justify-between gap-2 mb-2.5">
                                         <div class="flex items-center text-[11px] font-medium text-zinc-500">
                                             <svg class="w-3.5 h-3.5 mr-1.5 text-zinc-400" fill="none" viewBox="0 0 24 24"
@@ -230,43 +219,57 @@
                                             </svg>
                                             <span>{{ $item->date ?: '-' }}</span>
                                         </div>
-                                        <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md {{ $item->type === 'kinerja' ? 'bg-red-50 text-[#BC0202] border border-red-100' : 'bg-zinc-100 text-zinc-700 border border-zinc-200' }}">
+                                        <span class="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-md {{ $item->type === 'kinerja' ? 'bg-red-50 text-[#BC0202] border border-red-100' : 'bg-zinc-100 text-zinc-700 border border-zinc-200' }}">
                                             {{ $item->badge }}
                                         </span>
                                     </div>
 
-                                    <h3 class="font-bold text-base sm:text-lg text-zinc-950 leading-snug tracking-tight line-clamp-2">
-                                        {{ $item->title }}
+                                    <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-950 tracking-tight leading-snug">
+                                        <a href="{{ $item->url }}" @if ($item->isExternal) target="_blank" rel="noopener noreferrer" @endif class="hover:text-[#BC0202] transition-colors">
+                                            {{ $item->title }}
+                                        </a>
                                     </h3>
 
-                                    <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed line-clamp-3">
+                                    <p class="text-xs sm:text-[14px] text-zinc-600 mt-3.5 leading-relaxed line-clamp-3">
                                         {{ $item->excerpt }}
                                     </p>
                                 </div>
+
+                                <div class="mt-7 pt-5 border-t border-zinc-100 flex items-center justify-start">
+                                    <a href="{{ $item->url }}" @if ($item->isExternal) target="_blank" rel="noopener noreferrer" @endif
+                                        class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 shadow-sm transition-colors gap-1.5 active:scale-98">
+                                        <span>{{ $item->btnText }}</span>
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            @if ($item->isExternal)
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            @endif
+                                        </svg>
+                                    </a>
+                                </div>
                             </div>
 
-                            <!-- Button Action -->
-                            <div class="px-5 sm:px-6 pb-5 sm:pb-6 pt-1">
-                                <a href="{{ $item->url }}" @if ($item->isExternal) target="_blank" rel="noopener noreferrer" @endif
-                                    class="w-full inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2.5 px-3.5 shadow-2xs transition-colors active:scale-98 gap-1.5 group/btn">
-                                    <span>{{ $item->btnText }}</span>
-                                    <svg class="w-3.5 h-3.5 text-zinc-500 group-hover/btn:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        @if ($item->isExternal)
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        @else
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7" />
-                                        @endif
-                                    </svg>
-                                </a>
+                            <!-- Right: Cover Image (Sama Persis Format Featured Card) -->
+                            <div class="lg:col-span-5 rounded-xl border border-zinc-200 overflow-hidden shadow-sm aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto min-h-[240px] sm:min-h-[280px] bg-zinc-100">
+                                @if ($item->image)
+                                    <img src="{{ asset($item->image) }}" alt="{{ $item->title }}"
+                                        class="w-full h-full object-cover" loading="lazy" />
+                                @else
+                                    <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                                        <span class="text-white font-bold mb-1">banubagaskara.</span>
+                                        <span class="text-[11px] text-zinc-400">{{ $item->badge }}</span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+                <div class="mt-12 flex flex-wrap items-center justify-center gap-3">
                     <a href="{{ route('kinerja.index') }}"
                         class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-800 text-xs font-semibold px-4 py-2.5 shadow-2xs transition-colors">
                         Lihat Semua Kinerja &rarr;
@@ -277,8 +280,6 @@
                     </a>
                 </div>
             @endif
-        </div>
-    </section>
         </div>
     </section>
 

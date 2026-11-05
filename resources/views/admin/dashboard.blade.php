@@ -3,584 +3,581 @@
 @section('title', 'Ringkasan Dasbor Admin | Banu Lesmana Bagaskara, S.M.')
 
 @php
-  $aspirationList = $recentAspirations->map(function ($item) {
-    return [
-      'id' => $item->id,
-      'ticket' => $item->ticket_number,
-      'date' => $item->created_at ? $item->created_at->translatedFormat('d F Y') : '-',
-      'sender' => $item->sender_name,
-      'phone' => $item->phone_number,
-      'address' => $item->address,
-      'subject' => $item->subject,
-      'description' => $item->description,
-      'status' => $item->status instanceof \App\Enums\AspirationStatus ? $item->status->value : $item->status,
-    ];
-  })->values()->toArray();
+    $aspirationList = $recentAspirations
+        ->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'ticket' => $item->ticket_number,
+                'date' => $item->created_at ? $item->created_at->translatedFormat('d F Y') : '-',
+                'sender' => $item->sender_name,
+                'phone' => $item->phone_number,
+                'address' => $item->address,
+                'subject' => $item->subject,
+                'description' => $item->description,
+                'status' => $item->status instanceof \App\Enums\AspirationStatus ? $item->status->value : $item->status,
+            ];
+        })
+        ->values()
+        ->toArray();
 @endphp
 
 @section('content')
-  <div
-    x-data="{
-      activeTab: 'kinerja',
-      previewModal: false,
-      selectedAspiration: null,
-      aspirations: {{ json_encode($aspirationList) }},
-      openAspiration(item) {
-        this.selectedAspiration = item;
-        this.previewModal = true;
-        document.body.style.overflow = 'hidden';
-      },
-      closeAspiration() {
-        this.previewModal = false;
-        document.body.style.overflow = '';
-      }
-    }"
-    @keydown.escape.window="if (previewModal) closeAspiration();"
-  >
-    <!-- ========================================== -->
-    <!-- 1. EDITORIAL DASHBOARD HEADER (#faf5f5)    -->
-    <!-- ========================================== -->
-    <header class="w-full bg-[#faf5f5] border-b border-zinc-200 py-9 sm:py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
-        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div class="max-w-2xl">
-            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#830000] mb-3">
-              <span>Beranda Dasbor Administrasi</span>
-            </div>
-            <h1 class="text-2xl sm:text-4xl lg:text-[38px] text-zinc-950 font-bold leading-[1.16] tracking-tight">
-              Ringkasan <span class="text-[#BC0202]">Pengelolaan</span> Portal
-            </h1>
-            <p class="text-xs sm:text-sm text-zinc-600 font-normal leading-relaxed mt-3">
-              Pantau kiriman kotak aspirasi warga Tanah Sareal, publikasikan laporan kinerja berbasis kanvas blok modular, serta kelola rilis berita, dokumentasi galeri, dan pengaturan halaman situs resmi.
-            </p>
-          </div>
+    <div x-data="{
+        activeTab: 'kinerja',
+        previewModal: false,
+        selectedAspiration: null,
+        aspirations: {{ json_encode($aspirationList) }},
+        openAspiration(item) {
+            this.selectedAspiration = item;
+            this.previewModal = true;
+            document.body.style.overflow = 'hidden';
+        },
+        closeAspiration() {
+            this.previewModal = false;
+            document.body.style.overflow = '';
+        }
+    }" @keydown.escape.window="if (previewModal) closeAspiration();">
+        <!-- ========================================== -->
+        <!-- 1. EDITORIAL DASHBOARD HEADER (#faf5f5)    -->
+        <!-- ========================================== -->
+        <header class="w-full bg-[#faf5f5] border-b border-zinc-200 py-9 sm:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
+                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                    <div class="max-w-2xl">
+                        <div
+                            class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#830000] mb-3">
+                            <span>Beranda Dasbor Administrasi</span>
+                        </div>
+                        <h1
+                            class="text-2xl sm:text-4xl lg:text-[38px] text-zinc-950 font-bold leading-[1.16] tracking-tight">
+                            Ringkasan <span class="text-[#BC0202]">Pengelolaan</span>
+                        </h1>
+                    </div>
 
-          <!-- Primary Quick Actions -->
-          <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
-            <a
-              href="{{ route('admin.kinerja.index') }}"
-              class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold px-4 py-2.5 shadow-sm transition-colors active:scale-98 gap-1.5"
-            >
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Tulis Hasil Kinerja</span>
-            </a>
-            <a
-              href="{{ route('admin.berita.index') }}"
-              class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs font-semibold px-4 py-2.5 shadow-2xs transition-colors active:scale-98 gap-1.5"
-            >
-              <svg class="w-3.5 h-3.5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Tambah Berita</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- ========================================== -->
-    <!-- 2. RINGKASAN METRIK UTAMA (4 KARTU MODUL)  -->
-    <!-- ========================================== -->
-    <section aria-label="Metrik Ringkasan Konten" class="w-full bg-[#fafafa] py-10 sm:py-12 border-b border-zinc-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-          <!-- Metric Card 1: Hasil Kinerja -->
-          <a
-            href="{{ route('admin.kinerja.index') }}"
-            class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
+                    <!-- Primary Quick Actions -->
+                    <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+                        <a href="{{ route('admin.kinerja.index') }}"
+                            class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs font-semibold px-4 py-2.5 shadow-sm transition-colors active:scale-98 gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Tulis Hasil Kinerja</span>
+                        </a>
+                        <a href="{{ route('admin.berita.index') }}"
+                            class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs font-semibold px-4 py-2.5 shadow-2xs transition-colors active:scale-98 gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Tambah Berita</span>
+                        </a>
+                    </div>
                 </div>
-                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Kanvas Blok</span>
-              </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['publishedReports'] ?? 0 }}</div>
-              <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
-                <span class="text-[#BC0202] font-black mr-2">|</span> Hasil Kinerja
-              </h2>
-              <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">{{ $metrics['publishedReports'] ?? 0 }} laporan terbit di halaman publik &bull; {{ max(0, ($metrics['totalReports'] ?? 0) - ($metrics['publishedReports'] ?? 0)) }} konsep tersimpan.</p>
             </div>
-            <div class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
-              <span>Kelola Artikel Kinerja</span>
-              <span>&rarr;</span>
-            </div>
-          </a>
+        </header>
 
-          <!-- Metric Card 2: Berita Resmi -->
-          <a
-            href="{{ route('admin.berita.index') }}"
-            class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                    />
-                  </svg>
+        <!-- ========================================== -->
+        <!-- 2. RINGKASAN METRIK UTAMA (4 KARTU MODUL)  -->
+        <!-- ========================================== -->
+        <section aria-label="Metrik Ringkasan Konten" class="w-full bg-[#fafafa] py-10 sm:py-12 border-b border-zinc-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                    <!-- Metric Card 1: Hasil Kinerja -->
+                    <a href="{{ route('admin.kinerja.index') }}"
+                        class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Kanvas
+                                    Blok</span>
+                            </div>
+                            <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">
+                                {{ $metrics['publishedReports'] ?? 0 }}</div>
+                            <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
+                                <span class="text-[#BC0202] font-black mr-2">|</span> Hasil Kinerja
+                            </h2>
+                        </div>
+                        <div
+                            class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
+                            <span>Kelola Artikel Kinerja</span>
+                            <span>&rarr;</span>
+                        </div>
+                    </a>
+
+                    <!-- Metric Card 2: Berita Resmi -->
+                    <a href="{{ route('admin.berita.index') }}"
+                        class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Rilis
+                                    &amp; Media</span>
+                            </div>
+                            <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">
+                                {{ $metrics['totalNews'] ?? 0 }}</div>
+                            <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
+                                <span class="text-[#BC0202] font-black mr-2">|</span> Artikel Berita
+                            </h2>
+                        </div>
+                        <div
+                            class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
+                            <span>Kelola Artikel Berita</span>
+                            <span>&rarr;</span>
+                        </div>
+                    </a>
+
+                    <!-- Metric Card 3: Galeri Dokumentasi -->
+                    <a href="{{ route('admin.galeri.index') }}"
+                        class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Album
+                                    Publik</span>
+                            </div>
+                            <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">
+                                {{ $metrics['totalAlbums'] ?? 0 }}</div>
+                            <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
+                                <span class="text-[#BC0202] font-black mr-2">|</span> Album Galeri
+                            </h2>
+                        </div>
+                        <div
+                            class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
+                            <span>Kelola Album &amp; Foto</span>
+                            <span>&rarr;</span>
+                        </div>
+                    </a>
+
+                    <!-- Metric Card 4: Kotak Aspirasi Warga -->
+                    <a href="{{ route('admin.aspirasi.index') }}"
+                        class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                    </svg>
+                                </div>
+                                @if (($metrics['newAspirations'] ?? 0) > 0)
+                                    <span
+                                        class="inline-block text-[11px] font-bold px-2.5 py-1 rounded-md bg-red-50 text-[#BC0202] border border-red-100">{{ $metrics['newAspirations'] }}
+                                        Baru</span>
+                                @else
+                                    <span
+                                        class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-zinc-100 text-zinc-600 border border-zinc-200">Semua
+                                        Terbaca</span>
+                                @endif
+                            </div>
+                            <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">
+                                {{ $metrics['totalAspirations'] ?? 0 }}</div>
+                            <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
+                                <span class="text-[#BC0202] font-black mr-2">|</span> Aspirasi Warga
+                            </h2>
+                        </div>
+                        <div
+                            class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
+                            <span>Buka Kotak Aspirasi</span>
+                            <span>&rarr;</span>
+                        </div>
+                    </a>
                 </div>
-                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Rilis &amp; Media</span>
-              </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalNews'] ?? 0 }}</div>
-              <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
-                <span class="text-[#BC0202] font-black mr-2">|</span> Artikel Berita
-              </h2>
-              <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">Dilengkapi atribusi sumber liputan &amp; tanggal rilis resmi.</p>
             </div>
-            <div class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
-              <span>Kelola Artikel Berita</span>
-              <span>&rarr;</span>
-            </div>
-          </a>
+        </section>
 
-          <!-- Metric Card 3: Galeri Dokumentasi -->
-          <a
-            href="{{ route('admin.galeri.index') }}"
-            class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
+        <!-- ======================================================== -->
+        <!-- 3. ASPIRASI MASUK TERBARU & PINTASAN PENGATURAN HALAMAN  -->
+        <!-- ======================================================== -->
+        <section class="w-full bg-[#f4f4f5] py-12 sm:py-16 border-b border-zinc-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start">
+                    <!-- Left Column (7 Cols): Kotak Aspirasi Terbaru -->
+                    <div class="lg:col-span-7 rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 mb-5 border-b border-zinc-100">
+                            <div>
+                                <h2 class="text-lg sm:text-xl font-bold text-zinc-950 tracking-tight">Kotak <span
+                                        class="text-[#BC0202]">Aspirasi</span> Terbaru</h2>
+                            </div>
+                            <a href="{{ route('admin.aspirasi.index') }}"
+                                class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs font-semibold px-3.5 py-2 shadow-2xs transition-colors shrink-0 self-start sm:self-auto">
+                                Semua Aspirasi &rarr;
+                            </a>
+                        </div>
+
+                        <!-- List Aspirasi -->
+                        <div class="space-y-3">
+                            <template x-if="aspirations.length === 0">
+                                <div class="py-12 text-center text-zinc-500 text-xs">
+                                    Belum ada aspirasi masuk dari warga.
+                                </div>
+                            </template>
+                            <template x-for="(item, index) in aspirations" :key="item.ticket">
+                                <div @click="openAspiration(item)"
+                                    class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors cursor-pointer group">
+                                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="font-mono text-[11px] font-bold text-zinc-800 bg-white border border-zinc-200 px-2 py-0.5 rounded-md shadow-2xs"
+                                                x-text="item.ticket"></span>
+                                            <span class="text-[11px] text-zinc-500 font-medium" x-text="item.date"></span>
+                                        </div>
+                                        <span
+                                            class="inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-md border"
+                                            :class="{
+                                                'bg-red-50 text-[#BC0202] border-red-100': item.status === 'Baru',
+                                                'bg-white text-zinc-800 border-zinc-200': item.status === 'Ditinjau',
+                                                'bg-zinc-100 text-zinc-600 border-zinc-200': item.status === 'Selesai'
+                                            }"
+                                            x-text="item.status"></span>
+                                    </div>
+
+                                    <h3 class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight leading-snug"
+                                        x-text="item.subject"></h3>
+
+                                    <div
+                                        class="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
+                                        <span x-text="item.sender + ' • ' + item.address"></span>
+                                        <span
+                                            class="font-semibold text-zinc-700 group-hover:text-[#BC0202] transition-colors">Baca
+                                            Uraian &rarr;</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Right Column (5 Cols): Pengaturan Halaman Website -->
+                    <div class="lg:col-span-5 rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
+                        <div class="pb-5 mb-5 border-b border-zinc-100">
+                            <h2 class="text-lg sm:text-xl font-bold text-zinc-950 tracking-tight">Pengaturan <span
+                                    class="text-[#BC0202]">Halaman</span></h2>
+                        </div>
+
+                        <div class="space-y-3">
+                            <!-- Kategori 1: Umum -->
+                            <a href="{{ route('admin.pengaturan.index') }}#umum"
+                                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group">
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">
+                                        1. Pengaturan Umum</div>
+                                    <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Identitas situs,
+                                        alamat Rumah Aspirasi, kontak &amp; media sosial</div>
+                                </div>
+                                <span
+                                    class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
+                            </a>
+
+                            <!-- Kategori 2: Halaman Beranda -->
+                            <a href="{{ route('admin.pengaturan.index') }}#beranda"
+                                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group">
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">
+                                        2. Halaman Beranda</div>
+                                    <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Hero Section, Hero
+                                        Image, Banner, &amp; Kolase Foto Bento</div>
+                                </div>
+                                <span
+                                    class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
+                            </a>
+
+                            <!-- Kategori 3: Halaman Profil -->
+                            <a href="{{ route('admin.pengaturan.index') }}#profil"
+                                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group">
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">
+                                        3. Halaman Profil (Kenali Saya)</div>
+                                    <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Hero, Visi Misi,
+                                        Rekam Jejak, 12 Isu, 6 Program, Kolase, Kutipan</div>
+                                </div>
+                                <span
+                                    class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
+                            </a>
+
+                            <!-- Kategori 4: SEO -->
+                            <a href="{{ route('admin.pengaturan.index') }}#seo"
+                                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group">
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">
+                                        4. Pengaturan SEO</div>
+                                    <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Meta Title, Meta
+                                        Description, Open Graph &amp; keterbacaan mesin pencari</div>
+                                </div>
+                                <span
+                                    class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Album Publik</span>
-              </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAlbums'] ?? 0 }}</div>
-              <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
-                <span class="text-[#BC0202] font-black mr-2">|</span> Album Galeri
-              </h2>
-              <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">Dokumentasi kegiatan reses &amp; aksi lapangan terorganisir.</p>
             </div>
-            <div class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
-              <span>Kelola Album &amp; Foto</span>
-              <span>&rarr;</span>
-            </div>
-          </a>
+        </section>
 
-          <!-- Metric Card 4: Kotak Aspirasi Warga -->
-          <a
-            href="{{ route('admin.aspirasi.index') }}"
-            class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all flex flex-col justify-between group"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center group-hover:bg-[#BC0202] group-hover:text-white transition-colors">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                    />
-                  </svg>
+        <!-- ======================================================== -->
+        <!-- 4. PUBLIKASI TERAKHIR (TAB KINERJA & BERITA RESMI)       -->
+        <!-- ======================================================== -->
+        <section class="w-full bg-white py-12 sm:py-16 border-b border-zinc-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-950 tracking-tight">Publikasi <span
+                                class="text-[#BC0202]">Terakhir</span></h2>
+                    </div>
+
+                    <!-- Tab Switcher -->
+                    <div
+                        class="inline-flex items-center gap-1.5 bg-[#fafafa] border border-zinc-200 p-1.5 rounded-xl shadow-2xs self-start sm:self-auto">
+                        <button type="button" @click="activeTab = 'kinerja'"
+                            :class="activeTab === 'kinerja' ?
+                                'bg-white text-zinc-950 border border-zinc-200/90 shadow-2xs font-bold' :
+                                'text-zinc-600 hover:text-zinc-950 font-semibold'"
+                            class="text-xs px-3.5 py-1.5 rounded-lg transition-all">
+                            Hasil Kinerja
+                        </button>
+                        <button type="button" @click="activeTab = 'berita'"
+                            :class="activeTab === 'berita' ?
+                                'bg-white text-zinc-950 border border-zinc-200/90 shadow-2xs font-bold' :
+                                'text-zinc-600 hover:text-zinc-950 font-semibold'"
+                            class="text-xs px-3.5 py-1.5 rounded-lg transition-all">
+                            Artikel Berita
+                        </button>
+                    </div>
                 </div>
-                @if (($metrics['newAspirations'] ?? 0) > 0)
-                  <span class="inline-block text-[11px] font-bold px-2.5 py-1 rounded-md bg-red-50 text-[#BC0202] border border-red-100">{{ $metrics['newAspirations'] }} Baru</span>
-                @else
-                  <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-zinc-100 text-zinc-600 border border-zinc-200">Semua Terbaca</span>
-                @endif
-              </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAspirations'] ?? 0 }}</div>
-              <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
-                <span class="text-[#BC0202] font-black mr-2">|</span> Kotak Aspirasi
-              </h2>
-              <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">{{ $metrics['newAspirations'] ?? 0 }} aspirasi warga menunggu tinjauan tindak lanjut tim.</p>
-            </div>
-            <div class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
-              <span>Buka Kotak Aspirasi</span>
-              <span>&rarr;</span>
-            </div>
-          </a>
-        </div>
-      </div>
-    </section>
 
-    <!-- ======================================================== -->
-    <!-- 3. ASPIRASI MASUK TERBARU & PINTASAN PENGATURAN HALAMAN  -->
-    <!-- ======================================================== -->
-    <section class="w-full bg-[#f4f4f5] py-12 sm:py-16 border-b border-zinc-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start">
-          <!-- Left Column (7 Cols): Kotak Aspirasi Terbaru -->
-          <div class="lg:col-span-7 rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 mb-5 border-b border-zinc-100">
-              <div>
-                <h2 class="text-lg sm:text-xl font-bold text-zinc-950 tracking-tight">Kotak <span class="text-[#BC0202]">Aspirasi</span> Terbaru</h2>
-                <p class="text-xs text-zinc-500 mt-1">Klik salah satu kiriman untuk membaca rincian laporan warga secara cepat.</p>
-              </div>
-              <a
-                href="{{ route('admin.aspirasi.index') }}"
-                class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs font-semibold px-3.5 py-2 shadow-2xs transition-colors shrink-0 self-start sm:self-auto"
-              >
-                Semua Aspirasi &rarr;
-              </a>
-            </div>
-
-            <!-- List Aspirasi -->
-            <div class="space-y-3">
-              <template x-if="aspirations.length === 0">
-                <div class="py-12 text-center text-zinc-500 text-xs">
-                  Belum ada aspirasi masuk dari warga.
+                <!-- Tab Panel 1: 3 Hasil Kinerja Terakhir -->
+                <div x-show="activeTab === 'kinerja'" class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+                    @forelse ($recentReports as $report)
+                        <article
+                            class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
+                            <div>
+                                <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
+                                    @if ($report->cover_image)
+                                        <img src="{{ asset($report->cover_image) }}" alt="{{ $report->title }}"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            loading="lazy" />
+                                    @else
+                                        <div
+                                            class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                                            <span class="text-white font-bold mb-1">banubagaskara.</span>
+                                            <span class="text-[11px] text-zinc-400">Hasil Kinerja</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="p-5">
+                                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                                        <span
+                                            class="text-[11px] font-medium text-zinc-500">{{ $report->published_at ? $report->published_at->translatedFormat('d F Y') : ($report->created_at ? $report->created_at->translatedFormat('d F Y') : '-') }}</span>
+                                        @if ($report->is_featured)
+                                            <span
+                                                class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan
+                                                Utama</span>
+                                        @else
+                                            <span
+                                                class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">{{ ucfirst($report->status) }}</span>
+                                        @endif
+                                    </div>
+                                    <h3
+                                        class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight line-clamp-2">
+                                        {{ $report->title }}</h3>
+                                    <p class="text-xs text-zinc-500 mt-2 line-clamp-2">{{ $report->excerpt }}</p>
+                                </div>
+                            </div>
+                            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
+                                <a href="{{ route('admin.kinerja.index') }}"
+                                    class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors">
+                                    Kelola Kinerja
+                                </a>
+                                @if ($report->status === 'published')
+                                    <a href="{{ route('kinerja.show', $report->slug) }}" target="_blank" rel="noopener"
+                                        class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
+                                        title="Pratinjau Publik">
+                                        Lihat
+                                    </a>
+                                @endif
+                            </div>
+                        </article>
+                    @empty
+                        <div class="col-span-full py-12 text-center text-zinc-500 text-xs">
+                            Belum ada artikel kinerja yang dibuat.
+                        </div>
+                    @endforelse
                 </div>
-              </template>
-              <template x-for="(item, index) in aspirations" :key="item.ticket">
+
+                <!-- Tab Panel 2: 3 Artikel Berita Terakhir -->
+                <div x-show="activeTab === 'berita'" x-cloak class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+                    @forelse ($recentNews as $newsItem)
+                        <article
+                            class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
+                            <div>
+                                <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
+                                    @if ($newsItem->cover_image)
+                                        <img src="{{ asset($newsItem->cover_image) }}" alt="{{ $newsItem->title }}"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            loading="lazy" />
+                                    @else
+                                        <div
+                                            class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                                            <span class="text-white font-bold mb-1">banubagaskara.</span>
+                                            <span class="text-[11px] text-zinc-400">Artikel Berita</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="p-5">
+                                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                                        <span
+                                            class="text-[11px] font-medium text-zinc-500">{{ $newsItem->published_at ? $newsItem->published_at->translatedFormat('d F Y') : ($newsItem->created_at ? $newsItem->created_at->translatedFormat('d F Y') : '-') }}</span>
+                                        @if ($newsItem->is_featured)
+                                            <span
+                                                class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan
+                                                Berita</span>
+                                        @else
+                                            <span
+                                                class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">{{ ucfirst($newsItem->status) }}</span>
+                                        @endif
+                                    </div>
+                                    <h3
+                                        class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight line-clamp-2">
+                                        {{ $newsItem->title }}</h3>
+                                    <p class="text-xs text-zinc-500 mt-2 line-clamp-2">Sumber:
+                                        {{ $newsItem->source_url ?: ($newsItem->source ?: 'Rilis Media') }}</p>
+                                </div>
+                            </div>
+                            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
+                                <a href="{{ route('admin.berita.index') }}"
+                                    class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors">
+                                    Kelola Berita
+                                </a>
+                                @if ($newsItem->status === 'published' && ($newsItem->source_url || $newsItem->source))
+                                    <a href="{{ $newsItem->source_url ?: $newsItem->source }}" target="_blank"
+                                        rel="noopener"
+                                        class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
+                                        title="Lihat Sumber">
+                                        Lihat
+                                    </a>
+                                @endif
+                            </div>
+                        </article>
+                    @empty
+                        <div class="col-span-full py-12 text-center text-zinc-500 text-xs">
+                            Belum ada artikel berita yang dibuat.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 5. MINIMALIST ADMIN FOOTER (#000000)       -->
+        <!-- ========================================== -->
+        <footer class="w-full bg-[#000000] text-white py-8 border-t border-zinc-800">
+            <div
+                class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-7 h-7 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-[11px]">
+                        BLB</div>
+                    <span class="text-xs font-semibold text-zinc-300">Panel Administrasi Resmi &bull; Banu Lesmana
+                        Bagaskara, S.M.</span>
+                </div>
+                <div class="text-xs text-zinc-500">&copy; 2026 banubagaskara.</div>
+            </div>
+        </footer>
+
+        <!-- ======================================================== -->
+        <!-- MODAL PRATINJAU CEPAT ASPIRASI WARGA (Shadcn Dialog)     -->
+        <!-- ======================================================== -->
+        <div x-show="previewModal" x-cloak role="dialog" aria-modal="true" aria-labelledby="modal-aspirasi-title"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-zinc-950/75 backdrop-blur-sm">
+            <div @click.away="closeAspiration()"
+                class="bg-white border border-zinc-200 text-zinc-950 rounded-2xl shadow-2xl max-w-xl w-full overflow-hidden">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 bg-[#faf5f5] border-b border-zinc-200 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span
+                            class="font-mono text-xs font-bold text-[#BC0202] bg-white border border-red-200 px-2.5 py-1 rounded-md"
+                            x-text="selectedAspiration?.ticket"></span>
+                        <span class="text-xs text-zinc-500 font-medium truncate" x-text="selectedAspiration?.date"></span>
+                    </div>
+                    <button type="button" @click="closeAspiration()" aria-label="Tutup Rincian Aspirasi"
+                        class="rounded-lg p-1.5 text-zinc-500 hover:text-zinc-950 hover:bg-zinc-200/60 transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">Perihal
+                            Aspirasi:</span>
+                        <h3 id="modal-aspirasi-title" class="text-base sm:text-lg font-bold text-zinc-950 leading-snug"
+                            x-text="selectedAspiration?.subject"></h3>
+                    </div>
+
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-lg bg-zinc-50 border border-zinc-200/80 text-xs">
+                        <div>
+                            <span class="text-zinc-500 block font-medium">Pengirim:</span>
+                            <strong class="text-zinc-900" x-text="selectedAspiration?.sender"></strong>
+                        </div>
+                        <div>
+                            <span class="text-zinc-500 block font-medium">No. WhatsApp:</span>
+                            <strong class="text-zinc-900" x-text="selectedAspiration?.phone"></strong>
+                        </div>
+                        <div class="sm:col-span-2 pt-1 border-t border-zinc-200/60">
+                            <span class="text-zinc-500 block font-medium">Alamat Lingkungan:</span>
+                            <span class="text-zinc-900 font-semibold" x-text="selectedAspiration?.address"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1.5">Uraian /
+                            Isi Laporan:</span>
+                        <div class="p-4 rounded-xl border border-zinc-200 bg-white text-xs sm:text-sm text-zinc-800 leading-relaxed font-normal"
+                            x-text="selectedAspiration?.description"></div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
                 <div
-                  @click="openAspiration(item)"
-                  class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors cursor-pointer group"
-                >
-                  <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                    <div class="flex items-center gap-2">
-                      <span class="font-mono text-[11px] font-bold text-zinc-800 bg-white border border-zinc-200 px-2 py-0.5 rounded-md shadow-2xs" x-text="item.ticket"></span>
-                      <span class="text-[11px] text-zinc-500 font-medium" x-text="item.date"></span>
-                    </div>
-                    <span
-                      class="inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-md border"
-                      :class="{
-                        'bg-red-50 text-[#BC0202] border-red-100': item.status === 'Baru',
-                        'bg-white text-zinc-800 border-zinc-200': item.status === 'Ditinjau',
-                        'bg-zinc-100 text-zinc-600 border-zinc-200': item.status === 'Selesai'
-                      }"
-                      x-text="item.status"
-                    ></span>
-                  </div>
-
-                  <h3 class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight leading-snug" x-text="item.subject"></h3>
-
-                  <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
-                    <span x-text="item.sender + ' • ' + item.address"></span>
-                    <span class="font-semibold text-zinc-700 group-hover:text-[#BC0202] transition-colors">Baca Uraian &rarr;</span>
-                  </div>
+                    class="px-6 py-4 bg-[#fafafa] border-t border-zinc-200 flex flex-wrap items-center justify-between gap-3">
+                    <a href="{{ route('admin.aspirasi.index') }}"
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#BC0202] hover:underline">
+                        <span>Buka di Modul Aspirasi Lengkap</span>
+                        <span>&rarr;</span>
+                    </a>
+                    <button type="button" @click="closeAspiration()"
+                        class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-semibold px-4 py-2 transition-colors shadow-2xs">
+                        Tutup
+                    </button>
                 </div>
-              </template>
             </div>
-          </div>
-
-          <!-- Right Column (5 Cols): Pengaturan Halaman Website -->
-          <div class="lg:col-span-5 rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
-            <div class="pb-5 mb-5 border-b border-zinc-100">
-              <h2 class="text-lg sm:text-xl font-bold text-zinc-950 tracking-tight">Pengaturan <span class="text-[#BC0202]">Halaman</span></h2>
-              <p class="text-xs text-zinc-500 mt-1">Pintasan pengelolaan data statis halaman publik &amp; optimasi SEO.</p>
-            </div>
-
-            <div class="space-y-3">
-              <!-- Kategori 1: Umum -->
-              <a
-                href="{{ route('admin.pengaturan.index') }}#umum"
-                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group"
-              >
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">1. Pengaturan Umum</div>
-                  <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Identitas situs, alamat Rumah Aspirasi, kontak &amp; media sosial</div>
-                </div>
-                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
-              </a>
-
-              <!-- Kategori 2: Halaman Beranda -->
-              <a
-                href="{{ route('admin.pengaturan.index') }}#beranda"
-                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group"
-              >
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">2. Halaman Beranda</div>
-                  <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Hero Section, Hero Image, Banner, &amp; Kolase Foto Bento</div>
-                </div>
-                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
-              </a>
-
-              <!-- Kategori 3: Halaman Profil -->
-              <a
-                href="{{ route('admin.pengaturan.index') }}#profil"
-                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group"
-              >
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">3. Halaman Profil (Kenali Saya)</div>
-                  <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Hero, Visi Misi, Rekam Jejak, 12 Isu, 6 Program, Kolase, Kutipan</div>
-                </div>
-                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
-              </a>
-
-              <!-- Kategori 4: SEO -->
-              <a
-                href="{{ route('admin.pengaturan.index') }}#seo"
-                class="p-4 rounded-lg border border-zinc-200/90 bg-[#fafafa] hover:bg-white hover:border-zinc-300 transition-colors flex items-center justify-between gap-3 group"
-              >
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-xs sm:text-sm text-zinc-950 group-hover:text-[#BC0202] transition-colors tracking-tight">4. Pengaturan SEO</div>
-                  <div class="text-[11px] sm:text-xs text-zinc-600 mt-0.5 truncate">Meta Title, Meta Description, Open Graph &amp; keterbacaan mesin pencari</div>
-                </div>
-                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white text-zinc-800 border border-zinc-200 shadow-2xs shrink-0">Kelola</span>
-              </a>
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- 4. PUBLIKASI TERAKHIR (TAB KINERJA & BERITA RESMI)       -->
-    <!-- ======================================================== -->
-    <section class="w-full bg-white py-12 sm:py-16 border-b border-zinc-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-          <div>
-            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-950 tracking-tight">Publikasi <span class="text-[#BC0202]">Terakhir</span></h2>
-            <p class="text-xs sm:text-sm text-zinc-600 mt-1">Daftar tulisan Hasil Kinerja dan rilis Berita yang baru diperbarui.</p>
-          </div>
-
-          <!-- Tab Switcher -->
-          <div class="inline-flex items-center gap-1.5 bg-[#fafafa] border border-zinc-200 p-1.5 rounded-xl shadow-2xs self-start sm:self-auto">
-            <button
-              type="button"
-              @click="activeTab = 'kinerja'"
-              :class="activeTab === 'kinerja' ? 'bg-white text-zinc-950 border border-zinc-200/90 shadow-2xs font-bold' : 'text-zinc-600 hover:text-zinc-950 font-semibold'"
-              class="text-xs px-3.5 py-1.5 rounded-lg transition-all"
-            >
-              Hasil Kinerja
-            </button>
-            <button
-              type="button"
-              @click="activeTab = 'berita'"
-              :class="activeTab === 'berita' ? 'bg-white text-zinc-950 border border-zinc-200/90 shadow-2xs font-bold' : 'text-zinc-600 hover:text-zinc-950 font-semibold'"
-              class="text-xs px-3.5 py-1.5 rounded-lg transition-all"
-            >
-              Artikel Berita
-            </button>
-          </div>
-        </div>
-
-        <!-- Tab Panel 1: 3 Hasil Kinerja Terakhir -->
-        <div x-show="activeTab === 'kinerja'" class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
-          @forelse ($recentReports as $report)
-            <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-              <div>
-                <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                  @if ($report->cover_image)
-                    <img
-                      src="{{ asset($report->cover_image) }}"
-                      alt="{{ $report->title }}"
-                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                  @else
-                    <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
-                      <span class="text-white font-bold mb-1">banubagaskara.</span>
-                      <span class="text-[11px] text-zinc-400">Hasil Kinerja</span>
-                    </div>
-                  @endif
-                </div>
-                <div class="p-5">
-                  <div class="flex items-center justify-between gap-2 mb-2.5">
-                    <span class="text-[11px] font-medium text-zinc-500">{{ $report->published_at ? $report->published_at->translatedFormat('d F Y') : ($report->created_at ? $report->created_at->translatedFormat('d F Y') : '-') }}</span>
-                    @if ($report->is_featured)
-                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan Utama</span>
-                    @else
-                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">{{ ucfirst($report->status) }}</span>
-                    @endif
-                  </div>
-                  <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight line-clamp-2">{{ $report->title }}</h3>
-                  <p class="text-xs text-zinc-500 mt-2 line-clamp-2">{{ $report->excerpt }}</p>
-                </div>
-              </div>
-              <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-                <a
-                  href="{{ route('admin.kinerja.index') }}"
-                  class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-                >
-                  Kelola Kinerja
-                </a>
-                @if ($report->status === 'published')
-                  <a
-                    href="{{ route('kinerja.show', $report->slug) }}"
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-                    title="Pratinjau Publik"
-                  >
-                    Lihat
-                  </a>
-                @endif
-              </div>
-            </article>
-          @empty
-            <div class="col-span-full py-12 text-center text-zinc-500 text-xs">
-              Belum ada artikel kinerja yang dibuat.
-            </div>
-          @endforelse
-        </div>
-
-        <!-- Tab Panel 2: 3 Artikel Berita Terakhir -->
-        <div x-show="activeTab === 'berita'" x-cloak class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
-          @forelse ($recentNews as $newsItem)
-            <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-              <div>
-                <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                  @if ($newsItem->cover_image)
-                    <img
-                      src="{{ asset($newsItem->cover_image) }}"
-                      alt="{{ $newsItem->title }}"
-                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                  @else
-                    <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
-                      <span class="text-white font-bold mb-1">banubagaskara.</span>
-                      <span class="text-[11px] text-zinc-400">Artikel Berita</span>
-                    </div>
-                  @endif
-                </div>
-                <div class="p-5">
-                  <div class="flex items-center justify-between gap-2 mb-2.5">
-                    <span class="text-[11px] font-medium text-zinc-500">{{ $newsItem->published_at ? $newsItem->published_at->translatedFormat('d F Y') : ($newsItem->created_at ? $newsItem->created_at->translatedFormat('d F Y') : '-') }}</span>
-                    @if ($newsItem->is_featured)
-                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan Berita</span>
-                    @else
-                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">{{ ucfirst($newsItem->status) }}</span>
-                    @endif
-                  </div>
-                  <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight line-clamp-2">{{ $newsItem->title }}</h3>
-                  <p class="text-xs text-zinc-500 mt-2 line-clamp-2">Sumber: {{ $newsItem->source_url ?: ($newsItem->source ?: 'Rilis Media') }}</p>
-                </div>
-              </div>
-              <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-                <a
-                  href="{{ route('admin.berita.index') }}"
-                  class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-                >
-                  Kelola Berita
-                </a>
-                @if ($newsItem->status === 'published' && ($newsItem->source_url || $newsItem->source))
-                  <a
-                    href="{{ $newsItem->source_url ?: $newsItem->source }}"
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-                    title="Lihat Sumber"
-                  >
-                    Lihat
-                  </a>
-                @endif
-              </div>
-            </article>
-          @empty
-            <div class="col-span-full py-12 text-center text-zinc-500 text-xs">
-              Belum ada artikel berita yang dibuat.
-            </div>
-          @endforelse
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- 5. MINIMALIST ADMIN FOOTER (#000000)       -->
-    <!-- ========================================== -->
-    <footer class="w-full bg-[#000000] text-white py-8 border-t border-zinc-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="w-7 h-7 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-[11px]">BLB</div>
-          <span class="text-xs font-semibold text-zinc-300">Panel Administrasi Resmi &bull; Banu Lesmana Bagaskara, S.M.</span>
-        </div>
-        <div class="text-xs text-zinc-500">&copy; 2026 banubagaskara.</div>
-      </div>
-    </footer>
-
-    <!-- ======================================================== -->
-    <!-- MODAL PRATINJAU CEPAT ASPIRASI WARGA (Shadcn Dialog)     -->
-    <!-- ======================================================== -->
-    <div
-      x-show="previewModal"
-      x-cloak
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-aspirasi-title"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-zinc-950/75 backdrop-blur-sm"
-    >
-      <div @click.away="closeAspiration()" class="bg-white border border-zinc-200 text-zinc-950 rounded-2xl shadow-2xl max-w-xl w-full overflow-hidden">
-        <!-- Modal Header -->
-        <div class="px-6 py-4 bg-[#faf5f5] border-b border-zinc-200 flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <span class="font-mono text-xs font-bold text-[#BC0202] bg-white border border-red-200 px-2.5 py-1 rounded-md" x-text="selectedAspiration?.ticket"></span>
-            <span class="text-xs text-zinc-500 font-medium truncate" x-text="selectedAspiration?.date"></span>
-          </div>
-          <button
-            type="button"
-            @click="closeAspiration()"
-            aria-label="Tutup Rincian Aspirasi"
-            class="rounded-lg p-1.5 text-zinc-500 hover:text-zinc-950 hover:bg-zinc-200/60 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-          <div>
-            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">Perihal Aspirasi:</span>
-            <h3 id="modal-aspirasi-title" class="text-base sm:text-lg font-bold text-zinc-950 leading-snug" x-text="selectedAspiration?.subject"></h3>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-lg bg-zinc-50 border border-zinc-200/80 text-xs">
-            <div>
-              <span class="text-zinc-500 block font-medium">Pengirim:</span>
-              <strong class="text-zinc-900" x-text="selectedAspiration?.sender"></strong>
-            </div>
-            <div>
-              <span class="text-zinc-500 block font-medium">No. WhatsApp:</span>
-              <strong class="text-zinc-900" x-text="selectedAspiration?.phone"></strong>
-            </div>
-            <div class="sm:col-span-2 pt-1 border-t border-zinc-200/60">
-              <span class="text-zinc-500 block font-medium">Alamat Lingkungan:</span>
-              <span class="text-zinc-900 font-semibold" x-text="selectedAspiration?.address"></span>
-            </div>
-          </div>
-
-          <div>
-            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1.5">Uraian / Isi Laporan:</span>
-            <div class="p-4 rounded-xl border border-zinc-200 bg-white text-xs sm:text-sm text-zinc-800 leading-relaxed font-normal" x-text="selectedAspiration?.description"></div>
-          </div>
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="px-6 py-4 bg-[#fafafa] border-t border-zinc-200 flex flex-wrap items-center justify-between gap-3">
-          <a
-            href="{{ route('admin.aspirasi.index') }}"
-            class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#BC0202] hover:underline"
-          >
-            <span>Buka di Modul Aspirasi Lengkap</span>
-            <span>&rarr;</span>
-          </a>
-          <button
-            type="button"
-            @click="closeAspiration()"
-            class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-semibold px-4 py-2 transition-colors shadow-2xs"
-          >
-            Tutup
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
 @endsection

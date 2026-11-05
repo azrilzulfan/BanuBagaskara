@@ -13,11 +13,13 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => 'admin@banubagaskara.id'],
+        $email = (string) config('admin.initial_email', 'admin@banubagaskara.id');
+
+        User::firstOrCreate(
+            ['email' => $email],
             [
-                'name' => 'Admin Banu Bagaskara',
-                'password' => Hash::make('password123'),
+                'name' => (string) config('admin.initial_name', 'Admin Banu Bagaskara'),
+                'password' => Hash::make((string) config('admin.initial_password', 'password123')),
                 'email_verified_at' => now(),
             ]
         );

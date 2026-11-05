@@ -107,11 +107,60 @@ class BlockEngineService
         // Remove style attributes to prevent CSS expression/injection
         $sanitized = preg_replace('/\s+style\s*=\s*(["\'][^"\']*["\']|[^\s>]+)/i', '', (string) $sanitized);
 
-        // Remove javascript:, vbscript:, and data: URIs in links
-        $sanitized = preg_replace('/(href|src)\s*=\s*(["\'])\s*(?:javascript|vbscript|data):[^"\']*\2/i', '$1="#"', (string) $sanitized);
-        $sanitized = preg_replace('/(href|src)\s*=\s*(?:javascript|vbscript|data):[^\s>]*/i', '$1="#"', (string) $sanitized);
+        // Validate quoted href/src attributes (including HTML-entity encoded schemes)
+        $sanitized = preg_replace_callback(
+            '/\b(href|src)\s*=\s*(["\'])(.*?)\2/is',
+            function (array $matches): string {
+                $attr = strtolower($matches[1]);
+                $quote = $matches[2];
+                $rawVal = trim($matches[3]);
+                $decoded = html_entity_decode($rawVal, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $normalized = preg_replace('/[\x00-\x20]+/', '', $decoded) ?? '';
+
+                if (! $this->isSafeUrlScheme($normalized)) {
+                    return $attr.'='.$quote.'#'.$quote;
+                }
+
+                return $attr.'='.$quote.$rawVal.$quote;
+            },
+            (string) $sanitized
+        );
+
+        // Validate unquoted href/src attributes
+        $sanitized = preg_replace_callback(
+            '/\b(href|src)\s*=\s*([^\s"\'>]+)/is',
+            function (array $matches): string {
+                $attr = strtolower($matches[1]);
+                $rawVal = trim($matches[2]);
+                $decoded = html_entity_decode($rawVal, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $normalized = preg_replace('/[\x00-\x20]+/', '', $decoded) ?? '';
+
+                if (! $this->isSafeUrlScheme($normalized)) {
+                    return $attr.'="#"';
+                }
+
+                return $attr.'="'.$rawVal.'"';
+            },
+            (string) $sanitized
+        );
 
         return (string) $sanitized;
+    }
+
+    /**
+     * Check whether a normalized URI uses an allowed safe scheme or relative path.
+     */
+    protected function isSafeUrlScheme(string $normalizedUri): bool
+    {
+        if ($normalizedUri === '' || str_starts_with($normalizedUri, '#') || str_starts_with($normalizedUri, '/')) {
+            return true;
+        }
+
+        if (str_contains($normalizedUri, ':')) {
+            return (bool) preg_match('/^(https?:|mailto:|tel:)/i', $normalizedUri);
+        }
+
+        return true;
     }
 
     /**
@@ -126,17 +175,19 @@ class BlockEngineService
             $url = substr($url, 3);
         }
 
+        $cleanUrl = ltrim($url, '/');
+        if ($cleanUrl === '' || $cleanUrl === '#' || preg_match('/^(javascript|data|vbscript):/i', $cleanUrl)) {
+            return '';
+        }
+
+        $src = preg_match('/^https?:\/\//i', $cleanUrl) ? $cleanUrl : '/'.$cleanUrl;
+
         $captionHtml = $caption !== ''
             ? '<figcaption class="text-xs text-zinc-500 text-center mt-2.5 px-4 font-medium italic">'.$caption.'</figcaption>'
             : '';
 
-        $cleanUrl = ltrim($url, '/');
-        if (preg_match('/^(javascript|data|vbscript):/i', $cleanUrl)) {
-            $cleanUrl = '#';
-        }
-
         return '<figure class="my-8 rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shadow-2xs">
-            <img src="/'.$cleanUrl.'" alt="'.$caption.'" class="w-full aspect-[16/9] object-cover" loading="lazy" />
+            <img src="'.$src.'" alt="'.$caption.'" class="w-full aspect-[16/9] object-cover" loading="lazy" />
             '.$captionHtml.'
         </figure>';
     }
@@ -255,8 +306,12 @@ class BlockEngineService
         $metaText = $fileSize !== '' ? $fileSize.' &bull; Unduh Dokumen Resmi' : 'Unduh Dokumen Resmi';
 
         $cleanUrl = ltrim($url, '/');
-        if (preg_match('/^(javascript|data|vbscript):/i', $cleanUrl)) {
-            $cleanUrl = '#';
+        if ($cleanUrl === '' || $cleanUrl === '#' || preg_match('/^(javascript|data|vbscript):/i', $cleanUrl)) {
+            $href = '#';
+        } elseif (preg_match('/^https?:\/\//i', $cleanUrl)) {
+            $href = $cleanUrl;
+        } else {
+            $href = '/'.$cleanUrl;
         }
 
         return '<div class="my-6 p-4 sm:p-5 rounded-xl border border-zinc-200 bg-white hover:border-[#BC0202] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
@@ -269,7 +324,7 @@ class BlockEngineService
                     <span class="text-xs text-zinc-500 font-medium">'.$metaText.'</span>
                 </div>
             </div>
-            <a href="/'.$cleanUrl.'" download target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-[#BC0202] text-white text-xs font-semibold shrink-0 transition-colors shadow-2xs">
+            <a href="'.$href.'" download target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-[#BC0202] text-white text-xs font-semibold shrink-0 transition-colors shadow-2xs">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>

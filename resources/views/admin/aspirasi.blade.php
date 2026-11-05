@@ -573,7 +573,7 @@
 
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '/admin/aspirasi/' + this.targetDeleteId;
+                    form.action = '{{ route('admin.aspirasi.index') }}/' + this.targetDeleteId;
                     form.innerHTML = '@csrf @method('DELETE')';
                     document.body.appendChild(form);
                     form.submit();

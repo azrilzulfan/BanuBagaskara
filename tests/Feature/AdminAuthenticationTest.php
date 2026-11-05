@@ -133,3 +133,73 @@ it('fails updating password when current password is wrong', function () {
     $response->assertSessionHasErrors(['current_password']);
     expect(Hash::check('OldPassword123!', $admin->fresh()->password))->toBeTrue();
 });
+
+it('silently rejects login attempt when bot fills admin_hp honeypot field', function () {
+    User::create([
+        'name' => 'Banu Bagaskara Admin',
+        'email' => 'admin@banubagaskara.id',
+        'password' => Hash::make('BanuBogor2024!*'),
+    ]);
+
+    $response = $this->from(route('admin.login'))->post(route('admin.login.submit'), [
+        'email' => 'admin@banubagaskara.id',
+        'password' => 'BanuBogor2024!*',
+        'admin_hp' => 'I am a malicious bot auto-filler',
+    ]);
+
+    $response->assertRedirect(route('admin.login'));
+    $response->assertSessionHasErrors(['email']);
+    $this->assertGuest();
+});
+
+it('expires admin session when inactive longer than configured session timeout', function () {
+    $admin = User::create([
+        'name' => 'Banu Bagaskara Admin',
+        'email' => 'admin@banubagaskara.id',
+        'password' => Hash::make('BanuBogor2024!*'),
+    ]);
+
+    // Set activity time to 35 minutes ago (timeout is 30 mins)
+    $response = $this->actingAs($admin)
+        ->withSession(['admin_last_activity' => time() - (35 * 60)])
+        ->get(route('admin.dashboard'));
+
+    $response->assertRedirect(route('admin.login'));
+    $response->assertSessionHasErrors(['email']);
+    $this->assertGuest();
+});
+
+it('blocks access when client IP is not in configured admin allowlist', function () {
+    $admin = User::create([
+        'name' => 'Banu Bagaskara Admin',
+        'email' => 'admin@banubagaskara.id',
+        'password' => Hash::make('BanuBogor2024!*'),
+    ]);
+
+    config(['admin.allowed_ips' => ['192.168.1.100', '10.0.0.1']]);
+
+    // Request from unauthorized IP (127.0.0.1)
+    $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+    $response->assertNotFound();
+
+    // Request from authorized IP (192.168.1.100)
+    $allowedResponse = $this->actingAs($admin)
+        ->withServerVariables(['REMOTE_ADDR' => '192.168.1.100'])
+        ->get(route('admin.dashboard'));
+    $allowedResponse->assertOk();
+});
+
+it('injects anti-caching and noindex security headers on admin panel responses', function () {
+    $admin = User::create([
+        'name' => 'Banu Bagaskara Admin',
+        'email' => 'admin@banubagaskara.id',
+        'password' => Hash::make('BanuBogor2024!*'),
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+    $response->assertOk();
+    $response->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    expect($response->headers->get('Cache-Control'))->toContain('no-store', 'no-cache', 'must-revalidate', 'max-age=0');
+    $response->assertHeader('Pragma', 'no-cache');
+});

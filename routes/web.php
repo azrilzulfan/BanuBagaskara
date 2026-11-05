@@ -15,6 +15,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PerformanceReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Middleware\AdminSecurityMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,62 +42,79 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 /*
 |--------------------------------------------------------------------------
-| Authentication Routes (Single Admin)
+| Decoy / Obfuscation Routes (Menghalangi Bot Reconnaissance & Scanners)
 |--------------------------------------------------------------------------
 */
-Route::redirect('/login', '/admin/login')->name('login');
-Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
-Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
-Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+$adminPrefix = config('admin.prefix', 'portal-dewan');
+
+if ($adminPrefix !== 'admin') {
+    Route::any('/admin', fn () => abort(404));
+    Route::any('/admin/{any}', fn () => abort(404))->where('any', '.*');
+}
+if ($adminPrefix !== 'login') {
+    Route::any('/login', fn () => abort(404));
+}
+Route::any('/wp-admin', fn () => abort(404));
+Route::any('/wp-login.php', fn () => abort(404));
+Route::any('/administrator', fn () => abort(404));
+Route::any('/backend', fn () => abort(404));
 Route::any('/register', fn () => abort(404));
 
 /*
 |--------------------------------------------------------------------------
-| Admin Protected Routes (7 Modul Dasbor)
+| Admin Portal Routes (Configurable Secret URL Prefix + Security Middleware)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    // 1. Dashboard Ringkasan & KPI
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+Route::prefix($adminPrefix)->name('admin.')->middleware([AdminSecurityMiddleware::class])->group(function () {
+    // 1. Otentikasi Administrator Tunggal (Single Admin)
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-    // 2. Modul Hasil Kinerja (Modular Block Canvas)
-    Route::get('/kinerja', [AdminPerformanceReportController::class, 'index'])->name('kinerja.index');
-    Route::post('/kinerja', [AdminPerformanceReportController::class, 'store'])->name('kinerja.store');
-    Route::put('/kinerja/{report}', [AdminPerformanceReportController::class, 'update'])->name('kinerja.update');
-    Route::delete('/kinerja/{report}', [AdminPerformanceReportController::class, 'destroy'])->name('kinerja.destroy');
-    Route::patch('/kinerja/{report}/toggle-featured', [AdminPerformanceReportController::class, 'toggleFeatured'])->name('kinerja.toggle-featured');
-    Route::patch('/kinerja/{report}/toggle-status', [AdminPerformanceReportController::class, 'toggleStatus'])->name('kinerja.toggle-status');
+    // 2. Modul Dasbor Terproteksi (Single Admin Dashboard)
+    Route::middleware(['auth'])->group(function () {
+        // Ringkasan & KPI
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    // 3. Modul Kelola Berita
-    Route::get('/berita', [AdminNewsController::class, 'index'])->name('berita.index');
-    Route::post('/berita', [AdminNewsController::class, 'store'])->name('berita.store');
-    Route::put('/berita/{news}', [AdminNewsController::class, 'update'])->name('berita.update');
-    Route::delete('/berita/{news}', [AdminNewsController::class, 'destroy'])->name('berita.destroy');
-    Route::patch('/berita/{news}/toggle-featured', [AdminNewsController::class, 'toggleFeatured'])->name('berita.toggle-featured');
-    Route::patch('/berita/{news}/toggle-status', [AdminNewsController::class, 'toggleStatus'])->name('berita.toggle-status');
+        // Modul Hasil Kinerja (Modular Block Canvas)
+        Route::get('/kinerja', [AdminPerformanceReportController::class, 'index'])->name('kinerja.index');
+        Route::post('/kinerja', [AdminPerformanceReportController::class, 'store'])->name('kinerja.store');
+        Route::put('/kinerja/{report}', [AdminPerformanceReportController::class, 'update'])->name('kinerja.update');
+        Route::delete('/kinerja/{report}', [AdminPerformanceReportController::class, 'destroy'])->name('kinerja.destroy');
+        Route::patch('/kinerja/{report}/toggle-featured', [AdminPerformanceReportController::class, 'toggleFeatured'])->name('kinerja.toggle-featured');
+        Route::patch('/kinerja/{report}/toggle-status', [AdminPerformanceReportController::class, 'toggleStatus'])->name('kinerja.toggle-status');
 
-    // 4. Modul Kelola Galeri Album & Foto
-    Route::get('/galeri', [AdminGalleryController::class, 'index'])->name('galeri.index');
-    Route::post('/galeri', [AdminGalleryController::class, 'store'])->name('galeri.store');
-    Route::put('/galeri/{album}', [AdminGalleryController::class, 'update'])->name('galeri.update');
-    Route::delete('/galeri/{album}', [AdminGalleryController::class, 'destroy'])->name('galeri.destroy');
-    Route::patch('/galeri/{album}/toggle-status', [AdminGalleryController::class, 'toggleStatus'])->name('galeri.toggle-status');
+        // Modul Kelola Berita
+        Route::get('/berita', [AdminNewsController::class, 'index'])->name('berita.index');
+        Route::post('/berita', [AdminNewsController::class, 'store'])->name('berita.store');
+        Route::put('/berita/{news}', [AdminNewsController::class, 'update'])->name('berita.update');
+        Route::delete('/berita/{news}', [AdminNewsController::class, 'destroy'])->name('berita.destroy');
+        Route::patch('/berita/{news}/toggle-featured', [AdminNewsController::class, 'toggleFeatured'])->name('berita.toggle-featured');
+        Route::patch('/berita/{news}/toggle-status', [AdminNewsController::class, 'toggleStatus'])->name('berita.toggle-status');
 
-    // 5. Modul Kotak Aspirasi Warga & Disposisi
-    Route::get('/aspirasi', [AdminAspirationController::class, 'index'])->name('aspirasi.index');
-    Route::get('/aspirasi/export', [AdminAspirationController::class, 'exportCsv'])->name('aspirasi.export');
-    Route::patch('/aspirasi/{aspiration}/status', [AdminAspirationController::class, 'updateStatus'])->name('aspirasi.update-status');
-    Route::post('/aspirasi/{aspiration}/notes', [AdminAspirationController::class, 'storeNote'])->name('aspirasi.store-note');
-    Route::delete('/aspirasi/{aspiration}', [AdminAspirationController::class, 'destroy'])->name('aspirasi.destroy');
-    Route::post('/aspirasi/bulk-delete', [AdminAspirationController::class, 'bulkDelete'])->name('aspirasi.bulk-delete');
+        // Modul Kelola Galeri Album & Foto
+        Route::get('/galeri', [AdminGalleryController::class, 'index'])->name('galeri.index');
+        Route::post('/galeri', [AdminGalleryController::class, 'store'])->name('galeri.store');
+        Route::put('/galeri/{album}', [AdminGalleryController::class, 'update'])->name('galeri.update');
+        Route::delete('/galeri/{album}', [AdminGalleryController::class, 'destroy'])->name('galeri.destroy');
+        Route::patch('/galeri/{album}/toggle-status', [AdminGalleryController::class, 'toggleStatus'])->name('galeri.toggle-status');
 
-    // 6. Modul Pengaturan Halaman Website
-    Route::get('/pengaturan', [AdminSettingController::class, 'index'])->name('pengaturan.index');
-    Route::post('/pengaturan', [AdminSettingController::class, 'update'])->name('pengaturan.update');
-    Route::post('/upload', [AdminSettingController::class, 'upload'])
-        ->middleware('throttle:30,1')
-        ->name('upload');
+        // Modul Kotak Aspirasi Warga & Disposisi
+        Route::get('/aspirasi', [AdminAspirationController::class, 'index'])->name('aspirasi.index');
+        Route::get('/aspirasi/export', [AdminAspirationController::class, 'exportCsv'])->name('aspirasi.export');
+        Route::patch('/aspirasi/{aspiration}/status', [AdminAspirationController::class, 'updateStatus'])->name('aspirasi.update-status');
+        Route::post('/aspirasi/{aspiration}/notes', [AdminAspirationController::class, 'storeNote'])->name('aspirasi.store-note');
+        Route::delete('/aspirasi/{aspiration}', [AdminAspirationController::class, 'destroy'])->name('aspirasi.destroy');
+        Route::post('/aspirasi/bulk-delete', [AdminAspirationController::class, 'bulkDelete'])->name('aspirasi.bulk-delete');
 
-    // 7. Ganti Password Administrator
-    Route::put('/password', [AdminAuthController::class, 'updatePassword'])->name('password.update');
+        // Modul Pengaturan Halaman Website
+        Route::get('/pengaturan', [AdminSettingController::class, 'index'])->name('pengaturan.index');
+        Route::post('/pengaturan', [AdminSettingController::class, 'update'])->name('pengaturan.update');
+        Route::post('/upload', [AdminSettingController::class, 'upload'])
+            ->middleware('throttle:30,1')
+            ->name('upload');
+
+        // Ganti Password Administrator
+        Route::put('/password', [AdminAuthController::class, 'updatePassword'])->name('password.update');
+    });
 });

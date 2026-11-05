@@ -71,12 +71,18 @@
                 <!-- Form Element -->
                 <form method="POST" action="{{ route('admin.login.submit') }}" class="space-y-4">
                     @csrf
+
+                    <!-- Honeypot anti-bot field -->
+                    <div class="hidden" aria-hidden="true" style="display:none !important;">
+                        <input type="text" name="admin_hp" tabindex="-1" autocomplete="off" />
+                    </div>
+
                     <!-- Email / Username -->
                     <div>
                         <label for="admin_email" class="block text-xs font-bold text-zinc-900 mb-1.5">Email / Nama
                             Pengguna</label>
-                        <input type="email" id="admin_email" name="email"
-                            value="{{ old('email', 'admin@banubagaskara.id') }}" required aria-required="true"
+                        <input type="email" id="admin_email" name="email" autocomplete="username"
+                            value="{{ old('email') }}" required aria-required="true"
                             placeholder="admin@banubagaskara.id"
                             class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs font-medium" />
                     </div>
@@ -87,7 +93,7 @@
                             <label for="admin_password" class="block text-xs font-bold text-zinc-900">Kata Sandi</label>
                         </div>
                         <div class="relative">
-                            <input :type="showPassword ? 'text' : 'password'" id="admin_password" name="password"
+                            <input :type="showPassword ? 'text' : 'password'" id="admin_password" name="password" autocomplete="current-password"
                                 required aria-required="true" placeholder="Masukkan kata sandi admin..."
                                 class="w-full rounded-lg border border-zinc-300 bg-white pl-3.5 pr-10 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs" />
                             <button type="button" @click="showPassword = !showPassword"

@@ -159,7 +159,7 @@ class SiteSettingSeeder extends Seeder
                     'quote' => [
                         'text' => 'Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.',
                         'author' => 'Banu Lesmana Bagaskara, S.M.',
-                        'role' => 'Anggota DPRD Kota Bogor &bull; Dapil 4 Tanah Sareal',
+                        'role' => 'Anggota DPRD Kota Bogor • Dapil 4 Tanah Sareal',
                     ],
                 ],
             ],
@@ -174,13 +174,13 @@ class SiteSettingSeeder extends Seeder
                     'ogImage' => null,
                     'canonicalUrl' => 'https://banubagaskara.id',
                     'enableIndexing' => true,
-                    'googleSearchConsoleTag' => 'google-site-verification=SAMPLE_CODE_BLB_2026',
+                    'googleSearchConsoleTag' => '',
                 ],
             ],
         ];
 
         foreach ($settings as $setting) {
-            SiteSetting::updateOrCreate(
+            SiteSetting::firstOrCreate(
                 ['key' => $setting['key']],
                 $setting
             );

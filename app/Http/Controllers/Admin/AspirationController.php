@@ -21,6 +21,9 @@ class AspirationController extends Controller
 
     public function index(Request $request): View
     {
+        Aspiration::where('status', AspirationStatus::Baru->value)
+            ->update(['status' => AspirationStatus::Ditinjau->value]);
+
         $aspirations = Aspiration::latest('created_at')
             ->get()
             ->map(function ($item) {

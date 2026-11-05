@@ -19,9 +19,9 @@
     Kembali ke Beranda
   </a>
   <a
-    href="{{ route('admin.login') }}"
+    href="{{ route('kontak.index') }}"
     class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-800 text-xs sm:text-sm font-semibold px-5 py-2.5 shadow-2xs transition-colors cursor-pointer"
   >
-    Masuk Dasbor Admin
+    Hubungi Rumah Aspirasi
   </a>
 @endsection

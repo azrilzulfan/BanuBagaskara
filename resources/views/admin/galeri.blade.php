@@ -983,7 +983,7 @@
                         return;
                     }
 
-                    const url = this.formMode === 'create' ? '{{ route('admin.galeri.store') }}' : '/admin/galeri/' + this
+                    const url = this.formMode === 'create' ? '{{ route('admin.galeri.store') }}' : '{{ route('admin.galeri.index') }}/' + this
                         .currentAlbumId;
                     const method = this.formMode === 'create' ? 'POST' : 'PUT';
 
@@ -1024,7 +1024,7 @@
                     if (confirm('Apakah Anda yakin ingin menghapus album galeri ini beserta seluruh fotonya?')) {
                         const form = document.createElement('form');
                         form.method = 'POST';
-                        form.action = '/admin/galeri/' + id;
+                        form.action = '{{ route('admin.galeri.index') }}/' + id;
                         form.innerHTML = `@csrf @method('DELETE')`;
                         document.body.appendChild(form);
                         form.submit();
@@ -1032,7 +1032,7 @@
                 },
 
                 toggleStatus(item) {
-                    fetch(`/admin/galeri/${item.id}/toggle-status`, {
+                    fetch(`{{ route('admin.galeri.index') }}/${item.id}/toggle-status`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',

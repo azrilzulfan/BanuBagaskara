@@ -18,8 +18,9 @@ class CheckSiteMaintenanceMode
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // 1. Bypass untuk rute admin, login, dan health check
-        if ($request->is('admin*') || $request->is('login') || $request->is('up')) {
+        // 1. Bypass untuk rute admin (kustom prefix), login, dan health check
+        $adminPrefix = config('admin.prefix', 'portal-dewan');
+        if ($request->is($adminPrefix.'*') || $request->is('admin*') || $request->is('login') || $request->is('up')) {
             return $next($request);
         }
 

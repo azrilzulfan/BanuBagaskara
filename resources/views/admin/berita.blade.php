@@ -746,7 +746,7 @@
                         realForm.action = '{{ route('admin.berita.store') }}';
                         document.getElementById('newsFormMethod').value = 'POST';
                     } else {
-                        realForm.action = '/admin/berita/' + this.currentArticleId;
+                        realForm.action = '{{ route('admin.berita.index') }}/' + this.currentArticleId;
                         document.getElementById('newsFormMethod').value = 'PUT';
                     }
                     realForm.submit();
@@ -756,7 +756,7 @@
                     if (confirm('Apakah Anda yakin ingin menghapus artikel berita ini?')) {
                         const form = document.createElement('form');
                         form.method = 'POST';
-                        form.action = '/admin/berita/' + id;
+                        form.action = '{{ route('admin.berita.index') }}/' + id;
                         form.innerHTML = `@csrf @method('DELETE')`;
                         document.body.appendChild(form);
                         form.submit();
@@ -764,7 +764,7 @@
                 },
 
                 toggleFeatured(item) {
-                    fetch(`/admin/berita/${item.id}/toggle-featured`, {
+                    fetch(`{{ route('admin.berita.index') }}/${item.id}/toggle-featured`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
@@ -789,7 +789,7 @@
                 },
 
                 toggleStatus(item) {
-                    fetch(`/admin/berita/${item.id}/toggle-status`, {
+                    fetch(`{{ route('admin.berita.index') }}/${item.id}/toggle-status`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',

@@ -90,16 +90,21 @@
                     $rawHeadline = !empty($homeSettings['hero']['headline'])
                         ? $homeSettings['hero']['headline']
                         : '[Headline Utama Beranda]';
-                    if (str_contains($rawHeadline, '<span')) {
-                        $renderedHeadline = $rawHeadline;
-                    } elseif (
+                    if (
                         $rawHeadline === 'Bogor Lebih Baik: Maju & Nyaman untuk Semua' ||
                         $rawHeadline === 'Bogor Lebih Baik:<br />Maju & Nyaman untuk Semua'
                     ) {
                         $renderedHeadline =
                             'Bogor <span class="text-[#BC0202]">Lebih</span> Baik:<br />Maju &amp; <span class="text-[#BC0202]">Nyaman</span> untuk <span class="text-[#BC0202]">Semua</span>';
                     } else {
-                        $renderedHeadline = nl2br(e($rawHeadline));
+                        $escapedHeadline = e($rawHeadline);
+                        $escapedHeadline = preg_replace('/&lt;br\s*\/?&gt;/i', '<br />', $escapedHeadline) ?? $escapedHeadline;
+                        $escapedHeadline = preg_replace(
+                            '/&lt;span\s+class=(?:&quot;|&#039;)text-\[#BC0202\](?:&quot;|&#039;)&gt;(.*?)&lt;\/span&gt;/is',
+                            '<span class="text-[#BC0202]">$1</span>',
+                            $escapedHeadline
+                        ) ?? $escapedHeadline;
+                        $renderedHeadline = nl2br($escapedHeadline);
                     }
                 @endphp
                 <!-- Main Slogan & Headline (Disciplined Sans-Serif Typography) -->

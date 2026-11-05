@@ -1867,7 +1867,7 @@
                         return;
                     }
 
-                    const url = this.formMode === 'create' ? '{{ route('admin.kinerja.store') }}' : '/admin/kinerja/' + this
+                    const url = this.formMode === 'create' ? '{{ route('admin.kinerja.store') }}' : '{{ route('admin.kinerja.index') }}/' + this
                         .currentArticleId;
                     const method = this.formMode === 'create' ? 'POST' : 'PUT';
 
@@ -1909,7 +1909,7 @@
                     if (confirm('Apakah Anda yakin ingin menghapus tulisan hasil kinerja ini?')) {
                         const form = document.createElement('form');
                         form.method = 'POST';
-                        form.action = '/admin/kinerja/' + id;
+                        form.action = '{{ route('admin.kinerja.index') }}/' + id;
                         form.innerHTML = `@csrf @method('DELETE')`;
                         document.body.appendChild(form);
                         form.submit();
@@ -1917,7 +1917,7 @@
                 },
 
                 toggleFeatured(item) {
-                    fetch(`/admin/kinerja/${item.id}/toggle-featured`, {
+                    fetch(`{{ route('admin.kinerja.index') }}/${item.id}/toggle-featured`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1942,7 +1942,7 @@
                 },
 
                 toggleStatus(item) {
-                    fetch(`/admin/kinerja/${item.id}/toggle-status`, {
+                    fetch(`{{ route('admin.kinerja.index') }}/${item.id}/toggle-status`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',

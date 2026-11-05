@@ -16,39 +16,40 @@ beforeEach(function () {
 
 describe('Guest Admin Route Protection Matrix', function () {
     $routes = [
-        ['GET', '/admin'],
-        ['GET', '/admin/kinerja'],
-        ['POST', '/admin/kinerja'],
-        ['PUT', '/admin/kinerja/1'],
-        ['DELETE', '/admin/kinerja/1'],
-        ['PATCH', '/admin/kinerja/1/toggle-featured'],
-        ['PATCH', '/admin/kinerja/1/toggle-status'],
-        ['GET', '/admin/berita'],
-        ['POST', '/admin/berita'],
-        ['PUT', '/admin/berita/1'],
-        ['DELETE', '/admin/berita/1'],
-        ['PATCH', '/admin/berita/1/toggle-featured'],
-        ['PATCH', '/admin/berita/1/toggle-status'],
-        ['GET', '/admin/galeri'],
-        ['POST', '/admin/galeri'],
-        ['PUT', '/admin/galeri/1'],
-        ['DELETE', '/admin/galeri/1'],
-        ['PATCH', '/admin/galeri/1/toggle-status'],
-        ['GET', '/admin/aspirasi'],
-        ['GET', '/admin/aspirasi/export'],
-        ['PATCH', '/admin/aspirasi/1/status'],
-        ['POST', '/admin/aspirasi/1/notes'],
-        ['DELETE', '/admin/aspirasi/1'],
-        ['POST', '/admin/aspirasi/bulk-delete'],
-        ['GET', '/admin/pengaturan'],
-        ['POST', '/admin/pengaturan'],
-        ['POST', '/admin/upload'],
-        ['PUT', '/admin/password'],
+        ['GET', ''],
+        ['GET', '/kinerja'],
+        ['POST', '/kinerja'],
+        ['PUT', '/kinerja/1'],
+        ['DELETE', '/kinerja/1'],
+        ['PATCH', '/kinerja/1/toggle-featured'],
+        ['PATCH', '/kinerja/1/toggle-status'],
+        ['GET', '/berita'],
+        ['POST', '/berita'],
+        ['PUT', '/berita/1'],
+        ['DELETE', '/berita/1'],
+        ['PATCH', '/berita/1/toggle-featured'],
+        ['PATCH', '/berita/1/toggle-status'],
+        ['GET', '/galeri'],
+        ['POST', '/galeri'],
+        ['PUT', '/galeri/1'],
+        ['DELETE', '/galeri/1'],
+        ['PATCH', '/galeri/1/toggle-status'],
+        ['GET', '/aspirasi'],
+        ['GET', '/aspirasi/export'],
+        ['PATCH', '/aspirasi/1/status'],
+        ['POST', '/aspirasi/1/notes'],
+        ['DELETE', '/aspirasi/1'],
+        ['POST', '/aspirasi/bulk-delete'],
+        ['GET', '/pengaturan'],
+        ['POST', '/pengaturan'],
+        ['POST', '/upload'],
+        ['PUT', '/password'],
     ];
 
-    foreach ($routes as [$method, $uri]) {
-        it("strictly redirects unauthenticated {$method} {$uri} to admin login", function () use ($method, $uri) {
-            $response = $this->call($method, $uri);
+    foreach ($routes as [$method, $path]) {
+        it("strictly redirects unauthenticated {$method} {$path} to admin login", function () use ($method, $path) {
+            $prefix = '/'.config('admin.prefix', 'portal-dewan');
+            $response = $this->call($method, $prefix.$path);
             $response->assertRedirect(route('admin.login'));
         });
     }
@@ -56,6 +57,14 @@ describe('Guest Admin Route Protection Matrix', function () {
     it('returns 404 for any register attempt enforcing single admin architecture', function () {
         $this->get('/register')->assertNotFound();
         $this->post('/register')->assertNotFound();
+    });
+
+    it('strictly returns 404 for standard admin and login decoy paths to prevent scanner reconnaissance', function () {
+        $decoys = ['/admin', '/admin/login', '/admin/kinerja', '/login', '/wp-admin', '/wp-login.php', '/administrator', '/backend'];
+        foreach ($decoys as $decoy) {
+            $this->get($decoy)->assertNotFound();
+            $this->post($decoy)->assertNotFound();
+        }
     });
 });
 

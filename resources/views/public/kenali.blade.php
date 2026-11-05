@@ -93,16 +93,20 @@
 
                 @php
                     $profileTitle = $profileSettings['hero']['title'] ?? 'Banu Lesmana Bagaskara, S.M.';
-                    if (str_contains($profileTitle, '<span')) {
-                        $renderedProfileTitle = $profileTitle;
-                    } elseif (
+                    if (
                         $profileTitle === 'Banu Lesmana Bagaskara, S.M.' ||
                         $profileTitle === 'Kenali Banu Lesmana Bagaskara, S.M.'
                     ) {
                         $renderedProfileTitle =
                             '<span class="text-[#BC0202]">Banu</span> Lesmana <span class="text-[#BC0202]">Bagaskara</span>, S.M.';
                     } else {
-                        $renderedProfileTitle = e($profileTitle);
+                        $escapedProfileTitle = e($profileTitle);
+                        $escapedProfileTitle = preg_replace('/&lt;br\s*\/?&gt;/i', '<br />', $escapedProfileTitle) ?? $escapedProfileTitle;
+                        $renderedProfileTitle = preg_replace(
+                            '/&lt;span\s+class=(?:&quot;|&#039;)text-\[#BC0202\](?:&quot;|&#039;)&gt;(.*?)&lt;\/span&gt;/is',
+                            '<span class="text-[#BC0202]">$1</span>',
+                            $escapedProfileTitle
+                        ) ?? $escapedProfileTitle;
                     }
                 @endphp
                 <!-- Main Slogan & Headline (Disciplined Sans-Serif Typography) -->
@@ -669,7 +673,7 @@
             <div class="mt-6 flex flex-col items-center justify-center">
                 <span class="font-bold text-sm text-zinc-950">{{ $quoteAuthor }}</span>
                 @if (!empty($quoteRole))
-                    <span class="text-xs text-zinc-500 mt-0.5">{!! $quoteRole !!}</span>
+                    <span class="text-xs text-zinc-500 mt-0.5">{{ str_replace('&bull;', '•', $quoteRole) }}</span>
                 @endif
             </div>
         </div>

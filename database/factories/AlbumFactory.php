@@ -25,7 +25,7 @@ class AlbumFactory extends Factory
             'title' => $title,
             'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(100, 999),
             'description' => fake()->sentence(),
-            'cover_image' => 'assets/banu/hero_banu.jpg',
+            'cover_image' => 'uploads/sample_album.jpg',
             'event_date' => now()->toDateString(),
             'status' => PublicationStatus::Published->value,
             'sort_order' => 0,

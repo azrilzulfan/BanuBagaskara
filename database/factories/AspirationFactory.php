@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Enums\AspirationPriority;
 use App\Enums\AspirationStatus;
-use App\Enums\TanahSarealKelurahan;
 use App\Models\Aspiration;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -26,7 +25,6 @@ class AspirationFactory extends Factory
             'sender_name' => fake()->name(),
             'phone_number' => '0812'.fake()->numerify('########'),
             'address' => 'RT 0'.fake()->randomDigitNotNull().'/RW 0'.fake()->randomDigitNotNull().', '.fake()->streetAddress(),
-            'kelurahan' => fake()->randomElement(TanahSarealKelurahan::values()),
             'category' => fake()->randomElement(['Infrastruktur', 'Kesehatan', 'Pendidikan', 'Bansos', 'Layanan Publik']),
             'subject' => fake()->sentence(4),
             'description' => fake()->paragraph(),

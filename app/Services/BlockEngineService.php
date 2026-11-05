@@ -101,11 +101,15 @@ class BlockEngineService
         $allowedTags = '<strong><b><em><i><u><a><br><p><span><ul><ol><li><code>';
         $stripped = strip_tags($html, $allowedTags);
 
-        // Remove dangerous on* attributes
-        $sanitized = preg_replace('/\s+on[a-z]+\s*=\s*(["\'][^"\']*["\']|[^\s>]+)/i', '', (string) $stripped);
+        // Remove dangerous on* event handler attributes
+        $sanitized = preg_replace('/\s+on[a-z0-9_-]+\s*=\s*(["\'][^"\']*["\']|[^\s>]+)/i', '', (string) $stripped);
 
-        // Remove javascript: and data: URIs in links
-        $sanitized = preg_replace('/(href|src)\s*=\s*["\']\s*(javascript|data):[^"\']*["\']/i', '$1="#"', (string) $sanitized);
+        // Remove style attributes to prevent CSS expression/injection
+        $sanitized = preg_replace('/\s+style\s*=\s*(["\'][^"\']*["\']|[^\s>]+)/i', '', (string) $sanitized);
+
+        // Remove javascript:, vbscript:, and data: URIs in links
+        $sanitized = preg_replace('/(href|src)\s*=\s*(["\'])\s*(?:javascript|vbscript|data):[^"\']*\2/i', '$1="#"', (string) $sanitized);
+        $sanitized = preg_replace('/(href|src)\s*=\s*(?:javascript|vbscript|data):[^\s>]*/i', '$1="#"', (string) $sanitized);
 
         return (string) $sanitized;
     }
@@ -126,8 +130,13 @@ class BlockEngineService
             ? '<figcaption class="text-xs text-zinc-500 text-center mt-2.5 px-4 font-medium italic">'.$caption.'</figcaption>'
             : '';
 
+        $cleanUrl = ltrim($url, '/');
+        if (preg_match('/^(javascript|data|vbscript):/i', $cleanUrl)) {
+            $cleanUrl = '#';
+        }
+
         return '<figure class="my-8 rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shadow-2xs">
-            <img src="/'.ltrim($url, '/').'" alt="'.$caption.'" class="w-full aspect-[16/9] object-cover" loading="lazy" />
+            <img src="/'.$cleanUrl.'" alt="'.$caption.'" class="w-full aspect-[16/9] object-cover" loading="lazy" />
             '.$captionHtml.'
         </figure>';
     }
@@ -245,6 +254,11 @@ class BlockEngineService
 
         $metaText = $fileSize !== '' ? $fileSize.' &bull; Unduh Dokumen Resmi' : 'Unduh Dokumen Resmi';
 
+        $cleanUrl = ltrim($url, '/');
+        if (preg_match('/^(javascript|data|vbscript):/i', $cleanUrl)) {
+            $cleanUrl = '#';
+        }
+
         return '<div class="my-6 p-4 sm:p-5 rounded-xl border border-zinc-200 bg-white hover:border-[#BC0202] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
             <div class="flex items-center gap-3.5 min-w-0">
                 <div class="w-10 h-10 rounded-lg bg-red-50 border border-red-200 text-[#BC0202] flex items-center justify-center font-bold text-xs uppercase shrink-0">
@@ -255,7 +269,7 @@ class BlockEngineService
                     <span class="text-xs text-zinc-500 font-medium">'.$metaText.'</span>
                 </div>
             </div>
-            <a href="/'.ltrim($url, '/').'" download target="_blank" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-[#BC0202] text-white text-xs font-semibold shrink-0 transition-colors shadow-2xs">
+            <a href="/'.$cleanUrl.'" download target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-[#BC0202] text-white text-xs font-semibold shrink-0 transition-colors shadow-2xs">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>

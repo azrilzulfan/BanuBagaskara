@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Berita, Publikasi & Rilis Pers | Banu Lesmana Bagaskara, S.M.')
-@section('meta_description', 'Kabar berita terkini, publikasi kegiatan parlemen, liputan reses aspirasi warga, dan rilis pers resmi Banu Lesmana Bagaskara, S.M. (Anggota DPRD Kota Bogor 2024–2029, Dapil 4 Tanah Sareal).')
+@section('title', 'Berita & Rilis Pers Resmi | Banu Lesmana Bagaskara, S.M.')
+@section('meta_description', 'Siaran pers resmi, kabar reses, liputan media, dan pernyataan publik anggota DPRD Kota Bogor Fraksi PDI Perjuangan.')
 
 @section('content')
   <!-- ========================================== -->
@@ -38,8 +38,10 @@
         <div class="lg:hidden shrink-0 ml-2">
           <button
             @click="mobileMenu = !mobileMenu"
-            aria-label="Buka Menu"
-            class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200"
+            :aria-expanded="mobileMenu ? 'true' : 'false'"
+            aria-controls="mobile-nav-drawer"
+            aria-label="Buka Menu Navigasi"
+            class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200 cursor-pointer"
           >
             <svg class="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -109,43 +111,14 @@
 
           <!-- Right: Cover Image -->
           <div class="lg:col-span-5 rounded-xl border border-zinc-200 overflow-hidden shadow-sm aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto min-h-[240px] sm:min-h-[280px] bg-zinc-100">
-            <img src="{{ asset($featuredNews->cover_image ?? 'assets/banu/testi_dialog.jpg') }}" alt="{{ $featuredNews->title }}" class="w-full h-full object-cover" />
-          </div>
-        </div>
-      </div>
-    </section>
-  @else
-    <section class="w-full bg-[#fafafa] py-14 sm:py-16 lg:py-20 border-b border-zinc-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-          <!-- Left: Narrative -->
-          <div class="lg:col-span-7 rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 lg:p-10 shadow-sm flex flex-col justify-between">
-            <div>
-              <div class="flex items-center text-[11px] font-medium text-zinc-500 mb-2.5">
-                <svg class="w-3.5 h-3.5 mr-1.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>28 Februari 2026</span>
+            @if ($featuredNews->cover_image)
+              <img src="{{ asset($featuredNews->cover_image) }}" alt="{{ $featuredNews->title }}" class="w-full h-full object-cover" />
+            @else
+              <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                <span class="text-white font-bold mb-1">banubagaskara.</span>
+                <span class="text-[11px] text-zinc-400">Berita Terkini</span>
               </div>
-              <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-950 tracking-tight leading-snug">Serap Aspirasi di Kebon Pedes: Banu Lesmana Pastikan Usulan Drainase &amp; PJU Masuk Prioritas APBD Perubahan</h2>
-              <p class="text-xs sm:text-[14px] text-zinc-600 mt-3.5 leading-relaxed line-clamp-3">
-                Dalam agenda tatap muka bersama puluhan ketua RT, RW, dan tokoh masyarakat di Kebon Pedes, Anggota DPRD Kota Bogor Banu Lesmana Bagaskara menegaskan komitmennya untuk langsung mengawal kendala banjir genangan ke dinas terkait agar penanganannya masuk dokumen pokok pikiran dewan tahun 2026.
-              </p>
-            </div>
-
-            <div class="mt-7 pt-5 border-t border-zinc-100 flex items-center justify-start">
-              <a href="{{ route('kontak.index') }}#aspirasi" class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 shadow-sm transition-colors gap-1.5 active:scale-98">
-                <span>Baca Selengkapnya</span>
-                <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </div>
-
-          <!-- Right: Cover Image -->
-          <div class="lg:col-span-5 rounded-xl border border-zinc-200 overflow-hidden shadow-sm aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto min-h-[240px] sm:min-h-[280px] bg-zinc-100">
-            <img src="{{ asset('assets/banu/testi_dialog.jpg') }}" alt="Dialog Aspirasi Warga bersama Banu Bagaskara" class="w-full h-full object-cover" />
+            @endif
           </div>
         </div>
       </div>
@@ -169,12 +142,19 @@
             <div>
               <!-- Cover Image -->
               <div class="aspect-[16/10] sm:aspect-[16/9] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset($item->cover_image ?? 'assets/banu/program_ambulance.jpg') }}"
-                  alt="{{ $item->title }}"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
+                @if ($item->cover_image)
+                  <img
+                    src="{{ asset($item->cover_image) }}"
+                    alt="{{ $item->title }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                @else
+                  <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                    <span class="text-white font-bold mb-1">banubagaskara.</span>
+                    <span class="text-[11px] text-zinc-400">Berita Terkini</span>
+                  </div>
+                @endif
               </div>
 
               <!-- Content: Tanggal, Judul, dan Deskripsi (line-clamp-3) -->
@@ -184,7 +164,7 @@
                   <svg class="w-3.5 h-3.5 mr-1.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span>{{ $item->published_at ? $item->published_at->translatedFormat('d F Y') : '24 Februari 2026' }}</span>
+                  <span>{{ $item->published_at ? $item->published_at->translatedFormat('d F Y') : ($item->created_at ? $item->created_at->translatedFormat('d F Y') : '-') }}</span>
                 </div>
 
                 <h3 class="font-bold text-base sm:text-lg text-zinc-950 leading-snug tracking-tight">

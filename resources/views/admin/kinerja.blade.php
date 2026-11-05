@@ -3,139 +3,7 @@
 @section('title', 'Kelola Hasil Kinerja | Dasbor Admin Banu Lesmana Bagaskara, S.M.')
 
 @php
-  $defaultArticles = [
-    [
-      'id' => 1,
-      'title' => 'Ambulance Siaga 24 Jam & Pendampingan Administrasi Pasien BPJS Bebas Biaya',
-      'date' => '2026-01-20',
-      'dateFormatted' => '20 Januari 2026',
-      'coverImage' => asset('assets/banu/program_ambulance.jpg'),
-      'excerpt' => 'Menyikapi keluhan mendesak warga saat mengalami sakit parah di jam-jam genting, Banu Lesmana Bagaskara menyiagakan unit ambulans darurat gratis yang siap beroperasi 24 jam penuh di wilayah Kecamatan Tanah Sareal.',
-      'isFeatured' => true,
-      'status' => 'Terbit',
-      'blocks' => [
-        [
-          'id' => 'b1',
-          'type' => 'heading',
-          'level' => 'h2',
-          'text' => 'Latar Belakang & Komitmen Pelayanan Kesehatan Warga',
-        ],
-        [
-          'id' => 'b2',
-          'type' => 'paragraph',
-          'text' => 'Kesehatan merupakan hak mendasar setiap warga yang tidak boleh terhalang oleh kendala finansial maupun rumitnya administrasi rujukan. Melalui koordinasi intensif bersama jajaran RSUD Kota Bogor dan Dinas Kesehatan, layanan Ambulance Siaga Rumah Aspirasi dioperasikan secara penuh selama 24 jam untuk melayani panggilan darurat warga di 11 kelurahan se-Kecamatan Tanah Sareal tanpa dipungut biaya sepeser pun.',
-        ],
-        [
-          'id' => 'b3',
-          'type' => 'image',
-          'url' => asset('assets/banu/program_ambulance.jpg'),
-          'caption' => 'Armada Ambulance Siaga 24 Jam siap siaga di Posko Rumah Aspirasi Rakyat, Kelurahan Kedung Badak.',
-        ],
-        [
-          'id' => 'b4',
-          'type' => 'heading',
-          'level' => 'h3',
-          'text' => 'Cakupan Pelayanan & Pendampingan yang Diberikan',
-        ],
-        [
-          'id' => 'b5',
-          'type' => 'list',
-          'items' => [
-            'Antar-jemput pasien darurat medis dari kediaman warga menuju IGD rumah sakit rujukan terdekat.',
-            'Pendampingan kelengkapan dokumen administrasi jaminan kesehatan BPJS PBI dan penjaminan daerah.',
-            'Fasilitasi koordinasi ketersediaan ruang rawat inap kelas 3 bagi pasien prasejahtera.',
-            'Layanan siaga tanggap darurat bencana lokal dan evakuasi lansia berisiko.',
-          ],
-        ],
-        [
-          'id' => 'b6',
-          'type' => 'quote',
-          'quote' => 'Mandat di parlemen harus langsung terasa di depan pintu rumah warga, terutama saat mereka menghadapi saat-saat paling genting.',
-          'author' => 'Banu Lesmana Bagaskara, S.M.',
-        ],
-      ],
-    ],
-    [
-      'id' => 2,
-      'title' => 'Pendampingan Penerbitan NIB & Sertifikasi Halal Gratis untuk UMKM RT/RW',
-      'date' => '2026-01-16',
-      'dateFormatted' => '16 Januari 2026',
-      'coverImage' => asset('assets/banu/program_umkm.jpg'),
-      'excerpt' => 'Fasilitasi legalitas usaha mikro dan pedagang kecil di Tanah Sareal melalui pengurusan Nomor Induk Berusaha (NIB) gratis, sertifikasi produk halal, serta pelatihan pemasaran digital agar produk lokal mampu bersaing.',
-      'isFeatured' => false,
-      'status' => 'Terbit',
-      'blocks' => [
-        [
-          'id' => 'b21',
-          'type' => 'heading',
-          'level' => 'h2',
-          'text' => 'Penguatan Kemandirian Usaha Keluarga Berbasis Lingkungan',
-        ],
-        [
-          'id' => 'b22',
-          'type' => 'paragraph',
-          'text' => 'Mayoritas pelaku ekonomi kerakyatan di tingkat RT/RW menghadapi kendala administratif saat ingin memperluas usahanya. Rumah Aspirasi menghadirkan posko terpadu untuk mendampingi pengurusan izin usaha legal secara langsung.',
-        ],
-        [
-          'id' => 'b23',
-          'type' => 'grid',
-          'columns' => '2',
-          'col1Title' => 'Fasilitas Legalitas Resmi',
-          'col1Text' => 'Penerbitan Nomor Induk Berusaha (NIB) OSS RBA dan pendampingan self-declare sertifikasi halal bebas biaya.',
-          'col2Title' => 'Pelatihan Foto & Pasar Digital',
-          'col2Text' => 'Bimbingan teknis foto produk katalog smartphone dan pendaftaran toko daring pada etalase marketplace lokal.',
-        ],
-      ],
-    ],
-    [
-      'id' => 3,
-      'title' => 'Pengawalan Pokir APBD untuk Normalisasi Saluran Drainase & Pencegahan Banjir',
-      'date' => '2026-01-12',
-      'dateFormatted' => '12 Januari 2026',
-      'coverImage' => asset('assets/banu/testi_dialog.jpg'),
-      'excerpt' => 'Mengawal langsung usulan warga dari forum reses agar masuk ke dalam rencana kerja anggaran daerah untuk perbaikan dan normalisasi drainase gang pemukiman yang kerap meluap saat intensitas hujan tinggi.',
-      'isFeatured' => false,
-      'status' => 'Terbit',
-      'blocks' => [
-        [
-          'id' => 'b31',
-          'type' => 'heading',
-          'level' => 'h2',
-          'text' => 'Respon Cepat Usulan Drainase Pemukiman Padat',
-        ],
-        [
-          'id' => 'b32',
-          'type' => 'paragraph',
-          'text' => 'Peninjauan lapangan bersama tokoh masyarakat dan dinas teknis memastikan bahwa titik sumbatan saluran air gang langsung masuk dalam prioritas penanganan pemeliharaan berkala APBD Kota Bogor.',
-        ],
-      ],
-    ],
-    [
-      'id' => 4,
-      'title' => 'Mendorong Transparansi Alokasi Belanja Publik Raperda APBD Kota Bogor',
-      'date' => '2026-01-08',
-      'dateFormatted' => '08 Januari 2026',
-      'coverImage' => asset('assets/banu/banner_serbaguna.jpg'),
-      'excerpt' => 'Memperjuangkan efisiensi dan transparansi anggaran daerah di Badan Anggaran DPRD agar pos belanja publik lebih diprioritaskan untuk pemenuhan hak dasar warga, layanan kesehatan, dan infrastruktur lingkungan.',
-      'isFeatured' => false,
-      'status' => 'Terbit',
-      'blocks' => [
-        [
-          'id' => 'b41',
-          'type' => 'heading',
-          'level' => 'h2',
-          'text' => 'Pengawasan Alokasi Anggaran Berbasis Kepentingan Rakyat',
-        ],
-        [
-          'id' => 'b42',
-          'type' => 'paragraph',
-          'text' => 'Alokasi APBD harus difokuskan pada belanja yang langsung dirasakan manfaatnya oleh masyarakat dan memangkas anggaran seremonial yang tidak mendesak.',
-        ],
-      ],
-    ],
-  ];
-
-  $initialArticles = $articles->isNotEmpty() ? $articles->toArray() : $defaultArticles;
+  $initialArticles = $articles->toArray();
 @endphp
 
 @section('content')
@@ -473,10 +341,35 @@
             </div>
 
             <template x-for="(block, bIdx) in form.blocks" :key="block.id">
-              <div class="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden group hover:border-zinc-300 transition-all">
+              <div
+                class="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden group hover:border-zinc-300 transition-all"
+                :class="{
+                  'opacity-60 ring-2 ring-[#BC0202]': draggedBlockIndex === bIdx,
+                  'border-[#BC0202] ring-2 ring-[#BC0202]/30 bg-red-50/20': dragOverBlockIndex === bIdx && draggedBlockIndex !== bIdx
+                }"
+                :data-block-index="bIdx"
+                draggable="true"
+                @dragstart="handleDragStart($event, bIdx)"
+                @dragover.prevent="handleDragOver($event, bIdx)"
+                @dragleave="handleDragLeave($event, bIdx)"
+                @drop.prevent="handleDrop($event, bIdx)"
+                @dragend="handleDragEnd()"
+              >
                 <!-- Block Toolbar Header -->
                 <div class="px-4 py-2.5 bg-[#faf5f5] border-b border-zinc-200 flex items-center justify-between gap-3 select-none">
                   <div class="flex items-center gap-2">
+                    <!-- Drag handle for desktop & touch gestures for mobile/tablet -->
+                    <div
+                      class="cursor-grab active:cursor-grabbing p-1 -ml-1 text-zinc-400 hover:text-zinc-800 rounded transition-colors touch-none flex items-center justify-center"
+                      title="Geser urutan blok (Drag & Drop)"
+                      @touchstart="handleTouchStart($event, bIdx)"
+                      @touchmove="handleTouchMove($event)"
+                      @touchend="handleTouchEnd($event)"
+                    >
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8h16M4 16h16" />
+                      </svg>
+                    </div>
                     <span class="w-2 h-2 rounded-full bg-[#BC0202]"></span>
                     <span class="font-bold text-[11px] uppercase tracking-wider text-zinc-800" x-text="'Blok #' + (bIdx + 1) + ': ' + block.type"></span>
                   </div>
@@ -620,8 +513,15 @@
                   <!-- 3. TIPE: GAMBAR / IMAGE (UPLOAD LANGSUNG, TANPA SELECT) -->
                   <template x-if="block.type === 'image'">
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
-                      <div class="sm:col-span-5 aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 relative shadow-2xs">
-                        <img :src="block.url ? (block.url.startsWith('http') || block.url.startsWith('/') ? block.url : '/' + block.url) : '/assets/banu/testi_dialog.jpg'" alt="Pratinjau Foto Blok" class="w-full h-full object-cover" />
+                      <div class="sm:col-span-5 aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 relative shadow-2xs flex items-center justify-center">
+                        <template x-if="block.url">
+                          <img :src="block.url.startsWith('http') || block.url.startsWith('/') ? block.url : '/' + block.url" alt="Pratinjau Foto Blok" class="w-full h-full object-cover" />
+                        </template>
+                        <template x-if="!block.url">
+                          <div class="w-full h-full bg-zinc-200 flex items-center justify-center text-zinc-400 text-xs">
+                            <span>Belum ada foto</span>
+                          </div>
+                        </template>
                         <div x-show="block._uploading" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
                           Mengunggah...
                         </div>
@@ -684,6 +584,7 @@
                             <input
                               type="text"
                               x-model="block.items[itemIdx]"
+                              placeholder="Poin rincian capaian..."
                               class="flex-1 rounded-lg border border-zinc-300 bg-white text-xs px-3 py-2 text-zinc-900 focus:outline-none focus:border-[#FF0000]"
                             />
                             <button
@@ -1011,6 +912,7 @@
                             <input
                               type="text"
                               x-model="block.headers[hIdx]"
+                              placeholder="Nama Kolom..."
                               class="w-32 rounded-lg border border-zinc-300 bg-white text-xs px-2.5 py-1.5 font-bold text-zinc-900"
                             />
                             <button
@@ -1046,6 +948,7 @@
                                 <input
                                   type="text"
                                   x-model="block.rows[rIdx][cIdx]"
+                                  placeholder="Isi data..."
                                   class="w-32 rounded-lg border border-zinc-300 bg-white text-xs px-2.5 py-1.5 text-zinc-800 shrink-0"
                                 />
                               </template>
@@ -1283,8 +1186,15 @@
             </h3>
 
             <!-- Pratinjau Cover -->
-            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs relative">
-              <img :src="form.coverImage ? (form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage) : '/assets/banu/program_ambulance.jpg'" alt="Cover Image Laporan" class="w-full h-full object-cover" />
+            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs relative flex items-center justify-center">
+              <template x-if="form.coverImage">
+                <img :src="form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage" alt="Cover Image Laporan" class="w-full h-full object-cover" />
+              </template>
+              <template x-if="!form.coverImage">
+                <div class="w-full h-full bg-zinc-200 flex items-center justify-center text-zinc-400 text-xs">
+                  <span>Belum ada sampul</span>
+                </div>
+              </template>
               <div x-show="uploadingCover" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
                 Mengunggah Sampul...
               </div>
@@ -1311,7 +1221,7 @@
                 </svg>
                 <span x-text="uploadingCover ? 'Mengunggah...' : 'Pilih & Unggah Gambar Sampul'"></span>
               </button>
-              <p class="text-[11px] text-zinc-500 mt-1.5">Rasio 16:9 disarankan untuk tampilan ideal pada kartu publik.</p>
+              <p class="text-[11px] text-zinc-500 mt-1.5">Rasio 16:9 disarankan. Format JPG, PNG, WebP (Maksimal 2 MB).</p>
             </div>
           </div>
         </div>
@@ -1402,8 +1312,15 @@
               <!-- 3. Image Block -->
               <template x-if="block.type === 'image'">
                 <figure class="my-4 space-y-2">
-                  <div class="aspect-[16/10] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100 shadow-2xs">
-                    <img :src="block.url ? (block.url.startsWith('http') || block.url.startsWith('/') ? block.url : '/' + block.url) : '/assets/banu/testi_dialog.jpg'" :alt="block.caption" class="w-full h-full object-cover" />
+                  <div class="aspect-[16/10] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100 shadow-2xs flex items-center justify-center">
+                    <template x-if="block.url">
+                      <img :src="block.url.startsWith('http') || block.url.startsWith('/') ? block.url : '/' + block.url" :alt="block.caption" class="w-full h-full object-cover" />
+                    </template>
+                    <template x-if="!block.url">
+                      <div class="w-full h-full bg-zinc-200 flex items-center justify-center text-zinc-400 text-xs">
+                        <span>Belum ada foto</span>
+                      </div>
+                    </template>
                   </div>
                   <figcaption x-show="block.caption" class="text-center text-xs text-zinc-500 italic" x-text="block.caption"></figcaption>
                 </figure>
@@ -1581,13 +1498,16 @@
       previewModal: false,
       saveSuccessNotification: false,
       uploadingCover: false,
+      draggedBlockIndex: null,
+      dragOverBlockIndex: null,
+      touchDragSourceIndex: null,
 
       formMode: 'create',
       currentArticleId: null,
       form: {
         title: '',
         date: '',
-        coverImage: 'assets/banu/program_ambulance.jpg',
+        coverImage: '',
         excerpt: '',
         isFeatured: false,
         status: 'Terbit',
@@ -1617,7 +1537,7 @@
         this.form = {
           title: '',
           date: new Date().toISOString().split('T')[0],
-          coverImage: 'assets/banu/program_ambulance.jpg',
+          coverImage: '',
           excerpt: '',
           isFeatured: false,
           status: 'Terbit',
@@ -1661,6 +1581,12 @@
         const file = event.target.files[0];
         if (!file) return;
 
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Ukuran file gambar maksimal 2 MB.');
+          event.target.value = '';
+          return;
+        }
+
         this.uploadingCover = true;
         const fd = new FormData();
         fd.append('file', file);
@@ -1692,6 +1618,12 @@
         const file = event.target.files[0];
         if (!file) return;
 
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Ukuran file gambar maksimal 2 MB.');
+          event.target.value = '';
+          return;
+        }
+
         block._uploading = true;
         const fd = new FormData();
         fd.append('file', file);
@@ -1722,6 +1654,12 @@
       uploadBlockDocument(event, block) {
         const file = event.target.files[0];
         if (!file) return;
+
+        if (file.size > 10 * 1024 * 1024) {
+          alert('Ukuran berkas dokumen maksimal 10 MB.');
+          event.target.value = '';
+          return;
+        }
 
         block._uploadingDoc = true;
         const fd = new FormData();
@@ -1950,7 +1888,7 @@
         } else if (type === 'paragraph') {
           this.form.blocks.push({ id, type, format: 'html', text: 'Tuliskan paragraf penjelasan rinci mengenai kegiatan atau advokasi yang dilakukan...' });
         } else if (type === 'image') {
-          this.form.blocks.push({ id, type, url: 'assets/banu/testi_dialog.jpg', caption: 'Keterangan dokumentasi kegiatan lapangan.' });
+          this.form.blocks.push({ id, type, url: '', caption: 'Keterangan dokumentasi kegiatan lapangan.' });
         } else if (type === 'list') {
           this.form.blocks.push({ id, type, items: ['Poin rincian capaian pertama', 'Poin rincian capaian kedua'] });
         } else if (type === 'grid') {
@@ -2025,6 +1963,69 @@
           const el = this.form.blocks.splice(index, 1)[0];
           this.form.blocks.splice(index + 1, 0, el);
         }
+      },
+
+      handleDragStart(e, index) {
+        this.draggedBlockIndex = index;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(index));
+      },
+
+      handleDragOver(e, index) {
+        e.preventDefault();
+        if (this.draggedBlockIndex !== null && this.draggedBlockIndex !== index) {
+          this.dragOverBlockIndex = index;
+        }
+      },
+
+      handleDragLeave(e, index) {
+        if (this.dragOverBlockIndex === index) {
+          this.dragOverBlockIndex = null;
+        }
+      },
+
+      handleDrop(e, targetIndex) {
+        e.preventDefault();
+        const sourceIndex = this.draggedBlockIndex;
+        if (sourceIndex !== null && sourceIndex !== targetIndex) {
+          const item = this.form.blocks.splice(sourceIndex, 1)[0];
+          this.form.blocks.splice(targetIndex, 0, item);
+        }
+        this.draggedBlockIndex = null;
+        this.dragOverBlockIndex = null;
+      },
+
+      handleDragEnd() {
+        this.draggedBlockIndex = null;
+        this.dragOverBlockIndex = null;
+      },
+
+      handleTouchStart(e, index) {
+        this.touchDragSourceIndex = index;
+        this.draggedBlockIndex = index;
+      },
+
+      handleTouchMove(e) {
+        if (this.touchDragSourceIndex === null) return;
+        const touch = e.touches[0];
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+        const card = el ? el.closest('[data-block-index]') : null;
+        if (card) {
+          const targetIndex = parseInt(card.getAttribute('data-block-index'), 10);
+          if (!isNaN(targetIndex) && targetIndex !== this.draggedBlockIndex) {
+            this.dragOverBlockIndex = targetIndex;
+          }
+        }
+      },
+
+      handleTouchEnd(e) {
+        if (this.touchDragSourceIndex !== null && this.dragOverBlockIndex !== null && this.touchDragSourceIndex !== this.dragOverBlockIndex) {
+          const item = this.form.blocks.splice(this.touchDragSourceIndex, 1)[0];
+          this.form.blocks.splice(this.dragOverBlockIndex, 0, item);
+        }
+        this.touchDragSourceIndex = null;
+        this.draggedBlockIndex = null;
+        this.dragOverBlockIndex = null;
       },
 
       addListItem(block) {

@@ -27,7 +27,6 @@ class SubmitAspirationAction
             'sender_name' => $data['sender_name'],
             'phone_number' => $data['phone_number'],
             'address' => $data['address'],
-            'kelurahan' => $data['kelurahan'] ?? null,
             'category' => $data['category'] ?? 'Umum',
             'subject' => $data['subject'],
             'description' => $data['description'],

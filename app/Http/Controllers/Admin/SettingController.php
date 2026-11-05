@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class SettingController extends Controller
@@ -72,13 +73,43 @@ class SettingController extends Controller
 
     public function upload(Request $request): JsonResponse
     {
+        $file = $request->file('file');
+        $extension = $file ? strtolower($file->getClientOriginalExtension() ?: '') : '';
+        $mimeType = $file ? strtolower($file->getMimeType() ?: '') : '';
+
+        $isImage = in_array($extension, ['jpeg', 'png', 'jpg', 'webp', 'svg', 'ico'], true)
+            || str_starts_with($mimeType, 'image/');
+
+        $maxKilobytes = $isImage ? 2048 : 10240;
+
         $request->validate([
-            'file' => ['required', 'file', 'mimes:jpeg,png,jpg,webp,svg,ico,pdf,doc,docx,xls,xlsx,zip', 'max:10240'],
+            'file' => [
+                'required',
+                'file',
+                'mimes:jpeg,png,jpg,webp,svg,ico,pdf,doc,docx,xls,xlsx,zip',
+                'max:'.$maxKilobytes,
+            ],
+        ], [
+            'file.max' => $isImage
+                ? 'Ukuran file gambar maksimal 2 MB.'
+                : 'Ukuran berkas dokumen maksimal 10 MB.',
+            'file.mimes' => 'Format file tidak didukung.',
         ]);
 
         $file = $request->file('file');
         $originalName = $file->getClientOriginalName();
         $extension = strtolower($file->getClientOriginalExtension() ?: 'bin');
+
+        // Validasi keamanan berkas SVG dari injeksi skrip/XSS/XXE
+        if ($extension === 'svg') {
+            $content = file_get_contents($file->getRealPath());
+            if ($content !== false && preg_match('/<script|javascript:|<!ENTITY|onload|onerror|onclick|onmouseover/i', $content)) {
+                throw ValidationException::withMessages([
+                    'file' => 'Berkas SVG mengandung skrip atau instruksi berbahaya yang tidak diizinkan.',
+                ]);
+            }
+        }
+
         $sizeInBytes = $file->getSize();
 
         // Format file size readable

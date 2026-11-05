@@ -43,6 +43,8 @@ class News extends Model
     {
         return [
             'published_at' => 'date',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'is_featured' => 'boolean',
             'view_count' => 'integer',
         ];

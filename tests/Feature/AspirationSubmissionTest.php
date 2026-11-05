@@ -7,7 +7,6 @@ it('creates an aspiration record and redirects with ticket number for valid payl
         'sender_name' => 'Ahmad Fauzi',
         'phone_number' => '081234567890',
         'address' => 'Jl. Kebon Pedes No. 12, RT 02/RW 03',
-        'kelurahan' => 'Kebonpedes',
         'category' => 'Infrastruktur',
         'subject' => 'Perbaikan Lampu PJU Gang Melati',
         'description' => 'Mohon bantuan perbaikan lampu penerangan jalan umum di gang melati yang sudah mati selama 2 minggu.',
@@ -21,7 +20,6 @@ it('creates an aspiration record and redirects with ticket number for valid payl
     $this->assertDatabaseHas('aspirations', [
         'sender_name' => 'Ahmad Fauzi',
         'phone_number' => '081234567890',
-        'kelurahan' => 'Kebonpedes',
         'subject' => 'Perbaikan Lampu PJU Gang Melati',
     ]);
 
@@ -48,7 +46,6 @@ it('validates phone_number must follow Indonesian cellular format', function () 
         'sender_name' => 'Ahmad Fauzi',
         'phone_number' => '021123456', // telephone, not cellular 08...
         'address' => 'Jl. Kebon Pedes No. 12',
-        'kelurahan' => 'Kebonpedes',
         'subject' => 'Perbaikan Lampu PJU',
         'description' => 'Mohon bantuan perbaikan jalan umum.',
     ];
@@ -59,20 +56,21 @@ it('validates phone_number must follow Indonesian cellular format', function () 
     expect(Aspiration::count())->toBe(0);
 });
 
-it('validates kelurahan must belong to Tanah Sareal 11 kelurahans', function () {
-    $invalidPayload = [
+it('does not require kelurahan field when submitting aspiration', function () {
+    $payload = [
         'sender_name' => 'Ahmad Fauzi',
         'phone_number' => '081234567890',
         'address' => 'Jl. Pajajaran No. 12',
-        'kelurahan' => 'Bogor Timur', // Bukan Tanah Sareal
         'subject' => 'Perbaikan Lampu PJU',
         'description' => 'Mohon bantuan perbaikan jalan umum.',
     ];
 
-    $response = $this->post(route('aspirasi.store'), $invalidPayload);
+    $response = $this->post(route('aspirasi.store'), $payload);
 
-    $response->assertSessionHasErrors(['kelurahan']);
-    expect(Aspiration::count())->toBe(0);
+    $response->assertRedirect(route('kontak.index', '#aspirasi'));
+    $this->assertDatabaseHas('aspirations', [
+        'sender_name' => 'Ahmad Fauzi',
+    ]);
 });
 
 it('silently ignores spam bots when honeypot field is filled without saving to database', function () {
@@ -80,7 +78,6 @@ it('silently ignores spam bots when honeypot field is filled without saving to d
         'sender_name' => 'Spam Bot',
         'phone_number' => '081299998888',
         'address' => 'Jl. Cyber Bot No. 1',
-        'kelurahan' => 'Kedungbadak',
         'subject' => 'Buy Crypto Now',
         'description' => 'Great deals on crypto currencies visit our website now.',
         'website_hp' => 'http://malicious-spam-url.com', // Honeypot filled!
@@ -99,7 +96,6 @@ it('rate limits submissions to prevent flooding', function () {
         'sender_name' => 'Warga Peduli',
         'phone_number' => '081234567890',
         'address' => 'Jl. Sukaresmi No. 4',
-        'kelurahan' => 'Sukaresmi',
         'subject' => 'Aspirasi Warga',
         'description' => 'Usulan pembangunan pos ronda warga.',
     ];

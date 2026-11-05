@@ -25,7 +25,7 @@ class PerformanceReportFactory extends Factory
             'title' => $title,
             'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(100, 999),
             'excerpt' => fake()->paragraph(),
-            'cover_image' => 'assets/banu/program_ambulance.jpg',
+            'cover_image' => 'uploads/sample_report.jpg',
             'content_blocks' => [
                 [
                     'type' => 'paragraph',

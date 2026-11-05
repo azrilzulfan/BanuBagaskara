@@ -61,7 +61,7 @@ class PerformanceReportController extends Controller
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']).'-'.time(),
             'published_at' => $validated['date'] ?? now(),
-            'cover_image' => $validated['coverImage'] ?? 'assets/banu/program_ambulance.jpg',
+            'cover_image' => $validated['coverImage'] ?? null,
             'excerpt' => $validated['excerpt'] ?? Str::limit(collect($validated['blocks'] ?? [])->firstWhere('type', 'paragraph')['text'] ?? '', 160),
             'is_featured' => $isFeatured,
             'status' => $status,

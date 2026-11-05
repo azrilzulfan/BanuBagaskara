@@ -6,12 +6,7 @@
     <title>Masuk Admin Panel | Banu Lesmana Bagaskara, S.M.</title>
     <meta name="robots" content="noindex, nofollow" />
 
-    <!-- Font: Plus Jakarta Sans (Clean, Modern, Disciplined Sans-Serif) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-    <!-- Tailwind & Vite -->
+    <!-- Tailwind & Vite (Plus Jakarta Sans via Bunny Fonts) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -73,7 +68,7 @@
 
           <!-- Alert Error Notification -->
           @if ($errors->any())
-            <div class="p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900 flex items-start gap-2.5">
+            <div role="alert" class="p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900 flex items-start gap-2.5">
               <svg class="w-4 h-4 text-red-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -86,12 +81,14 @@
             @csrf
             <!-- Email / Username -->
             <div>
-              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Email / Nama Pengguna</label>
+              <label for="admin_email" class="block text-xs font-bold text-zinc-900 mb-1.5">Email / Nama Pengguna</label>
               <input
                 type="email"
+                id="admin_email"
                 name="email"
                 value="{{ old('email', 'admin@banubagaskara.id') }}"
                 required
+                aria-required="true"
                 placeholder="admin@banubagaskara.id"
                 class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs font-medium"
               />
@@ -100,22 +97,24 @@
             <!-- Password with Show/Hide Toggle -->
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <label class="block text-xs font-bold text-zinc-900">Kata Sandi</label>
+                <label for="admin_password" class="block text-xs font-bold text-zinc-900">Kata Sandi</label>
                 <span class="text-[11px] text-zinc-400">Akun Tunggal Resmi</span>
               </div>
               <div class="relative">
                 <input
                   :type="showPassword ? 'text' : 'password'"
+                  id="admin_password"
                   name="password"
                   required
+                  aria-required="true"
                   placeholder="Masukkan kata sandi admin..."
                   class="w-full rounded-lg border border-zinc-300 bg-white pl-3.5 pr-10 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#BC0202] focus:ring-1 focus:ring-[#BC0202] shadow-2xs"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-600 focus:outline-none"
-                  aria-label="Toggle Password Visibility"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-600 focus:outline-none cursor-pointer"
+                  aria-label="Tampilkan atau sembunyikan kata sandi"
                 >
                   <svg x-show="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -130,9 +129,10 @@
 
             <!-- Remember Me -->
             <div class="flex items-center justify-between pt-1">
-              <label class="flex items-center gap-2 cursor-pointer">
+              <label for="remember_me" class="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  id="remember_me"
                   name="remember"
                   value="1"
                   class="rounded border-zinc-300 text-[#BC0202] focus:ring-[#BC0202] focus:ring-offset-0"

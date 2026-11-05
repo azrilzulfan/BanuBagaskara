@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\TanahSarealKelurahan;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreAspirationRequest extends FormRequest
 {
@@ -28,7 +26,6 @@ class StoreAspirationRequest extends FormRequest
             'sender_name' => ['required', 'string', 'max:100'],
             'phone_number' => ['required', 'string', 'regex:/^(\+62|62|0)8[1-9][0-9]{6,10}$/'],
             'address' => ['required', 'string', 'max:500'],
-            'kelurahan' => ['nullable', 'string', Rule::in(TanahSarealKelurahan::values())],
             'category' => ['nullable', 'string', 'max:100'],
             'subject' => ['required', 'string', 'max:200'],
             'description' => ['required', 'string', 'max:5000'],

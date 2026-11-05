@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /admin/
+Disallow: /login
 Allow: /
 
 Sitemap: https://banubagaskara.id/sitemap.xml

@@ -99,3 +99,37 @@ it('allows authenticated admin to logout and redirects to login', function () {
     $response->assertRedirect(route('admin.login'));
     $this->assertGuest();
 });
+
+it('allows authenticated admin to update password successfully', function () {
+    $admin = User::create([
+        'name' => 'Banu Bagaskara Admin',
+        'email' => 'admin@banubagaskara.id',
+        'password' => Hash::make('OldPassword123!'),
+    ]);
+
+    $response = $this->actingAs($admin)->put(route('admin.password.update'), [
+        'current_password' => 'OldPassword123!',
+        'password' => 'NewSecretPassword2026!*',
+        'password_confirmation' => 'NewSecretPassword2026!*',
+    ]);
+
+    $response->assertSessionHas('success');
+    expect(Hash::check('NewSecretPassword2026!*', $admin->fresh()->password))->toBeTrue();
+});
+
+it('fails updating password when current password is wrong', function () {
+    $admin = User::create([
+        'name' => 'Banu Bagaskara Admin',
+        'email' => 'admin@banubagaskara.id',
+        'password' => Hash::make('OldPassword123!'),
+    ]);
+
+    $response = $this->actingAs($admin)->put(route('admin.password.update'), [
+        'current_password' => 'WrongCurrentPassword',
+        'password' => 'NewSecretPassword2026!*',
+        'password_confirmation' => 'NewSecretPassword2026!*',
+    ]);
+
+    $response->assertSessionHasErrors(['current_password']);
+    expect(Hash::check('OldPassword123!', $admin->fresh()->password))->toBeTrue();
+});

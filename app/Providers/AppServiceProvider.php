@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Enums\AspirationStatus;
+use App\Models\Aspiration;
 use App\Services\BlockEngineService;
 use App\Services\SiteSettingsService;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -30,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->ip());
         });
 
-        View::composer(['layouts.public', 'public.*'], function ($view) {
+        View::composer('layouts.public', function ($view) {
             /** @var SiteSettingsService $settings */
             $settings = app(SiteSettingsService::class);
             $view->with([
@@ -38,6 +40,12 @@ class AppServiceProvider extends ServiceProvider
                 'seoSettings' => $settings->getGroup('seo'),
                 'homeSettings' => $settings->getGroup('home'),
                 'profileSettings' => $settings->getGroup('profile'),
+            ]);
+        });
+
+        View::composer('layouts.admin', function ($view) {
+            $view->with([
+                'newAspirationsCount' => Aspiration::where('status', AspirationStatus::Baru->value)->count(),
             ]);
         });
     }

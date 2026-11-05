@@ -7,6 +7,7 @@ use App\Models\AlbumPhoto;
 use App\Models\Aspiration;
 use App\Models\News;
 use App\Models\PerformanceReport;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\SiteSettingsService;
 use Illuminate\Http\UploadedFile;
@@ -35,7 +36,7 @@ it('allows admin to create a performance report with modular blocks', function (
     $payload = [
         'title' => 'Advokasi Anggaran Revitalisasi Drainase Kebonpedes',
         'date' => '2026-03-15',
-        'coverImage' => 'assets/banu/program_ambulance.jpg',
+        'coverImage' => 'uploads/program_ambulance.jpg',
         'excerpt' => 'Pengawalan alokasi APBD untuk penanganan genangan air di Kebonpedes.',
         'isFeatured' => true,
         'status' => 'Terbit',
@@ -80,7 +81,7 @@ it('allows admin to update an existing performance report', function () {
     $updatePayload = [
         'title' => 'Judul Diperbarui',
         'date' => '2026-04-01',
-        'coverImage' => 'assets/banu/news_1.jpg',
+        'coverImage' => 'uploads/news_1.jpg',
         'excerpt' => 'Ringkasan baru.',
         'isFeatured' => false,
         'status' => 'Terbit',
@@ -180,7 +181,7 @@ it('allows admin to create news article', function () {
         'title' => 'Banu Bagaskara Tinjau Lokasi Rawan Longsor Kedungwaringin',
         'date' => '2026-03-20',
         'source' => 'Media Center',
-        'coverImage' => 'assets/banu/news_1.jpg',
+        'coverImage' => 'uploads/news_1.jpg',
         'description' => 'Peninjauan langsung ke tebing sungai di Kedungwaringin yang terancam longsor.',
         'isFeatured' => true,
         'status' => 'Terbit',
@@ -207,7 +208,7 @@ it('allows admin to update news article', function () {
         'title' => 'Judul Berita Baru Hasil Revisi',
         'date' => '2026-03-21',
         'source' => 'Radar Bogor',
-        'coverImage' => 'assets/banu/news_2.jpg',
+        'coverImage' => 'uploads/news_2.jpg',
         'description' => 'Deskripsi baru setelah revisi redaksi.',
         'isFeatured' => false,
         'status' => 'Draf',
@@ -266,7 +267,7 @@ it('enforces only one news article can be featured at any time', function () {
         'title' => 'Berita Featured Terbaru',
         'date' => '2026-03-25',
         'sourceUrl' => 'https://kotabogor.go.id/berita-baru',
-        'coverImage' => 'assets/banu/news_1.jpg',
+        'coverImage' => 'uploads/news_1.jpg',
         'description' => 'Deskripsi rilis berita terbaru.',
         'isFeatured' => true,
         'status' => 'Terbit',
@@ -281,7 +282,7 @@ it('enforces only one news article can be featured at any time', function () {
         'title' => 'Berita Lama Kembali Menjadi Sorotan',
         'date' => '2026-03-26',
         'sourceUrl' => 'https://kotabogor.go.id/berita-lama',
-        'coverImage' => 'assets/banu/news_2.jpg',
+        'coverImage' => 'uploads/news_2.jpg',
         'description' => 'Deskripsi pembaruan berita.',
         'isFeatured' => true,
         'status' => 'Terbit',
@@ -296,7 +297,7 @@ it('requires sourceUrl when creating news article', function () {
         'title' => 'Berita Tanpa URL Sumber',
         'date' => '2026-03-25',
         'sourceUrl' => '',
-        'coverImage' => 'assets/banu/news_1.jpg',
+        'coverImage' => 'uploads/news_1.jpg',
         'description' => 'Deskripsi.',
         'status' => 'Terbit',
     ]);
@@ -323,11 +324,11 @@ it('allows admin to create album with nested photos', function () {
         'title' => 'Musrenbang Kecamatan Tanah Sareal 2026',
         'date' => '2026-02-10',
         'desc' => 'Dokumentasi kehadiran dan pemaparan pokok pikiran dewan.',
-        'cover' => 'assets/banu/hero_banu.jpg',
+        'cover' => 'uploads/hero_banu.jpg',
         'status' => 'Terbit',
         'photos' => [
-            ['url' => 'assets/banu/hero_banu.jpg', 'caption' => 'Pemaparan materi'],
-            ['url' => 'assets/banu/testi_dialog.jpg', 'caption' => 'Sesi tanya jawab'],
+            ['url' => 'uploads/hero_banu.jpg', 'caption' => 'Pemaparan materi'],
+            ['url' => 'uploads/testi_dialog.jpg', 'caption' => 'Sesi tanya jawab'],
         ],
     ];
 
@@ -629,7 +630,7 @@ it('allows admin to upload image assets for settings', function () {
     Storage::disk('public')->assertExists($storedFileName);
 });
 
-it('allows admin to configure logo and favicon and reflects in layout', function () {
+it('allows admin to configure logo and favicon while retaining banubagaskara brand text', function () {
     $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
         'group' => 'general',
         'data' => [
@@ -640,10 +641,21 @@ it('allows admin to configure logo and favicon and reflects in layout', function
         ],
     ])->assertRedirect();
 
-    $response = $this->get(route('home'));
-    $response->assertOk();
-    $response->assertSee('storage/settings/favicon_custom.ico');
-    $response->assertSee('storage/settings/official_logo.png');
+    $homeResponse = $this->get(route('home'));
+    $homeResponse->assertOk();
+    $homeResponse->assertSee('storage/settings/favicon_custom.ico');
+    $homeResponse->assertSee('storage/settings/official_logo.png');
+    $homeResponse->assertSee('banubagaskara.');
+
+    $profileResponse = $this->get(route('profile'));
+    $profileResponse->assertOk();
+    $profileResponse->assertSee('storage/settings/official_logo.png');
+    $profileResponse->assertSee('banubagaskara.');
+
+    $contactResponse = $this->get(route('kontak.index'));
+    $contactResponse->assertOk();
+    $contactResponse->assertSee('storage/settings/official_logo.png');
+    $contactResponse->assertSee('banubagaskara.');
 });
 
 it('synchronizes 6 programs bidirectionally between home and profile settings', function () {
@@ -770,4 +782,242 @@ it('allows admin to manage quote of Banu Lesmana Bagaskara in profile settings',
     $response->assertSee('Bekerja dengan kejujuran dan keberanian untuk kesejahteraan nyata rakyat Kota Bogor.');
     $response->assertSee('Banu Lesmana Bagaskara, S.M.');
     $response->assertSee('Fraksi PDI Perjuangan');
+});
+
+it('allows admin to manage footer banner and contact banner separately', function () {
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'general',
+        'data' => [
+            'footerBanner' => [
+                'enabled' => true,
+                'image' => 'storage/settings/custom_footer_banner.jpg',
+                'alt' => 'Banner Khusus Footer Warga',
+            ],
+            'contactBanner' => [
+                'image' => 'storage/settings/custom_contact_banner.jpg',
+                'alt' => 'Banner Khusus Halaman Kontak Darurat',
+            ],
+        ],
+    ])->assertRedirect();
+
+    $settingsService = app(SiteSettingsService::class);
+    $general = $settingsService->getGroup('general');
+
+    expect($general['footerBanner']['image'])->toBe('storage/settings/custom_footer_banner.jpg')
+        ->and($general['contactBanner']['image'])->toBe('storage/settings/custom_contact_banner.jpg');
+
+    // Footer banner appears on home/public layout
+    $homeResponse = $this->get(route('home'));
+    $homeResponse->assertOk();
+    $homeResponse->assertSee('storage/settings/custom_footer_banner.jpg');
+    $homeResponse->assertSee('Banner Khusus Footer Warga');
+
+    // Contact banner appears on kontak page
+    $contactResponse = $this->get(route('kontak.index'));
+    $contactResponse->assertOk();
+    $contactResponse->assertSee('storage/settings/custom_contact_banner.jpg');
+    $contactResponse->assertSee('Banner Khusus Halaman Kontak Darurat');
+});
+
+it('renders profile page displaying mission from database and removes program badges', function () {
+    $customMissions = [
+        'Misi Khusus Advokasi APBD untuk Rakyat Miskin',
+        'Misi Khusus Pelayanan Kesehatan Gratis 24 Jam',
+        'Misi Khusus Pendidikan Berkualitas Tanpa Pungli',
+    ];
+
+    $this->actingAs($this->admin)->post(route('admin.pengaturan.update'), [
+        'group' => 'profile',
+        'data' => [
+            'mission' => $customMissions,
+        ],
+    ])->assertRedirect();
+
+    $response = $this->get(route('profile'));
+    $response->assertOk();
+    $response->assertSee('Misi Khusus Advokasi APBD untuk Rakyat Miskin');
+    $response->assertSee('Misi Khusus Pelayanan Kesehatan Gratis 24 Jam');
+    $response->assertSee('Misi Khusus Pendidikan Berkualitas Tanpa Pungli');
+
+    // Verify program badges are removed
+    $response->assertDontSee('Penurunan Angka Putus Sekolah');
+    $response->assertDontSee('Pemberdayaan Pemuda Kreatif');
+    $response->assertDontSee('Kemandirian Ekonomi Warga');
+});
+
+// ==========================================
+// 6. UPLOAD LIMITS & SETTING PLACEHOLDERS
+// ==========================================
+
+it('restricts image uploads to maximum 2 MB and allows documents up to 10 MB', function () {
+    Storage::fake('public');
+
+    // 1. Upload valid image (<= 2 MB, e.g. 1 MB = 1024 KB)
+    $validImage = UploadedFile::fake()->image('banner.jpg')->size(1024);
+    $resValidImage = $this->actingAs($this->admin)->postJson(route('admin.upload'), [
+        'file' => $validImage,
+    ]);
+    $resValidImage->assertOk();
+    $resValidImage->assertJson(['success' => true]);
+
+    // 2. Upload oversized image (> 2 MB, e.g. 2500 KB)
+    $oversizedImage = UploadedFile::fake()->image('large_banner.png')->size(2500);
+    $resOversizedImage = $this->actingAs($this->admin)->postJson(route('admin.upload'), [
+        'file' => $oversizedImage,
+    ]);
+    $resOversizedImage->assertStatus(422);
+    $resOversizedImage->assertJsonValidationErrors(['file']);
+    $resOversizedImage->assertJsonFragment([
+        'file' => ['Ukuran file gambar maksimal 2 MB.'],
+    ]);
+
+    // 3. Upload valid document (<= 10 MB, e.g. 5 MB = 5120 KB)
+    $validDoc = UploadedFile::fake()->create('dokumen_kinerja.pdf', 5120, 'application/pdf');
+    $resValidDoc = $this->actingAs($this->admin)->postJson(route('admin.upload'), [
+        'file' => $validDoc,
+    ]);
+    $resValidDoc->assertOk();
+    $resValidDoc->assertJson(['success' => true]);
+
+    // 4. Upload oversized document (> 10 MB, e.g. 12000 KB)
+    $oversizedDoc = UploadedFile::fake()->create('dokumen_besar.pdf', 12000, 'application/pdf');
+    $resOversizedDoc = $this->actingAs($this->admin)->postJson(route('admin.upload'), [
+        'file' => $oversizedDoc,
+    ]);
+    $resOversizedDoc->assertStatus(422);
+    $resOversizedDoc->assertJsonValidationErrors(['file']);
+});
+
+it('runs database seeder only for admin account and website settings', function () {
+    // Run DatabaseSeeder
+    $this->artisan('db:seed');
+
+    // Admin exists
+    expect(User::where('email', 'admin@banubagaskara.id')->exists())->toBeTrue();
+
+    // Site settings exist
+    expect(SiteSetting::where('group', 'general')->exists())->toBeTrue();
+    expect(SiteSetting::where('group', 'home')->exists())->toBeTrue();
+
+    // Other models (articles, aspirations, albums, reports) are NOT seeded by DatabaseSeeder
+    expect(News::count())->toBe(0);
+    expect(Aspiration::count())->toBe(0);
+    expect(Album::count())->toBe(0);
+    expect(PerformanceReport::count())->toBe(0);
+});
+
+it('seeds site settings with null image files and renders solid color placeholders', function () {
+    $this->artisan('db:seed', ['--class' => 'SiteSettingSeeder']);
+
+    $general = SiteSetting::where('key', 'site_general')->first()->value;
+    $home = SiteSetting::where('key', 'site_home')->first()->value;
+    $profile = SiteSetting::where('key', 'site_profile')->first()->value;
+    $seo = SiteSetting::where('key', 'site_seo')->first()->value;
+
+    expect($general['logo'])->toBeNull();
+    expect($general['favicon'])->toBeNull();
+    expect($general['footerBanner']['image'])->toBeNull();
+    expect($general['contactBanner']['image'])->toBeNull();
+    expect($home['hero']['heroImage'])->toBeNull();
+    expect($home['banner']['image'])->toBeNull();
+    expect($profile['hero']['heroImage'])->toBeNull();
+    expect($seo['ogImage'])->toBeNull();
+
+    // Check home page renders without crashing and shows background placeholder
+    $homeRes = $this->get(route('home'));
+    $homeRes->assertOk();
+    $homeRes->assertSee('bg-zinc-800');
+
+    // Check profile page renders without crashing and shows background placeholder
+    $profileRes = $this->get(route('profile'));
+    $profileRes->assertOk();
+    $profileRes->assertSee('bg-zinc-800');
+
+    // Check contact page renders without crashing
+    $contactRes = $this->get(route('kontak.index'));
+    $contactRes->assertOk();
+    $contactRes->assertSee('bg-zinc-900');
+});
+
+it('displays descriptive field placeholders on public pages when site settings data is absent', function () {
+    // Empty out all site settings
+    SiteSetting::truncate();
+    app(SiteSettingsService::class)->clearCache();
+
+    // 1. Home page with no settings
+    $homeRes = $this->get(route('home'));
+    $homeRes->assertOk();
+    $homeRes->assertSee('[Headline Utama Beranda]', false);
+    $homeRes->assertSee('[Deskripsi Pengantar Beranda]', false);
+    $homeRes->assertSee('[Banner Beranda]', false);
+    $homeRes->assertSee('[Judul Program Kerja 1]', false);
+
+    // 2. Profile page with no settings
+    $profileRes = $this->get(route('profile'));
+    $profileRes->assertOk();
+    $profileRes->assertSee('[Subjudul Profil Anggota Dewan]', false);
+    $profileRes->assertSee('[Visi Pengabdian]', false);
+    $profileRes->assertSee('[Daerah Pemilihan]', false);
+
+    // 3. Contact page with no settings
+    $contactRes = $this->get(route('kontak.index'));
+    $contactRes->assertOk();
+    $contactRes->assertSee('[Banner Kontak]', false);
+    $contactRes->assertSee('[Alamat Kantor / Rumah Aspirasi]', false);
+});
+
+it('renders admin dashboard without dummy fallback data when database is empty', function () {
+    $response = $this->actingAs($this->admin)->get(route('admin.dashboard'));
+
+    $response->assertOk();
+    $response->assertDontSee('BLB-842910');
+    $response->assertDontSee('BLB-842765');
+    $response->assertSee('Belum ada aspirasi masuk dari warga.');
+    $response->assertSee('Belum ada artikel kinerja yang dibuat.');
+    $response->assertSee('Belum ada artikel berita yang dibuat.');
+});
+
+it('renders admin kinerja module without dummy data when database is empty', function () {
+    $response = $this->actingAs($this->admin)->get(route('admin.kinerja.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Ambulance Siaga 24 Jam & Pendampingan Administrasi Pasien BPJS Bebas Biaya');
+    $response->assertSee('Tidak ada tulisan hasil kinerja yang ditemukan');
+});
+
+it('renders admin berita module without dummy data when database is empty', function () {
+    $response = $this->actingAs($this->admin)->get(route('admin.berita.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Serap Aspirasi di Kebon Pedes: Banu Lesmana Pastikan Usulan Drainase');
+    $response->assertSee('Tidak ada artikel berita yang ditemukan');
+});
+
+it('renders admin galeri module without dummy data when database is empty', function () {
+    $response = $this->actingAs($this->admin)->get(route('admin.galeri.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Dialog Reses Masa Sidang II di Kebon Pedes');
+    $response->assertSee('Tidak ada album galeri yang ditemukan');
+});
+
+it('renders admin aspirasi module without dummy data when database is empty', function () {
+    $response = $this->actingAs($this->admin)->get(route('admin.aspirasi.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('BLB-842910');
+    $response->assertDontSee('BLB-842765');
+    $response->assertSee('Tidak ada aspirasi yang cocok');
+});
+
+it('renders admin pengaturan module without dummy data when site settings is empty', function () {
+    SiteSetting::truncate();
+    app(SiteSettingsService::class)->clearCache();
+
+    $response = $this->actingAs($this->admin)->get(route('admin.pengaturan.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Banu Lesmana Bagaskara, S.M. | Anggota DPRD Kota Bogor 2024-2029');
+    $response->assertDontSee('IBI Kesatuan Bogor');
+    $response->assertDontSee('Mengabdi dengan Integritas, Bekerja Nyata untuk Warga Bogor');
 });

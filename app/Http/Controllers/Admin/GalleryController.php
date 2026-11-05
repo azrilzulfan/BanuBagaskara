@@ -57,7 +57,7 @@ class GalleryController extends Controller
         ]);
 
         $status = ($validated['status'] ?? 'Terbit') === 'Terbit' ? 'published' : 'draft';
-        $cover = $validated['cover'] ?? ($validated['photos'][0]['url'] ?? 'assets/banu/testi_dialog.jpg');
+        $cover = $validated['cover'] ?? ($validated['photos'][0]['url'] ?? 'uploads/default_album_cover.jpg');
 
         $album = Album::create([
             'title' => $validated['title'],

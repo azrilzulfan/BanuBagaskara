@@ -3,7 +3,7 @@
 @section('title', 'Ringkasan Dasbor Admin | Banu Lesmana Bagaskara, S.M.')
 
 @php
-  $aspirationList = $recentAspirations->isNotEmpty() ? $recentAspirations->map(function ($item) {
+  $aspirationList = $recentAspirations->map(function ($item) {
     return [
       'id' => $item->id,
       'ticket' => $item->ticket_number,
@@ -15,48 +15,7 @@
       'description' => $item->description,
       'status' => $item->status instanceof \App\Enums\AspirationStatus ? $item->status->value : $item->status,
     ];
-  })->values()->toArray() : [
-    [
-      'ticket' => 'BLB-842910',
-      'date' => '04 November 2026',
-      'sender' => 'Warga RT 03 / RW 05',
-      'phone' => '0812-xxxx-xxxx',
-      'address' => 'Kelurahan Kebon Pedes, Kec. Tanah Sareal',
-      'subject' => 'Usulan Normalisasi Saluran Drainase Gang Saat Hujan Deras',
-      'description' => 'Mohon peninjauan saluran air di lingkungan RT 03/RW 05 Kelurahan Kebon Pedes yang mengalami pendangkalan sedimen sehingga meluap ke jalan gang saat hujan deras berlangsung lebih dari satu jam.',
-      'status' => 'Baru',
-    ],
-    [
-      'ticket' => 'BLB-842765',
-      'date' => '02 November 2026',
-      'sender' => 'Pengurus Lingkungan RW 04',
-      'phone' => '0813-xxxx-xxxx',
-      'address' => 'Kelurahan Sukadamai, Kec. Tanah Sareal',
-      'subject' => 'Perbaikan 3 Titik Lampu Penerangan Jalan Umum (PJU) Padam',
-      'description' => 'Terdapat tiga titik lampu penerangan jalan lingkungan di akses utama warga menuju jalan raya yang padam sejak pekan lalu. Mohon dapat dikawal ke dinas terkait demi keamanan warga malam hari.',
-      'status' => 'Baru',
-    ],
-    [
-      'ticket' => 'BLB-842519',
-      'date' => '29 Oktober 2026',
-      'sender' => 'Pelaku Usaha Rumahan',
-      'phone' => '0857-xxxx-xxxx',
-      'address' => 'Kelurahan Kedung Badak, Kec. Tanah Sareal',
-      'subject' => 'Pendaftaran Pendampingan NIB & Sertifikasi Halal UMKM',
-      'description' => 'Kami kelompok usaha kuliner rumahan di Kedung Badak ingin mendaftarkan 8 pelaku usaha warga untuk mengikuti jadwal pendampingan pembuatan NIB dan sertifikasi halal gratis di Rumah Aspirasi.',
-      'status' => 'Ditinjau',
-    ],
-    [
-      'ticket' => 'BLB-841904',
-      'date' => '25 Oktober 2026',
-      'sender' => 'Warga Kel. Kayumanis',
-      'phone' => '0878-xxxx-xxxx',
-      'address' => 'Kelurahan Kayumanis, Kec. Tanah Sareal',
-      'subject' => 'Konsultasi Persyaratan Pengajuan Beasiswa Siswa Prasejahtera',
-      'description' => 'Ingin menanyakan jadwal konsultasi di Rumah Aspirasi terkait kelengkapan dokumen advokasi bantuan pendidikan bagi anak kami yang sedang menempuh pendidikan tingkat SMA di Kota Bogor.',
-      'status' => 'Selesai',
-    ],
-  ];
+  })->values()->toArray();
 @endphp
 
 @section('content')
@@ -146,11 +105,11 @@
                 </div>
                 <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Kanvas Blok</span>
               </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['publishedReports'] ?? 18 }}</div>
+              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['publishedReports'] ?? 0 }}</div>
               <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                 <span class="text-[#BC0202] font-black mr-2">|</span> Hasil Kinerja
               </h2>
-              <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">{{ $metrics['publishedReports'] ?? 18 }} laporan terbit di halaman publik &bull; {{ $metrics['totalReports'] - $metrics['publishedReports'] ?? 0 }} konsep tersimpan.</p>
+              <p class="text-xs text-zinc-600 mt-1.5 leading-relaxed">{{ $metrics['publishedReports'] ?? 0 }} laporan terbit di halaman publik &bull; {{ max(0, ($metrics['totalReports'] ?? 0) - ($metrics['publishedReports'] ?? 0)) }} konsep tersimpan.</p>
             </div>
             <div class="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-[#BC0202]">
               <span>Kelola Artikel Kinerja</span>
@@ -177,7 +136,7 @@
                 </div>
                 <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Rilis &amp; Media</span>
               </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalNews'] ?? 18 }}</div>
+              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalNews'] ?? 0 }}</div>
               <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                 <span class="text-[#BC0202] font-black mr-2">|</span> Artikel Berita
               </h2>
@@ -208,7 +167,7 @@
                 </div>
                 <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#fafafa] text-zinc-600 border border-zinc-200">Album Publik</span>
               </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAlbums'] ?? 18 }}</div>
+              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAlbums'] ?? 0 }}</div>
               <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                 <span class="text-[#BC0202] font-black mr-2">|</span> Album Galeri
               </h2>
@@ -243,7 +202,7 @@
                   <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-md bg-zinc-100 text-zinc-600 border border-zinc-200">Semua Terbaca</span>
                 @endif
               </div>
-              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAspirations'] ?? 24 }}</div>
+              <div class="text-3xl font-extrabold text-zinc-950 tracking-tight">{{ $metrics['totalAspirations'] ?? 0 }}</div>
               <h2 class="font-bold text-sm text-zinc-950 mt-1.5 flex items-center tracking-tight">
                 <span class="text-[#BC0202] font-black mr-2">|</span> Kotak Aspirasi
               </h2>
@@ -281,6 +240,11 @@
 
             <!-- List Aspirasi -->
             <div class="space-y-3">
+              <template x-if="aspirations.length === 0">
+                <div class="py-12 text-center text-zinc-500 text-xs">
+                  Belum ada aspirasi masuk dari warga.
+                </div>
+              </template>
               <template x-for="(item, index) in aspirations" :key="item.ticket">
                 <div
                   @click="openAspiration(item)"
@@ -408,233 +372,122 @@
 
         <!-- Tab Panel 1: 3 Hasil Kinerja Terakhir -->
         <div x-show="activeTab === 'kinerja'" class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
-          <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-            <div>
-              <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset('assets/banu/program_ambulance.jpg') }}"
-                  alt="Layanan Ambulance Siaga 24 Jam & Pendampingan Medis Pasien Warga"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-              </div>
-              <div class="p-5">
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                  <span class="text-[11px] font-medium text-zinc-500">20 Januari 2026</span>
-                  <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan Utama</span>
+          @forelse ($recentReports as $report)
+            <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
+                  @if ($report->cover_image)
+                    <img
+                      src="{{ asset($report->cover_image) }}"
+                      alt="{{ $report->title }}"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  @else
+                    <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                      <span class="text-white font-bold mb-1">banubagaskara.</span>
+                      <span class="text-[11px] text-zinc-400">Hasil Kinerja</span>
+                    </div>
+                  @endif
                 </div>
-                <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight">Layanan Ambulance Siaga 24 Jam &amp; Pendampingan Medis Pasien Warga</h3>
-                <p class="text-xs text-zinc-500 mt-2">Susunan Kanvas: 6 Blok Modular (Judul, Gambar, Paragraf, List, Grid)</p>
-              </div>
-            </div>
-            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-              <a
-                href="{{ route('admin.kinerja.index') }}"
-                class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-              >
-                Sunting Blok
-              </a>
-              <a
-                href="{{ route('kinerja.index') }}"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-                title="Pratinjau Publik"
-              >
-                Lihat
-              </a>
-            </div>
-          </article>
-
-          <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-            <div>
-              <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset('assets/banu/program_umkm.jpg') }}"
-                  alt="Pendampingan Penerbitan NIB & Sertifikasi Halal Gratis untuk UMKM RT/RW"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-              </div>
-              <div class="p-5">
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                  <span class="text-[11px] font-medium text-zinc-500">16 Januari 2026</span>
-                  <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">Terbit</span>
+                <div class="p-5">
+                  <div class="flex items-center justify-between gap-2 mb-2.5">
+                    <span class="text-[11px] font-medium text-zinc-500">{{ $report->published_at ? $report->published_at->translatedFormat('d F Y') : ($report->created_at ? $report->created_at->translatedFormat('d F Y') : '-') }}</span>
+                    @if ($report->is_featured)
+                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan Utama</span>
+                    @else
+                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">{{ ucfirst($report->status) }}</span>
+                    @endif
+                  </div>
+                  <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight line-clamp-2">{{ $report->title }}</h3>
+                  <p class="text-xs text-zinc-500 mt-2 line-clamp-2">{{ $report->excerpt }}</p>
                 </div>
-                <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight">Pendampingan Penerbitan NIB &amp; Sertifikasi Halal Gratis untuk UMKM RT/RW</h3>
-                <p class="text-xs text-zinc-500 mt-2">Susunan Kanvas: 5 Blok Modular (Judul, Paragraf, Gambar, List)</p>
               </div>
-            </div>
-            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-              <a
-                href="{{ route('admin.kinerja.index') }}"
-                class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-              >
-                Sunting Blok
-              </a>
-              <a
-                href="{{ route('kinerja.index') }}"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-                title="Pratinjau Publik"
-              >
-                Lihat
-              </a>
-            </div>
-          </article>
-
-          <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-            <div>
-              <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset('assets/banu/testi_dialog.jpg') }}"
-                  alt="Pengawalan Pokir APBD untuk Normalisasi Saluran Drainase & Pencegahan Banjir"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
+              <div class="px-5 pb-5 pt-2 flex items-center gap-2">
+                <a
+                  href="{{ route('admin.kinerja.index') }}"
+                  class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
+                >
+                  Kelola Kinerja
+                </a>
+                @if ($report->status === 'published')
+                  <a
+                    href="{{ route('kinerja.show', $report->slug) }}"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
+                    title="Pratinjau Publik"
+                  >
+                    Lihat
+                  </a>
+                @endif
               </div>
-              <div class="p-5">
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                  <span class="text-[11px] font-medium text-zinc-500">12 Januari 2026</span>
-                  <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">Terbit</span>
-                </div>
-                <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight">Pengawalan Pokir APBD untuk Normalisasi Saluran Drainase &amp; Pencegahan Banjir</h3>
-                <p class="text-xs text-zinc-500 mt-2">Susunan Kanvas: 4 Blok Modular (Judul, Paragraf, Grid Foto)</p>
-              </div>
+            </article>
+          @empty
+            <div class="col-span-full py-12 text-center text-zinc-500 text-xs">
+              Belum ada artikel kinerja yang dibuat.
             </div>
-            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-              <a
-                href="{{ route('admin.kinerja.index') }}"
-                class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-              >
-                Sunting Blok
-              </a>
-              <a
-                href="{{ route('kinerja.index') }}"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-                title="Pratinjau Publik"
-              >
-                Lihat
-              </a>
-            </div>
-          </article>
+          @endforelse
         </div>
 
         <!-- Tab Panel 2: 3 Artikel Berita Terakhir -->
         <div x-show="activeTab === 'berita'" x-cloak class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
-          <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-            <div>
-              <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset('assets/banu/testi_dialog.jpg') }}"
-                  alt="Serap Aspirasi di Kebon Pedes"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-              </div>
-              <div class="p-5">
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                  <span class="text-[11px] font-medium text-zinc-500">28 Februari 2026</span>
-                  <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan Berita</span>
+          @forelse ($recentNews as $newsItem)
+            <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
+                  @if ($newsItem->cover_image)
+                    <img
+                      src="{{ asset($newsItem->cover_image) }}"
+                      alt="{{ $newsItem->title }}"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  @else
+                    <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                      <span class="text-white font-bold mb-1">banubagaskara.</span>
+                      <span class="text-[11px] text-zinc-400">Artikel Berita</span>
+                    </div>
+                  @endif
                 </div>
-                <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight">Serap Aspirasi di Kebon Pedes: Pastikan Usulan Drainase &amp; PJU Masuk Prioritas</h3>
-                <p class="text-xs text-zinc-500 mt-2">Sumber: Rilis Resmi Rumah Aspirasi</p>
-              </div>
-            </div>
-            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-              <a
-                href="{{ route('admin.berita.index') }}"
-                class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-              >
-                Ubah Berita
-              </a>
-              <a
-                href="{{ route('berita.index') }}"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-              >
-                Lihat
-              </a>
-            </div>
-          </article>
-
-          <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-            <div>
-              <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset('assets/banu/program_ambulance.jpg') }}"
-                  alt="Ambulance Siaga Banu Bagaskara Respon Cepat Rujukan Pasien Darurat"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-              </div>
-              <div class="p-5">
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                  <span class="text-[11px] font-medium text-zinc-500">24 Februari 2026</span>
-                  <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">Terbit</span>
+                <div class="p-5">
+                  <div class="flex items-center justify-between gap-2 mb-2.5">
+                    <span class="text-[11px] font-medium text-zinc-500">{{ $newsItem->published_at ? $newsItem->published_at->translatedFormat('d F Y') : ($newsItem->created_at ? $newsItem->created_at->translatedFormat('d F Y') : '-') }}</span>
+                    @if ($newsItem->is_featured)
+                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-[#BC0202] border border-red-100">Sorotan Berita</span>
+                    @else
+                      <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">{{ ucfirst($newsItem->status) }}</span>
+                    @endif
+                  </div>
+                  <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight line-clamp-2">{{ $newsItem->title }}</h3>
+                  <p class="text-xs text-zinc-500 mt-2 line-clamp-2">Sumber: {{ $newsItem->source_url ?: ($newsItem->source ?: 'Rilis Media') }}</p>
                 </div>
-                <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight">Ambulance Siaga Respon Cepat Rujukan Pasien Darurat di Kedung Badak</h3>
-                <p class="text-xs text-zinc-500 mt-2">Sumber: Tim Relawan Kesehatan 24 Jam</p>
               </div>
-            </div>
-            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-              <a
-                href="{{ route('admin.berita.index') }}"
-                class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-              >
-                Ubah Berita
-              </a>
-              <a
-                href="{{ route('berita.index') }}"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-              >
-                Lihat
-              </a>
-            </div>
-          </article>
-
-          <article class="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between group">
-            <div>
-              <div class="aspect-[16/10] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset('assets/banu/program_umkm.jpg') }}"
-                  alt="Rumah Aspirasi Fasilitasi NIB Gratis"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
+              <div class="px-5 pb-5 pt-2 flex items-center gap-2">
+                <a
+                  href="{{ route('admin.berita.index') }}"
+                  class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
+                >
+                  Kelola Berita
+                </a>
+                @if ($newsItem->status === 'published' && ($newsItem->source_url || $newsItem->source))
+                  <a
+                    href="{{ $newsItem->source_url ?: $newsItem->source }}"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
+                    title="Lihat Sumber"
+                  >
+                    Lihat
+                  </a>
+                @endif
               </div>
-              <div class="p-5">
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                  <span class="text-[11px] font-medium text-zinc-500">19 Februari 2026</span>
-                  <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#fafafa] text-zinc-700 border border-zinc-200">Terbit</span>
-                </div>
-                <h3 class="font-bold text-sm sm:text-base text-zinc-950 leading-snug tracking-tight">Rumah Aspirasi Fasilitasi 120+ NIB Gratis dan Pelatihan Foto Produk</h3>
-                <p class="text-xs text-zinc-500 mt-2">Sumber: Dokumentasi Sekretariat Dapil 4</p>
-              </div>
+            </article>
+          @empty
+            <div class="col-span-full py-12 text-center text-zinc-500 text-xs">
+              Belum ada artikel berita yang dibuat.
             </div>
-            <div class="px-5 pb-5 pt-2 flex items-center gap-2">
-              <a
-                href="{{ route('admin.berita.index') }}"
-                class="flex-1 inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-900 text-xs font-semibold py-2 px-3 shadow-2xs transition-colors"
-              >
-                Ubah Berita
-              </a>
-              <a
-                href="{{ route('berita.index') }}"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-[#fafafa] hover:bg-zinc-100 text-zinc-700 text-xs font-semibold py-2 px-3 transition-colors"
-              >
-                Lihat
-              </a>
-            </div>
-          </article>
+          @endforelse
         </div>
       </div>
     </section>

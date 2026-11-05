@@ -14,10 +14,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             SiteSettingSeeder::class,
-            PerformanceReportSeeder::class,
-            NewsSeeder::class,
-            AlbumSeeder::class,
-            AspirationSeeder::class,
         ]);
     }
 }

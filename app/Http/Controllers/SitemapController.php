@@ -16,6 +16,6 @@ class SitemapController extends Controller
         $content = view('sitemap', compact('reports', 'newsList'))->render();
 
         return response($content, 200)
-            ->header('Content-Type', 'text/xml');
+            ->header('Content-Type', 'text/xml; charset=UTF-8');
     }
 }

@@ -25,7 +25,9 @@ class DashboardController extends Controller
 
         $recentAspirations = Aspiration::latest()->take(5)->get();
         $recentActivities = ActivityLog::latest('created_at')->take(5)->get();
+        $recentReports = PerformanceReport::latest('updated_at')->take(3)->get();
+        $recentNews = News::latest('updated_at')->take(3)->get();
 
-        return view('admin.dashboard', compact('metrics', 'recentAspirations', 'recentActivities'));
+        return view('admin.dashboard', compact('metrics', 'recentAspirations', 'recentActivities', 'recentReports', 'recentNews'));
     }
 }

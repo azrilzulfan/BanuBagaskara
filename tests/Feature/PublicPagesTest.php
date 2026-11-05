@@ -4,6 +4,7 @@ use App\Enums\PublicationStatus;
 use App\Models\Album;
 use App\Models\News;
 use App\Models\PerformanceReport;
+use Database\Seeders\SiteSettingSeeder;
 
 it('renders home page successfully with HTTP 200', function () {
     $report = PerformanceReport::factory()->create([
@@ -25,6 +26,8 @@ it('renders home page successfully with HTTP 200', function () {
 });
 
 it('renders kenali saya page successfully with HTTP 200', function () {
+    (new SiteSettingSeeder)->run();
+
     $response = $this->get(route('profile'));
 
     $response->assertOk();
@@ -143,22 +146,12 @@ it('renders galeri page with albums', function () {
     $response->assertSee('Dokumentasi Rapat Dengar Pendapat Warga');
 });
 
-it('renders kontak dan aspirasi page with 11 kelurahan options', function () {
+it('renders kontak dan aspirasi page without kelurahan field', function () {
     $response = $this->get(route('kontak.index'));
 
     $response->assertOk();
     $response->assertSee('Kotak Aspirasi');
-    $response->assertSee('Cibadak');
-    $response->assertSee('Kayumanis');
-    $response->assertSee('Kebonpedes');
-    $response->assertSee('Kedungbadak');
-    $response->assertSee('Kedungjaya');
-    $response->assertSee('Kedungwaringin');
-    $response->assertSee('Kencana');
-    $response->assertSee('Mekarwangi');
-    $response->assertSee('Sukadamai');
-    $response->assertSee('Sukaresmi');
-    $response->assertSee('Tanah Sareal');
+    $response->assertDontSee('name="kelurahan"', false);
 });
 
 it('renders dynamic XML sitemap with correct XML content type and URLs', function () {
@@ -184,4 +177,52 @@ it('renders dynamic XML sitemap with correct XML content type and URLs', functio
     $response->assertSee(url('/kontak'));
     $response->assertSee(route('kinerja.show', $report->slug));
     $response->assertSee(route('berita.show', $news->slug));
+});
+
+it('shows empty state on home page when no reports or news exist in database', function () {
+    $response = $this->get(route('home'));
+
+    $response->assertOk();
+    $response->assertSee('Belum ada publikasi hasil kinerja dan berita terkini.');
+    $response->assertDontSee('Ambulance Siaga 24 Jam & Pendampingan Administrasi Pasien BPJS Bebas Biaya');
+    $response->assertDontSee('Serap Aspirasi di Kebon Pedes: Banu Lesmana Pastikan Usulan Drainase');
+});
+
+it('renders at most 4 combined articles on home page ordered by date', function () {
+    PerformanceReport::factory()->count(3)->create([
+        'status' => PublicationStatus::Published->value,
+    ]);
+    News::factory()->count(3)->create([
+        'status' => PublicationStatus::Published->value,
+    ]);
+
+    $response = $this->get(route('home'));
+
+    $response->assertOk();
+    $latestArticles = $response->viewData('latestArticles');
+    expect($latestArticles)->toHaveCount(4);
+});
+
+it('shows empty state on kinerja page when no featured or regular reports exist', function () {
+    $response = $this->get(route('kinerja.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Ambulance Siaga 24 Jam &amp; Pendampingan Administrasi Pasien BPJS Bebas Biaya', false);
+    $response->assertSee('Belum ada laporan kinerja lainnya yang dipublikasikan.');
+});
+
+it('shows empty state on berita page when no featured or regular news exist', function () {
+    $response = $this->get(route('berita.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Serap Aspirasi di Kebon Pedes: Banu Lesmana Pastikan Usulan Drainase', false);
+    $response->assertSee('Belum ada artikel berita lainnya yang dipublikasikan.');
+});
+
+it('shows empty state on galeri page when no albums exist', function () {
+    $response = $this->get(route('galeri.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Dialog Reses Masa Sidang II di Kebon Pedes');
+    $response->assertSee('Belum ada dokumentasi galeri foto kegiatan yang dipublikasikan.');
 });

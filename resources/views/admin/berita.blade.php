@@ -3,46 +3,7 @@
 @section('title', 'Kelola Artikel Berita | Dasbor Admin Banu Lesmana Bagaskara, S.M.')
 
 @php
-  $defaultArticles = [
-    [
-      'id' => 1,
-      'title' => 'Serap Aspirasi di Kebon Pedes: Banu Lesmana Pastikan Usulan Drainase & PJU Masuk Prioritas APBD Perubahan',
-      'date' => '2026-02-28',
-      'dateFormatted' => '28 Februari 2026',
-      'source' => 'Rilis Resmi Sekretariat Dapil 4',
-      'sourceUrl' => 'https://kotabogor.go.id',
-      'coverImage' => asset('assets/banu/testi_dialog.jpg'),
-      'description' => 'Dalam agenda tatap muka bersama puluhan ketua RT, RW, dan tokoh masyarakat di Kelurahan Kebon Pedes, Anggota DPRD Kota Bogor Banu Lesmana Bagaskara menegaskan komitmennya untuk langsung mengawal kendala banjir genangan ke dinas terkait agar penanganannya masuk dokumen pokok pikiran dewan tahun 2026. Pertemuan ini turut membahas pengadaan penerangan jalan gang di titik-titik rawan guna meningkatkan keamanan lingkungan warga saat malam hari.',
-      'isFeatured' => true,
-      'status' => 'Terbit',
-    ],
-    [
-      'id' => 2,
-      'title' => 'Ambulance Siaga Banu Bagaskara Respon Cepat Rujukan Pasien Darurat di Kedung Badak',
-      'date' => '2026-02-24',
-      'dateFormatted' => '24 Februari 2026',
-      'source' => 'Relawan Kesehatan 24 Jam',
-      'sourceUrl' => '',
-      'coverImage' => asset('assets/banu/program_ambulance.jpg'),
-      'description' => 'Tim relawan siaga bergerak cepat pada tengah malam untuk menjemput dan mengantarkan seorang warga lansia yang membutuhkan tindakan medis intensif ke RSUD Kota Bogor. Selain armada transportasi medis gratis, tim relawan turut mengawal kelengkapan berkas administrasi kepesertaan jaminan kesehatan agar pasien langsung mendapatkan kamar perawatan tanpa hambatan biaya.',
-      'isFeatured' => false,
-      'status' => 'Terbit',
-    ],
-    [
-      'id' => 3,
-      'title' => 'Rumah Aspirasi Fasilitasi 120+ NIB Gratis dan Pelatihan Foto Produk Bagi Pelaku Usaha',
-      'date' => '2026-02-19',
-      'dateFormatted' => '19 Februari 2026',
-      'source' => 'Divisi Advokasi UMKM RT/RW',
-      'sourceUrl' => '',
-      'coverImage' => asset('assets/banu/program_umkm.jpg'),
-      'description' => 'Sebanyak lebih dari 120 pedagang kecil dan produsen olahan rumahan di Kecamatan Tanah Sareal telah menerima dokumen Nomor Induk Berusaha (NIB) dan sertifikat halal secara cuma-cuma. Program pemberdayaan ini dilengkapi pendampingan visual kemasan produk guna memperluas jangkauan pemasaran daring.',
-      'isFeatured' => false,
-      'status' => 'Terbit',
-    ],
-  ];
-
-  $initialArticles = $articles->isNotEmpty() ? $articles->toArray() : $defaultArticles;
+  $initialArticles = $articles->toArray();
 @endphp
 
 @section('content')
@@ -489,8 +450,15 @@
             </h3>
 
             <!-- Pratinjau Cover Image -->
-            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs relative">
-              <img :src="form.coverImage ? (form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage) : '/assets/banu/testi_dialog.jpg'" alt="Cover Image Berita" class="w-full h-full object-cover" />
+            <div class="aspect-[16/10] bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-2xs relative flex items-center justify-center">
+              <template x-if="form.coverImage">
+                <img :src="form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage" alt="Cover Image Berita" class="w-full h-full object-cover" />
+              </template>
+              <template x-if="!form.coverImage">
+                <div class="w-full h-full bg-zinc-200 flex items-center justify-center text-zinc-400 text-xs">
+                  <span>Belum ada foto sampul</span>
+                </div>
+              </template>
               <div x-show="uploadingCover" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-semibold">
                 Mengunggah Sampul...
               </div>
@@ -517,7 +485,7 @@
                 </svg>
                 <span x-text="uploadingCover ? 'Mengunggah...' : 'Pilih & Unggah Gambar Sampul'"></span>
               </button>
-              <p class="text-[11px] text-zinc-500 mt-1.5">Rasio ideal 16:9 atau 16:10 untuk keseragaman kartu berita di tampilan publik.</p>
+              <p class="text-[11px] text-zinc-500 mt-1.5">Rasio ideal 16:9 atau 16:10. Format JPG, PNG, WebP (Maksimal 2 MB).</p>
             </div>
           </div>
         </div>
@@ -598,8 +566,15 @@
         <h1 id="modal-preview-title" class="text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-950 leading-tight tracking-tight" x-text="form.title ? form.title : 'Judul Berita'"></h1>
 
         <!-- Gambar Berita -->
-        <div class="aspect-[16/9] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100 shadow-2xs">
-          <img :src="form.coverImage ? (form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage) : '/assets/banu/testi_dialog.jpg'" :alt="form.title" class="w-full h-full object-cover" />
+        <div class="aspect-[16/9] w-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-100 shadow-2xs flex items-center justify-center">
+          <template x-if="form.coverImage">
+            <img :src="form.coverImage.startsWith('http') || form.coverImage.startsWith('/') ? form.coverImage : '/' + form.coverImage" :alt="form.title" class="w-full h-full object-cover" />
+          </template>
+          <template x-if="!form.coverImage">
+            <div class="w-full h-full bg-zinc-200 flex items-center justify-center text-zinc-400 text-xs">
+              <span>Belum ada foto sampul</span>
+            </div>
+          </template>
         </div>
 
         <!-- Deskripsi / Ringkasan Cuplikan Berita -->
@@ -657,7 +632,7 @@
         title: '',
         date: '',
         sourceUrl: '',
-        coverImage: 'assets/banu/testi_dialog.jpg',
+        coverImage: '',
         description: '',
         isFeatured: false,
         status: 'Terbit'
@@ -689,7 +664,7 @@
           title: '',
           date: new Date().toISOString().split('T')[0],
           sourceUrl: '',
-          coverImage: 'assets/banu/testi_dialog.jpg',
+          coverImage: '',
           description: '',
           isFeatured: false,
           status: 'Terbit'
@@ -717,6 +692,12 @@
       uploadCoverImage(event) {
         const file = event.target.files[0];
         if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Ukuran file gambar maksimal 2 MB.');
+          event.target.value = '';
+          return;
+        }
 
         this.uploadingCover = true;
         const fd = new FormData();

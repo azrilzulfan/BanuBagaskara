@@ -64,7 +64,6 @@ Banu Bagaskara/
 │   └── CODING_STANDARDS_AND_WORKFLOW.md   # Coding Standards & Testing Strategy
 │
 ├── templates/                             # Purwarupa Antarmuka Statis Terverifikasi
-│   ├── assets/banu/                       # Aset foto resolusi tinggi terverifikasi
 │   ├── index.html                         # Purwarupa Beranda
 │   ├── kenali.html                        # Purwarupa Kenali Saya
 │   ├── kinerja.html                       # Purwarupa Hasil Kinerja

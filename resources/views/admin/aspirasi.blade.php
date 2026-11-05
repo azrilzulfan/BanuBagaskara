@@ -3,54 +3,7 @@
 @section('title', 'Kotak Aspirasi Warga | Dasbor Admin Banu Lesmana Bagaskara, S.M.')
 
 @php
-  $defaultAspirations = [
-    [
-      'id' => 1,
-      'ticket' => 'BLB-842910',
-      'date' => '04 Nov 2026, 14:20 WIB',
-      'sender' => 'Warga RT 03 / RW 05',
-      'phone' => '0812-9844-1290',
-      'address' => 'Jl. Kebon Pedes No. 42 RT 03 / RW 05',
-      'subject' => 'Usulan Normalisasi Saluran Drainase Gang Saat Hujan Deras',
-      'description' => "Mohon peninjauan saluran air di lingkungan RT 03/RW 05 yang mengalami pendangkalan sedimen sehingga meluap ke jalan gang saat hujan deras berlangsung lebih dari satu jam.\n\nSudah diajukan pada forum RT namun membutuhkan pengawalan anggaran dari dewan agar segera direalisasikan Dinas PUPR.",
-      'waUrl' => 'https://wa.me/6281298441290?text=Halo%20Bapak/Ibu',
-    ],
-    [
-      'id' => 2,
-      'ticket' => 'BLB-842765',
-      'date' => '02 Nov 2026, 20:10 WIB',
-      'sender' => 'Pengurus Lingkungan RW 04',
-      'phone' => '0813-8821-4433',
-      'address' => 'Komplek Griya Sukadamai Blok C2',
-      'subject' => 'Perbaikan 3 Titik Lampu Penerangan Jalan Umum (PJU) Padam',
-      'description' => "Terdapat tiga titik lampu penerangan jalan lingkungan di akses utama warga menuju jalan raya yang padam sejak dua pekan lalu. Kondisi ini membuat jalan gelap dan rawan tindak kejahatan malam hari.\n\nMohon bantuannya untuk diteruskan ke Dishub Kota Bogor.",
-      'waUrl' => 'https://wa.me/6281388214433?text=Halo%20Bapak/Ibu',
-    ],
-    [
-      'id' => 3,
-      'ticket' => 'BLB-842519',
-      'date' => '29 Okt 2026, 09:15 WIB',
-      'sender' => 'Pelaku Usaha Rumahan',
-      'phone' => '0857-1190-3321',
-      'address' => 'Kedung Badak RT 02 / RW 07',
-      'subject' => 'Pendaftaran Pendampingan NIB & Sertifikasi Halal UMKM',
-      'description' => 'Kami kelompok usaha kuliner rumahan ingin mendaftarkan 8 pelaku usaha warga untuk mengikuti jadwal pendampingan pembuatan NIB dan sertifikasi halal gratis di Rumah Aspirasi.',
-      'waUrl' => 'https://wa.me/6285711903321?text=Halo%20Bapak/Ibu',
-    ],
-    [
-      'id' => 4,
-      'ticket' => 'BLB-841904',
-      'date' => '25 Okt 2026, 16:40 WIB',
-      'sender' => 'Warga Kayumanis',
-      'phone' => '0878-4455-6677',
-      'address' => 'Jl. Raya Kayumanis RT 01 / RW 03',
-      'subject' => 'Konsultasi Persyaratan Pengajuan Beasiswa Siswa Prasejahtera',
-      'description' => 'Ingin menanyakan jadwal konsultasi di Rumah Aspirasi terkait kelengkapan dokumen advokasi bantuan pendidikan bagi anak kami yang sedang menempuh pendidikan tingkat SMA di Kota Bogor.',
-      'waUrl' => 'https://wa.me/6287844556677?text=Halo%20Bapak/Ibu',
-    ],
-  ];
-
-  $initialAspirations = $aspirations->isNotEmpty() ? $aspirations->toArray() : $defaultAspirations;
+  $initialAspirations = $aspirations->toArray();
 @endphp
 
 @section('content')
@@ -231,9 +184,15 @@
                 <!-- Tiket & Waktu -->
                 <td class="py-4 px-4 whitespace-nowrap">
                   <div class="flex flex-col">
-                    <span class="font-mono font-bold text-xs text-zinc-950 flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      @click.stop="copyTicket(item.ticket)"
+                      class="font-mono font-bold text-xs text-zinc-950 flex items-center gap-1.5 hover:text-[#BC0202] transition-colors cursor-pointer text-left"
+                      title="Klik untuk salin nomor tiket"
+                    >
                       <span x-text="item.ticket"></span>
-                    </span>
+                      <span x-show="copiedTicket === item.ticket" x-cloak class="text-[10px] text-emerald-600 font-sans font-semibold">Tersalin!</span>
+                    </button>
                     <span class="text-[11px] text-zinc-600 mt-1" x-text="item.date"></span>
                   </div>
                 </td>
@@ -323,7 +282,15 @@
             <!-- Header Card: Tiket & Waktu -->
             <div class="flex items-start justify-between gap-3">
               <div>
-                <span class="font-mono font-bold text-xs text-zinc-950" x-text="item.ticket"></span>
+                <button
+                  type="button"
+                  @click.stop="copyTicket(item.ticket)"
+                  class="font-mono font-bold text-xs text-zinc-950 flex items-center gap-1.5 hover:text-[#BC0202] transition-colors cursor-pointer text-left"
+                  title="Klik untuk salin nomor tiket"
+                >
+                  <span x-text="item.ticket"></span>
+                  <span x-show="copiedTicket === item.ticket" x-cloak class="text-[10px] text-emerald-600 font-sans font-semibold">Tersalin!</span>
+                </button>
                 <span class="text-[11px] text-zinc-600 block mt-0.5" x-text="item.date"></span>
               </div>
             </div>
@@ -428,7 +395,15 @@
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-mono font-bold text-sm text-zinc-950" x-text="selectedAspiration?.ticket"></span>
+              <button
+                type="button"
+                @click="copyTicket(selectedAspiration?.ticket)"
+                class="font-mono font-bold text-sm text-zinc-950 hover:text-[#BC0202] transition-colors cursor-pointer flex items-center gap-1.5"
+                title="Salin Nomor Tiket"
+              >
+                <span x-text="selectedAspiration?.ticket"></span>
+                <span x-show="copiedTicket === selectedAspiration?.ticket" x-cloak class="text-[10px] text-emerald-600 font-sans font-semibold">Tersalin!</span>
+              </button>
               <span class="text-xs text-zinc-400">&bull;</span>
               <span class="text-xs text-zinc-500" x-text="selectedAspiration?.date"></span>
             </div>
@@ -588,6 +563,16 @@
       targetDeleteId: null,
 
       aspirations: @json($initialAspirations),
+      copiedTicket: null,
+
+      copyTicket(ticket) {
+        if (!ticket) return;
+        navigator.clipboard.writeText(ticket);
+        this.copiedTicket = ticket;
+        setTimeout(() => {
+          if (this.copiedTicket === ticket) this.copiedTicket = null;
+        }, 2000);
+      },
 
       get countTotal() {
         return this.aspirations.length;

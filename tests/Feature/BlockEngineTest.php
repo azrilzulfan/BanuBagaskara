@@ -40,13 +40,13 @@ it('renders image blocks with caption and normalized relative paths', function (
     $service = app(BlockEngineService::class);
 
     $blocks = [
-        ['type' => 'image', 'url' => '../assets/banu/program_ambulance.jpg', 'caption' => 'Ambulance Siaga 24 Jam'],
+        ['type' => 'image', 'url' => '../uploads/program_ambulance.jpg', 'caption' => 'Ambulance Siaga 24 Jam'],
     ];
 
     $html = $service->renderToHtml($blocks);
 
     expect($html)
-        ->toContain('src="/assets/banu/program_ambulance.jpg"')
+        ->toContain('src="/uploads/program_ambulance.jpg"')
         ->toContain('alt="Ambulance Siaga 24 Jam"')
         ->toContain('Ambulance Siaga 24 Jam');
 });

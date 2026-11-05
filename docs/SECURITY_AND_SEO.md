@@ -113,7 +113,7 @@ Untuk modul Berita yang mengarahkan pembaca langsung ke artikel asli media luar 
     "name": "PDI Perjuangan"
   },
   "url": "https://banubagaskara.id",
-  "image": "https://banubagaskara.id/assets/banu/hero_banu.jpg",
+  "image": "https://banubagaskara.id/uploads/hero_banu.jpg",
   "sameAs": [
     "https://instagram.com/banubagaskara",
     "https://tiktok.com/@banubagaskara",

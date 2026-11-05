@@ -27,7 +27,7 @@ class NewsFactory extends Factory
             'source' => fake()->randomElement(['Media Center', 'Radar Bogor', 'Antara', 'Pikiran Rakyat']),
             'source_url' => fake()->url(),
             'description' => fake()->paragraph(),
-            'cover_image' => 'assets/banu/news_1.jpg',
+            'cover_image' => 'uploads/sample_news.jpg',
             'is_featured' => false,
             'status' => PublicationStatus::Published->value,
             'published_at' => now()->toDateString(),

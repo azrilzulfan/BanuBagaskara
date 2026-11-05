@@ -1,7 +1,26 @@
 @extends('layouts.public')
 
-@section('title', 'Kontak & Rumah Aspirasi Rakyat | Banu Lesmana Bagaskara, S.M.')
-@section('meta_description', 'Saluran kontak resmi, alamat sekretariat Rumah Aspirasi Rakyat di Kedung Badak, hotline ambulance siaga 24 jam, dan formulir pengaduan warga Banu Lesmana Bagaskara, S.M. (DPRD Kota Bogor 2024–2029).')
+@section('title', 'Kontak & Rumah Aspirasi Warga | Banu Lesmana Bagaskara, S.M.')
+@section('meta_description', 'Saluran resmi pengaduan warga, alamat sekretariat Rumah Aspirasi di Kedung Badak, dan layanan ambulance siaga 24 jam gratis.')
+
+@push('schema')
+<script type="application/ld+json">
+{
+  "{{ '@context' }}": "https://schema.org",
+  "@type": "GovernmentService",
+  "name": "Rumah Aspirasi Rakyat Banu Bagaskara",
+  "serviceType": "Layanan Pengaduan & Bantuan Publik",
+  "provider": {
+    "@type": "Person",
+    "name": "Banu Lesmana Bagaskara, S.M."
+  },
+  "areaServed": {
+    "@type": "AdministrativeArea",
+    "name": "Kecamatan Tanah Sareal, Kota Bogor"
+  }
+}
+</script>
+@endpush
 
 @section('content')
   <!-- ========================================== -->
@@ -12,12 +31,16 @@
       <!-- Top Nav Bar: Logo & Navigation Links -->
       <div class="flex items-center justify-between z-10 w-full mb-10 sm:mb-14 gap-2">
         <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 text-zinc-950 group min-w-0 flex-1">
-          <!-- Official Parliamentary / Democratic Red Mark (No Pill, Rounded-lg) -->
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-sm shrink-0">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-          </div>
+          @if (!empty($generalSettings['logo']))
+            <img src="{{ asset($generalSettings['logo']) }}" alt="{{ $generalSettings['siteTitle'] ?? 'Banu Lesmana Bagaskara' }}" class="h-8 sm:h-9 w-auto object-contain" />
+          @else
+            <!-- Official Parliamentary / Democratic Red Mark (No Pill, Rounded-lg) -->
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#BC0202] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-sm shrink-0">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+          @endif
           <div class="flex flex-col leading-tight min-w-0 flex-1">
             <span class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
           </div>
@@ -38,8 +61,10 @@
         <div class="lg:hidden shrink-0 ml-2">
           <button
             @click="mobileMenu = !mobileMenu"
-            aria-label="Buka Menu"
-            class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200"
+            :aria-expanded="mobileMenu ? 'true' : 'false'"
+            aria-controls="mobile-nav-drawer"
+            aria-label="Buka Menu Navigasi"
+            class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200 cursor-pointer"
           >
             <svg class="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -47,21 +72,6 @@
             <span class="hidden sm:inline ml-1.5">Menu</span>
           </button>
         </div>
-      </div>
-
-      <!-- Mobile Navigation Drawer Overlay (Alpine.js - Rounded-xl) -->
-      <div x-show="mobileMenu" x-cloak @click.away="mobileMenu = false" class="lg:hidden fixed top-16 left-4 right-4 bg-white border border-zinc-200 rounded-xl p-5 shadow-xl z-50">
-        <nav class="flex flex-col space-y-3 text-sm font-medium text-zinc-800">
-          <a href="{{ route('home') }}" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Beranda</a>
-          <a href="{{ route('profile') }}" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Profil (Kenali Banu)</a>
-          <a href="{{ route('kinerja.index') }}" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Hasil Kinerja</a>
-          <a href="{{ route('berita.index') }}" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Berita &amp; Rilis Pers</a>
-          <a href="{{ route('galeri.index') }}" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Galeri Dokumentasi</a>
-          <a href="{{ route('kontak.index') }}" @click="mobileMenu = false" class="py-1.5 px-3 rounded-lg bg-zinc-100 font-bold text-zinc-950 transition-colors">Rumah Aspirasi &amp; Kontak</a>
-          <div class="pt-2 border-t border-zinc-100">
-            <a href="#aspirasi" @click="mobileMenu = false" class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] text-white py-2 text-xs font-semibold"> Sampaikan Aspirasi </a>
-          </div>
-        </nav>
       </div>
 
       <!-- Hero Content (Editorial Header, No Badge) -->
@@ -74,18 +84,22 @@
   </header>
 
   <!-- ======================================================== -->
-  <!-- 2. BANNER AMBULANCE SIAGA 24 JAM (FULL GAMBAR RESPONSIF) -->
+  <!-- 2. BANNER AMBULANCE SIAGA 24 JAM (FULL GAMBAR - SELALU AKTIF) -->
   <!-- ======================================================== -->
   <section class="w-full bg-zinc-950 border-b border-zinc-200">
     <div class="w-full max-w-[1920px] mx-auto overflow-hidden">
-      <a href="#aspirasi" class="block w-full group focus:outline-none" title="Banner Layanan Ambulance Siaga 24 Jam & Aspirasi Warga - Banu Lesmana Bagaskara, S.M.">
+      @if (!empty($generalSettings['contactBanner']['image']))
         <img
-          src="{{ asset('assets/banu/banner_serbaguna.jpg') }}"
-          alt="Ambulance Siaga 24 Jam & Pendamping Rujukan RSUD - Banu Lesmana Bagaskara, S.M."
-          class="w-full h-auto object-cover min-h-[160px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] transition-transform duration-500 group-hover:scale-[1.008]"
+          src="{{ asset($generalSettings['contactBanner']['image']) }}"
+          alt="{{ !empty($generalSettings['contactBanner']['alt']) ? $generalSettings['contactBanner']['alt'] : '[Banner Kontak]' }}"
+          class="w-full h-auto object-cover min-h-[160px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px]"
           loading="lazy"
         />
-      </a>
+      @else
+        <div class="w-full h-44 sm:h-56 md:h-64 lg:h-72 bg-zinc-900 flex items-center justify-center text-zinc-500 text-sm font-medium p-4 text-center">
+          <span>{{ !empty($generalSettings['contactBanner']['alt']) ? $generalSettings['contactBanner']['alt'] : '[Banner Kontak]' }}</span>
+        </div>
+      @endif
     </div>
   </section>
 
@@ -96,30 +110,55 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
         <!-- Left Column (5 Cols): Kontak Resmi (Hanya Alamat, Telepon, Email, Media Sosial) -->
-        <div class="lg:col-span-5 flex flex-col space-y-6">
+        <div
+          class="lg:col-span-5 flex flex-col space-y-6"
+          x-data="{
+            copiedField: null,
+            copyText(text, field) {
+              if (!text) return;
+              navigator.clipboard.writeText(text);
+              this.copiedField = field;
+              setTimeout(() => {
+                if (this.copiedField === field) this.copiedField = null;
+              }, 2000);
+            }
+          }"
+        >
           <div class="rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
             <h2 class="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight"><span class="text-[#BC0202]">Kontak</span> Resmi</h2>
 
             <!-- List: Alamat, Telepon, Email -->
             <div class="mt-6 space-y-5 text-xs text-zinc-700">
               <!-- 1. Alamat -->
-              <div class="flex items-start gap-3.5">
+              <div class="flex items-start gap-3.5 group">
                 <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <div>
-                  <span class="font-bold text-zinc-950 block text-[13px]">Alamat:</span>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-bold text-zinc-950 block text-[13px]">Alamat:</span>
+                    @if (!empty($generalSettings['address']))
+                      <button
+                        type="button"
+                        @click="copyText('{{ addslashes($generalSettings['address']) }}', 'address')"
+                        class="text-[10px] text-zinc-400 hover:text-zinc-700 font-medium transition-colors cursor-pointer"
+                      >
+                        <span x-show="copiedField !== 'address'">Salin</span>
+                        <span x-show="copiedField === 'address'" x-cloak class="text-[#BC0202] font-bold">Tersalin!</span>
+                      </button>
+                    @endif
+                  </div>
                   <span class="text-zinc-600 mt-0.5 block leading-relaxed">
-                    {{ $generalSettings['address'] ?? 'Kelurahan Kedung Badak, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat.' }}
+                    {{ !empty($generalSettings['address']) ? $generalSettings['address'] : '[Alamat Kantor / Rumah Aspirasi]' }}
                   </span>
                 </div>
               </div>
 
               <!-- 2. Telepon -->
-              <div class="flex items-start gap-3.5">
+              <div class="flex items-start gap-3.5 group">
                 <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -130,25 +169,49 @@
                     />
                   </svg>
                 </div>
-                <div>
-                  <span class="font-bold text-zinc-950 block text-[13px]">Telepon / WhatsApp:</span>
-                  <a href="tel:{{ $generalSettings['phone'] ?? '+6281288880000' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
-                    {{ $generalSettings['phone'] ?? '+62 812-8888-0000' }}
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-bold text-zinc-950 block text-[13px]">Telepon / WhatsApp:</span>
+                    @if (!empty($generalSettings['phone']))
+                      <button
+                        type="button"
+                        @click="copyText('{{ addslashes($generalSettings['phone']) }}', 'phone')"
+                        class="text-[10px] text-zinc-400 hover:text-zinc-700 font-medium transition-colors cursor-pointer"
+                      >
+                        <span x-show="copiedField !== 'phone'">Salin</span>
+                        <span x-show="copiedField === 'phone'" x-cloak class="text-[#BC0202] font-bold">Tersalin!</span>
+                      </button>
+                    @endif
+                  </div>
+                  <a href="tel:{{ !empty($generalSettings['phone']) ? $generalSettings['phone'] : '+6281200000000' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
+                    {{ !empty($generalSettings['phone']) ? $generalSettings['phone'] : '+62 812-0000-0000' }}
                   </a>
                 </div>
               </div>
 
               <!-- 3. Email -->
-              <div class="flex items-start gap-3.5">
+              <div class="flex items-start gap-3.5 group">
                 <div class="w-9 h-9 rounded-xl bg-red-50 text-[#BC0202] flex items-center justify-center shrink-0 mt-0.5 border border-red-100">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <div>
-                  <span class="font-bold text-zinc-950 block text-[13px]">Email:</span>
-                  <a href="mailto:{{ $generalSettings['email'] ?? 'aspirasi@banubagaskara.id' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
-                    {{ $generalSettings['email'] ?? 'aspirasi@banubagaskara.id' }}
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-bold text-zinc-950 block text-[13px]">Email:</span>
+                    @if (!empty($generalSettings['email']))
+                      <button
+                        type="button"
+                        @click="copyText('{{ addslashes($generalSettings['email']) }}', 'email')"
+                        class="text-[10px] text-zinc-400 hover:text-zinc-700 font-medium transition-colors cursor-pointer"
+                      >
+                        <span x-show="copiedField !== 'email'">Salin</span>
+                        <span x-show="copiedField === 'email'" x-cloak class="text-[#BC0202] font-bold">Tersalin!</span>
+                      </button>
+                    @endif
+                  </div>
+                  <a href="mailto:{{ !empty($generalSettings['email']) ? $generalSettings['email'] : 'aspirasi@banubagaskara.id' }}" class="text-zinc-600 hover:text-[#BC0202] mt-0.5 block transition-colors font-medium">
+                    {{ !empty($generalSettings['email']) ? $generalSettings['email'] : '[Email Resmi: aspirasi@banubagaskara.id]' }}
                   </a>
                 </div>
               </div>
@@ -184,7 +247,7 @@
 
           <!-- Error Alert -->
           @if ($errors->any())
-            <div class="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900">
+            <div role="alert" class="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900">
               <ul class="list-disc list-inside space-y-1">
                 @foreach ($errors->all() as $error)
                   <li>{{ $error }}</li>
@@ -193,110 +256,141 @@
             </div>
           @endif
 
-          <!-- Form Element -->
-          <form method="POST" action="{{ route('aspirasi.store') }}" class="space-y-4">
+          <!-- Form Element with Character Counter & Submit Loading Indicator -->
+          <form
+            method="POST"
+            action="{{ route('aspirasi.store') }}"
+            x-data="{
+              submitting: false,
+              charCount: {{ strlen(old('description', '')) }}
+            }"
+            @submit="submitting = true"
+            class="space-y-4"
+          >
             @csrf
             <!-- Anti-bot Honeypot Field -->
-            <input type="text" name="website_hp" value="" class="hidden" tabindex="-1" autocomplete="off" />
+            <div class="hidden" aria-hidden="true" style="display:none !important;">
+              <input type="text" name="website_hp" value="" tabindex="-1" autocomplete="off" />
+            </div>
 
             <!-- 1. Nama Lengkap & 2. Nomor Telepon -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-bold text-zinc-900 mb-1.5">Nama Lengkap *</label>
+                <label for="sender_name" class="block text-xs font-bold text-zinc-900 mb-1.5">Nama Lengkap *</label>
                 <input
                   type="text"
+                  id="sender_name"
                   name="sender_name"
                   value="{{ old('sender_name') }}"
                   required
+                  aria-required="true"
                   placeholder="Nama lengkap kamu"
                   class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
                 />
               </div>
               <div>
-                <label class="block text-xs font-bold text-zinc-900 mb-1.5">Nomor Telepon *</label>
+                <label for="phone_number" class="block text-xs font-bold text-zinc-900 mb-1.5">Nomor Telepon *</label>
                 <input
                   type="tel"
+                  id="phone_number"
                   name="phone_number"
                   value="{{ old('phone_number') }}"
                   required
+                  aria-required="true"
                   placeholder="Nomor WhatsApp aktif (misal: 081234567890)"
                   class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
                 />
               </div>
             </div>
 
-            <!-- 3. Kelurahan di Tanah Sareal (11 Kelurahan Faktual) -->
+            <!-- 3. Alamat Lengkap -->
             <div>
-              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Kelurahan di Kecamatan Tanah Sareal *</label>
-              <select
-                name="kelurahan"
-                class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
-              >
-                <option value="">Pilih Kelurahan</option>
-                @foreach ($kelurahanList ?? \App\Enums\TanahSarealKelurahan::values() as $kel)
-                  <option value="{{ $kel }}" {{ old('kelurahan') === $kel ? 'selected' : '' }}>
-                    {{ $kel }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- 4. Alamat Lengkap -->
-            <div>
-              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Alamat Lengkap *</label>
+              <label for="address" class="block text-xs font-bold text-zinc-900 mb-1.5">Alamat Lengkap *</label>
               <input
                 type="text"
+                id="address"
                 name="address"
                 value="{{ old('address') }}"
                 required
+                aria-required="true"
                 placeholder="Alamat tinggal (RT / RW / Nama Gang)"
                 class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
               />
             </div>
 
-            <!-- 5. Subjek -->
+            <!-- 4. Subjek -->
             <div>
-              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Subjek *</label>
+              <label for="subject" class="block text-xs font-bold text-zinc-900 mb-1.5">Subjek *</label>
               <input
                 type="text"
+                id="subject"
                 name="subject"
                 value="{{ old('subject') }}"
                 required
+                aria-required="true"
                 placeholder="Apa yang mau disampaikan? (Contoh: Lampu jalan mati / Saluran mampet)"
                 class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs"
               />
             </div>
 
-            <!-- 6. Uraian -->
+            <!-- 5. Uraian -->
             <div>
-              <label class="block text-xs font-bold text-zinc-900 mb-1.5">Uraian *</label>
+              <label for="description" class="block text-xs font-bold text-zinc-900 mb-1.5">Uraian *</label>
               <textarea
+                id="description"
                 name="description"
                 required
+                aria-required="true"
                 rows="4"
+                maxlength="5000"
+                @input="charCount = $event.target.value.length"
                 placeholder="Ceritakan detail masalah atau usulanmu secara lengkap di sini..."
                 class="w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#FF0000] focus:ring-1 focus:ring-[#FF0000] shadow-2xs leading-relaxed"
               >{{ old('description') }}</textarea>
+              <div class="flex items-center justify-between text-[11px] text-zinc-500 mt-1 px-0.5">
+                <span>Maksimal 5000 karakter</span>
+                <span :class="charCount > 4500 ? 'text-[#BC0202] font-bold' : 'text-zinc-400'" x-text="charCount + ' / 5000'"></span>
+              </div>
             </div>
 
-            <!-- 7. Button Submit Kirim Aspirasi -->
+            <!-- 6. Button Submit Kirim Aspirasi -->
             <div class="pt-2">
-              <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-7 py-3 shadow-sm transition-colors active:scale-98">
-                Kirim Aspirasi
+              <button
+                type="submit"
+                :disabled="submitting"
+                class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] disabled:bg-zinc-400 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold px-7 py-3 shadow-sm transition-colors active:scale-98 cursor-pointer gap-2"
+              >
+                <svg x-show="submitting" x-cloak class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span x-text="submitting ? 'Mengirimkan Aspirasi...' : 'Kirim Aspirasi'"></span>
               </button>
             </div>
           </form>
 
-          <!-- Success Notification Card -->
+          <!-- Success Notification Card with Quick Copy -->
           @if (session('ticket_number'))
-            <div class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50/80 p-5 text-xs text-emerald-900">
+            <div role="status" aria-live="polite" class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50/80 p-5 text-xs text-emerald-900">
               <div class="flex items-start gap-3">
-                <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">&check;</div>
-                <div>
+                <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 font-bold">&check;</div>
+                <div class="flex-1 min-w-0" x-data="{ ticketCopied: false }">
                   <span class="font-bold text-sm block">Aspirasi Anda Berhasil Terkirim!</span>
                   <p class="mt-1 leading-relaxed">
                     Terima kasih banyak{{ session('sender_name') ? ', ' . session('sender_name') : '' }}! Pesanmu sudah kami terima dengan Nomor Tiket: <strong class="text-emerald-950 font-mono text-sm">{{ session('ticket_number') }}</strong>. Tim kami bakal segera cek dan hubungi nomor WhatsApp kamu.
                   </p>
+                  <div class="mt-3">
+                    <button
+                      type="button"
+                      @click="navigator.clipboard.writeText('{{ session('ticket_number') }}'); ticketCopied = true; setTimeout(() => ticketCopied = false, 2000)"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-emerald-300 text-emerald-800 text-xs font-semibold hover:bg-emerald-50 shadow-2xs transition-colors cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                      </svg>
+                      <span x-text="ticketCopied ? 'Nomor Tiket Tersalin!' : 'Salin Nomor Tiket'"></span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

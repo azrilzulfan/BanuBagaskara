@@ -1,9 +1,40 @@
 @extends('layouts.public')
 
-@section('title', $seoSettings['metaTitle'] ?? 'Profil & Rekam Jejak | Banu Lesmana Bagaskara, S.M.')
-@section('meta_description', $seoSettings['metaDescription'] ?? 'Profil resmi, riwayat pendidikan S1 Manajemen,
-    pengalaman organisasi, 12 isu strategis, dan 6 program fokus pengabdian warga Kota Bogor bersama Banu Lesmana Bagaskara,
-    S.M.')
+@section('title', 'Profil Banu Lesmana Bagaskara, S.M. | Kenali Rekam Jejak, Visi & Program')
+@section('meta_description', 'Profil resmi, riwayat pendidikan S1 Manajemen, pengalaman organisasi, 12 isu strategis, dan 6 program fokus pengabdian warga Kota Bogor bersama Banu Lesmana Bagaskara, S.M.')
+
+@push('schema')
+<script type="application/ld+json">
+{
+  "{{ '@context' }}": "https://schema.org",
+  "@type": "Person",
+  "name": "Banu Lesmana Bagaskara, S.M.",
+  "jobTitle": "Anggota DPRD Kota Bogor",
+  "worksFor": {
+    "@type": "GovernmentOrganization",
+    "name": "DPRD Kota Bogor"
+  },
+  "memberOf": {
+    "@type": "PoliticalParty",
+    "name": "PDI Perjuangan"
+  },
+  "url": "{{ route('profile') }}",
+  "image": "{{ !empty($generalSettings['logo']) ? asset($generalSettings['logo']) : url('/favicon.ico') }}",
+  "sameAs": [
+    "{{ $generalSettings['socials']['instagram'] ?? 'https://instagram.com/banubagaskara' }}",
+    "{{ $generalSettings['socials']['tiktok'] ?? 'https://tiktok.com/@banubagaskara' }}",
+    "{{ $generalSettings['socials']['facebook'] ?? 'https://facebook.com/banubgsk' }}",
+    "https://goodkind.id/profil/banu-lesmana-bagaskara-sm"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Bogor",
+    "addressRegion": "Jawa Barat",
+    "addressCountry": "ID"
+  }
+}
+</script>
+@endpush
 
 @section('content')
     <!-- ========================================== -->
@@ -29,17 +60,21 @@
                                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                             </svg>
                         </div>
-                        <div class="flex flex-col leading-tight min-w-0 flex-1">
-                            <span
-                                class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
-                        </div>
                     @endif
+                    <div class="flex flex-col leading-tight min-w-0 flex-1">
+                        <span
+                            class="font-bold text-sm sm:text-base lg:text-lg tracking-tight text-zinc-950 truncate">banubagaskara.</span>
+                    </div>
                 </a>
 
                 <!-- Menu Button for Mobile & Tablet (< lg) - Shadcn Button (No Pill, Rounded-lg) -->
                 <div class="lg:hidden shrink-0 ml-2">
-                    <button @click="mobileMenu = !mobileMenu" aria-label="Buka Menu"
-                        class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200">
+                    <button
+                        @click="mobileMenu = !mobileMenu"
+                        :aria-expanded="mobileMenu ? 'true' : 'false'"
+                        aria-controls="mobile-nav-drawer"
+                        aria-label="Buka Menu Navigasi"
+                        class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200 cursor-pointer">
                         <svg class="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -48,31 +83,6 @@
                     </button>
                 </div>
             </header>
-
-            <!-- Mobile Navigation Drawer Overlay (Alpine.js - Rounded-xl) -->
-            <div x-show="mobileMenu" x-cloak @click.away="mobileMenu = false"
-                class="lg:hidden fixed top-16 left-4 right-4 bg-white border border-zinc-200 rounded-xl p-5 shadow-xl z-50">
-                <nav class="flex flex-col space-y-3 text-sm font-medium text-zinc-800">
-                    <a href="{{ route('home') }}" @click="mobileMenu = false"
-                        class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Beranda</a>
-                    <a href="{{ route('profile') }}" @click="mobileMenu = false"
-                        class="py-1.5 px-3 rounded-lg bg-zinc-100 font-bold text-zinc-950 transition-colors">Profil (Kenali
-                        Banu)</a>
-                    <a href="{{ route('kinerja.index') }}" @click="mobileMenu = false"
-                        class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Hasil Kinerja</a>
-                    <a href="{{ route('berita.index') }}" @click="mobileMenu = false"
-                        class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Berita &amp; Rilis Pers</a>
-                    <a href="{{ route('galeri.index') }}" @click="mobileMenu = false"
-                        class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Galeri Dokumentasi</a>
-                    <a href="{{ route('kontak.index') }}" @click="mobileMenu = false"
-                        class="py-1.5 px-3 rounded-lg hover:bg-zinc-100 transition-colors">Rumah Aspirasi &amp; Kontak</a>
-                    <div class="pt-2 border-t border-zinc-100">
-                        <a href="{{ route('kontak.index') }}#aspirasi" @click="mobileMenu = false"
-                            class="w-full inline-flex items-center justify-center rounded-lg bg-[#BC0202] text-white py-2 text-xs font-semibold">
-                            Sampaikan Aspirasi </a>
-                    </div>
-                </nav>
-            </div>
 
             <!-- Hero Content Block -->
             <div class="my-auto pt-2 sm:pt-6 pb-4 z-10 max-w-xl">
@@ -104,30 +114,29 @@
                 <!-- Subtitle / Executive Summary -->
                 <p
                     class="text-xs sm:text-sm lg:text-[13px] xl:text-sm text-zinc-600 font-normal leading-relaxed mt-4 sm:mt-5 max-w-[480px]">
-                    {{ $profileSettings['hero']['subtitle'] ?? 'Anggota DPRD Kota Bogor terpilih periode 2024–2029 dari Dapil 4 Kecamatan Tanah Sareal (PDI Perjuangan No. Urut 5). Berlatar belakang profesional manajemen bisnis di sektor riil dengan tekad memperjuangkan transparansi anggaran publik dan pelayanan dasar rakyat tanpa sekat.' }}
+                    {{ !empty($profileSettings['hero']['subtitle']) ? $profileSettings['hero']['subtitle'] : '[Subjudul Profil Anggota Dewan]' }}
                 </p>
 
                 <!-- Key Metadata Grid (Clean 2x2, Rounded-xl Cards, No Pill) -->
                 <div class="grid grid-cols-2 gap-3 mt-6 pt-5 border-t border-zinc-200/80">
                     <div class="flex flex-col">
                         <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Daerah Pemilihan</span>
-                        <span class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">Kota Bogor 4 &bull; Tanah
-                            Sareal</span>
+                        <span class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">{{ !empty($generalSettings['dapil']) ? $generalSettings['dapil'] : '[Daerah Pemilihan]' }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Partai Politik</span>
                         <span
-                            class="font-bold text-xs sm:text-sm text-[#BC0202] mt-0.5">{{ $generalSettings['party'] ?? 'PDI Perjuangan (No. 5)' }}</span>
+                            class="font-bold text-xs sm:text-sm text-[#BC0202] mt-0.5">{{ !empty($generalSettings['party']) ? $generalSettings['party'] : '[Partai Politik]' }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Domisili Warga</span>
                         <span
-                            class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">{{ $generalSettings['address'] ?? 'Kedung Badak, Tanah Sareal' }}</span>
+                            class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">{{ !empty($generalSettings['address']) ? $generalSettings['address'] : '[Domisili / Wilayah]' }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Komisi DPRD</span>
                         <span
-                            class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">{{ $generalSettings['officeRole'] ?? 'Komisi 1 DPRD Kota Bogor' }}</span>
+                            class="font-bold text-xs sm:text-sm text-zinc-950 mt-0.5">{{ !empty($generalSettings['officeRole']) ? $generalSettings['officeRole'] : '[Komisi DPRD / Jabatan]' }}</span>
                     </div>
                 </div>
 
@@ -135,7 +144,7 @@
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-4 mt-7 sm:mt-8">
                     <a href="#visi-misi"
                         class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 sm:px-6 py-2.5 sm:py-3 shadow-sm transition-colors active:scale-98 text-center">
-                        Lihat Visi &amp; 3 Misi Pokok
+                        Lihat Visi Pengabdian
                     </a>
                     <a href="#pengalaman"
                         class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900 text-xs sm:text-sm font-semibold px-5 sm:px-6 py-2.5 sm:py-3 shadow-2xs transition-colors active:scale-98 text-center">
@@ -149,10 +158,20 @@
         </div>
 
         <!-- Hero Right: Edge-to-Edge Photo Side with Top-Right Menu Button on Desktop -->
-        <div class="relative min-h-[360px] sm:min-h-[440px] lg:min-h-full w-full bg-zinc-100 overflow-hidden">
-            <img src="{{ asset($profileSettings['hero']['heroImage'] ?? 'assets/banu/hero_banu.jpg') }}"
-                alt="Banu Lesmana Bagaskara, S.M. - Profil Resmi"
-                class="w-full h-full object-cover object-top filter grayscale contrast-105 hover:grayscale-0 transition-all duration-500" />
+        <div class="relative min-h-[360px] sm:min-h-[440px] lg:min-h-full w-full bg-zinc-800 overflow-hidden">
+            @if (!empty($profileSettings['hero']['heroImage']))
+                <img src="{{ asset($profileSettings['hero']['heroImage']) }}"
+                    alt="Banu Lesmana Bagaskara, S.M. - Profil Resmi"
+                    class="w-full h-full object-cover object-top filter grayscale contrast-105 hover:grayscale-0 transition-all duration-500" />
+            @else
+                <div class="w-full h-full min-h-[360px] sm:min-h-[440px] bg-zinc-800 flex items-center justify-center text-zinc-600">
+                    <div class="w-20 h-20 rounded-xl bg-zinc-700/50 flex items-center justify-center text-zinc-500">
+                        <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                </div>
+            @endif
 
             <!-- Desktop Pre-Scroll Navigation Bar (Rounded-xl container, No Pill) -->
             <div class="hidden lg:block absolute top-8 right-8 xl:top-10 xl:right-14 2xl:right-20 z-20">
@@ -175,96 +194,58 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- 2. VISI & 3 MISI POKOK PEMBANGUNAN         -->
+    <!-- 2. VISI PENGABDIAN                         -->
     <!-- ========================================== -->
     <section id="visi-misi" class="w-full bg-[#fafafa] py-16 sm:py-20 lg:py-24 border-b border-zinc-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
             <!-- Section Header -->
             <div class="max-w-2xl mb-10 sm:mb-12">
                 <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight"><span
-                        class="text-[#BC0202]">Visi</span> &amp; Tiga <span class="text-[#BC0202]">Misi</span> Pokok</h2>
+                        class="text-[#BC0202]">Visi</span> Pengabdian</h2>
             </div>
 
             <!-- Official Vision Highlight Card (Rounded-xl, No Badge, No Gradient) -->
-            <div class="rounded-xl border border-zinc-200 bg-white p-7 sm:p-10 shadow-sm mb-8 relative overflow-hidden">
+            <div class="rounded-xl border border-zinc-200 bg-white p-7 sm:p-10 shadow-sm relative overflow-hidden">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div class="max-w-3xl">
                         <h3
                             class="text-xl sm:text-3xl lg:text-4xl font-extrabold text-zinc-950 tracking-tight leading-tight">
-                            &ldquo;{{ $profileSettings['vision'] ?? 'Kota Bogor yang Maju dan Nyaman untuk Semua' }}&rdquo;
+                            &ldquo;{{ !empty($profileSettings['vision']) ? $profileSettings['vision'] : '[Visi Pengabdian]' }}&rdquo;
                         </h3>
-                        <p class="text-xs sm:text-sm text-zinc-600 mt-3.5 leading-relaxed">
-                            Kemajuan Kota Bogor tidak boleh meninggalkan satu pun kelompok masyarakat. Pembangunan fisik
-                            harus berjalan selaras dengan ketenangan hidup, kemudahan akses kesehatan darurat, perlindungan
-                            hak belajar anak, serta kepastian berusaha bagi pedagang kecil di tingkat rukun warga.
-                        </p>
                     </div>
                     <div
                         class="shrink-0 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-zinc-200 pt-4 lg:pt-0 lg:pl-8">
                         <span
-                            class="text-lg sm:text-xl font-black text-[#BC0202] mt-1">{{ $generalSettings['slogan'] ?? 'Bogor Lebih Baik' }}</span>
+                            class="text-lg sm:text-xl font-black text-[#BC0202] mt-1">{{ !empty($generalSettings['slogan']) ? $generalSettings['slogan'] : '[Slogan]' }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 3 Misi Pokok Grid (3 Columns, Rounded-xl Cards) -->
-            @php
-                $missions = $profileSettings['mission'] ?? [
-                    'Advokasi & Analisis Masukan Rakyat' =>
-                        'Menjaga rencana pembangunan agar senantiasa berpihak pada rakyat melalui analisis dampak mendalam serta penyerapan masukan warga secara berkala dan terverifikasi.',
-                    'Peningkatan Taraf Pendidikan Warga' =>
-                        'Meningkatkan taraf pendidikan warga Kota Bogor dan memastikan penurunan angka putus sekolah melalui advokasi alokasi beasiswa daerah yang tepat sasaran.',
-                    'Kemandirian Ekonomi & Keilmuan' =>
-                        'Mendorong masyarakat terjun di bidang keilmuan dan penelitian terapan guna mengurangi angka pengangguran serta meningkatkan daya beli dan taraf hidup warga.',
-                ];
-                $misiSubtexts = [
-                    'Fungsi Pengawasan & Anggaran',
-                    'Program Wajib Belajar 12 Tahun',
-                    'Inovasi Riset & UMKM Lokal',
-                    'Harmoni Sosial & Perlindungan Warga',
-                ];
-            @endphp
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
-                @foreach ($missions as $mKey => $m)
-                    @php
-                        $mText = is_array($m) ? $m['desc'] ?? '' : $m;
-                        if (!is_numeric($mKey)) {
-                            $mTitle = $mKey;
-                        } else {
-                            if ($loop->index === 0 && str_contains($mText, 'hak-hak dasar')) {
-                                $mTitle = 'Pemenuhan Hak Dasar & Fasilitas Warga';
-                            } elseif ($loop->index === 1 && str_contains($mText, 'transparansi')) {
-                                $mTitle = 'Transparansi Kebijakan & Alokasi APBD';
-                            } elseif ($loop->index === 2 && str_contains($mText, 'ekonomi rakyat')) {
-                                $mTitle = 'Kemandirian Ekonomi & Digitalisasi UMKM';
-                            } elseif ($loop->index === 3 && str_contains($mText, 'harmoni sosial')) {
-                                $mTitle = 'Harmoni Sosial & Perlindungan Warga';
-                            } else {
-                                $mTitle = \Illuminate\Support\Str::words($mText, 4, '');
-                            }
-                        }
-                    @endphp
-                    <div
-                        class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-colors">
-                        <div>
-                            <div
-                                class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">
-                                {{ sprintf('%02d', $loop->iteration) }}</div>
-                            <h4 class="font-bold text-base sm:text-lg text-zinc-950 mt-4 tracking-tight">
-                                {{ $mTitle }}</h4>
-                            <p class="text-xs sm:text-[13px] text-zinc-600 mt-2.5 leading-relaxed">
-                                {{ $mText }}
-                            </p>
-                        </div>
-                        <div
-                            class="mt-6 pt-4 border-t border-zinc-100 flex items-center text-xs font-semibold text-[#BC0202]">
-                            <span>{{ $misiSubtexts[$loop->index % count($misiSubtexts)] }}</span>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+            <!-- Misi Pokok Grid dari Database (Hanya tampil jika ada data di database, tanpa raw/dummy fallback) -->
+            @if (!empty($profileSettings['mission']) && is_array($profileSettings['mission']) && count($profileSettings['mission']) > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ count($profileSettings['mission']) > 3 ? '4' : '3' }} gap-5 lg:gap-6 items-stretch mt-8">
+                    @foreach ($profileSettings['mission'] as $m)
+                        @php
+                            $mText = is_array($m) ? $m['desc'] ?? ($m['text'] ?? '') : $m;
+                        @endphp
+                        @if (!empty(trim((string)$mText)))
+                            <div class="rounded-xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-colors">
+                                <div>
+                                    <div class="w-10 h-10 rounded-lg bg-red-50 text-[#BC0202] flex items-center justify-center font-bold text-sm">
+                                        {{ sprintf('%02d', $loop->iteration) }}
+                                    </div>
+                                    <p class="text-xs sm:text-[13px] text-zinc-700 mt-4 leading-relaxed font-semibold">
+                                        {{ $mText }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
         </div>
     </section>
+
     <!-- ========================================== -->
     <!-- 3. REKAM JEJAK PENGALAMAN & PENDIDIKAN     -->
     <!-- ========================================== -->
@@ -274,43 +255,44 @@
             <div class="max-w-2xl mb-10 sm:mb-12">
                 <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight">Rekam
                     <span class="text-[#BC0202]">Jejak</span> Pengalaman &amp; <span
-                        class="text-[#BC0202]">Pendidikan</span></h2>
+                        class="text-[#BC0202]">Pendidikan</span>
+                </h2>
             </div>
 
             @php
-                $experiences = $profileSettings['historyTrack']['experience'] ?? [
+                $experiences = !empty($profileSettings['historyTrack']['experience']) ? $profileSettings['historyTrack']['experience'] : [
                     [
-                        'title' => 'Anggota DPRD Kota Bogor',
-                        'institution' => 'DPRD Kota Bogor (Dapil 4 Tanah Sareal)',
+                        'title' => '[Pengalaman Karir / Organisasi 1]',
+                        'institution' => '[Nama Lembaga / Instansi 1]',
                         'period' => '2024 – Sekarang',
                     ],
                     [
-                        'title' => 'Direktur Utama',
-                        'institution' => 'PT. Kreasi Baraya Mandiri',
+                        'title' => '[Pengalaman Karir / Organisasi 2]',
+                        'institution' => '[Nama Lembaga / Instansi 2]',
                         'period' => '2018 – 2023',
                     ],
-                    ['title' => 'Direktur', 'institution' => 'CV. Putra Baraya Mandiri', 'period' => '2020 – 2023'],
-                    ['title' => 'Pimpinan', 'institution' => 'KSU Karya Mandiri', 'period' => '2015 – 2023'],
+                    ['title' => '[Pengalaman Karir / Organisasi 3]', 'institution' => '[Nama Lembaga / Instansi 3]', 'period' => '2020 – 2023'],
+                    ['title' => '[Pengalaman Karir / Organisasi 4]', 'institution' => '[Nama Lembaga / Instansi 4]', 'period' => '2015 – 2023'],
                 ];
-                $educations = $profileSettings['historyTrack']['education'] ?? [
+                $educations = !empty($profileSettings['historyTrack']['education']) ? $profileSettings['historyTrack']['education'] : [
                     [
-                        'title' => 'Sarjana Manajemen (S.M.)',
-                        'institution' => 'IBI Kesatuan Bogor',
+                        'title' => '[Pendidikan Sarjana / Tinggi (S.M.)]',
+                        'institution' => '[Nama Perguruan Tinggi]',
                         'period' => '2015 – 2019',
                     ],
                     [
-                        'title' => 'Sekolah Menengah Atas (SMA)',
-                        'institution' => 'SMA Negeri 4 Bogor',
+                        'title' => '[Pendidikan Menengah Atas (SMA)]',
+                        'institution' => '[Nama SMA / Sederajat]',
                         'period' => '2011 – 2014',
                     ],
                     [
-                        'title' => 'Sekolah Menengah Pertama (SMP)',
-                        'institution' => 'SMP Mardi Yuana Bogor',
+                        'title' => '[Pendidikan Menengah Pertama (SMP)]',
+                        'institution' => '[Nama SMP / Sederajat]',
                         'period' => '2008 – 2011',
                     ],
                     [
-                        'title' => 'Sekolah Dasar (SD)',
-                        'institution' => 'SD Mardi Yuana Bogor',
+                        'title' => '[Pendidikan Tingkat Dasar (SD)]',
+                        'institution' => '[Nama SD / Sederajat]',
                         'period' => '2002 – 2008',
                     ],
                 ];
@@ -416,10 +398,52 @@
                     <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight">
                         12 <span class="text-[#BC0202]">Isu</span> Penting</h2>
                 </div>
+
+                <!-- Filter Tabs for Isu Strategis (Horizontal Scroll on Mobile, Strictly No Pill) -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+                    <button
+                        type="button"
+                        @click="isuFilter = 'all'"
+                        class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer shrink-0"
+                        :class="isuFilter === 'all' ? 'bg-zinc-950 text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'"
+                    >
+                        Semua (12)
+                    </button>
+                    <button
+                        type="button"
+                        @click="isuFilter = 'gov'"
+                        class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer shrink-0"
+                        :class="isuFilter === 'gov' ? 'bg-[#BC0202] text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'"
+                    >
+                        Tata Kelola &amp; Hukum
+                    </button>
+                    <button
+                        type="button"
+                        @click="isuFilter = 'soc'"
+                        class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer shrink-0"
+                        :class="isuFilter === 'soc' ? 'bg-[#BC0202] text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'"
+                    >
+                        Sosial &amp; Warga
+                    </button>
+                    <button
+                        type="button"
+                        @click="isuFilter = 'env'"
+                        class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer shrink-0"
+                        :class="isuFilter === 'env' ? 'bg-[#BC0202] text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'"
+                    >
+                        Lingkungan &amp; Tata Kota
+                    </button>
+                </div>
             </div>
 
             @php
-                $issues = $profileSettings['issues'] ?? [];
+                $issues = !empty($profileSettings['issues']) ? $profileSettings['issues'] : array_map(function ($i) {
+                    return [
+                        'no' => $i,
+                        'title' => '[Fokus Isu & Advokasi ' . $i . ']',
+                        'desc' => '[Deskripsi Advokasi Isu ' . $i . ': Komitmen dan langkah kebijakan terkait isu ini.]',
+                    ];
+                }, range(1, 12));
             @endphp
             <!-- 12 Isu Grid (3 Columns Responsive) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
@@ -429,15 +453,15 @@
                         $cat = $no <= 4 ? 'gov' : ($no <= 8 ? 'soc' : 'env');
                     @endphp
                     <div x-show="isuFilter === 'all' || isuFilter === '{{ $cat }}'"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
                         class="rounded-xl border border-zinc-200 bg-[#fafafa] hover:bg-white hover:border-zinc-300 p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
                         <div>
                             <h3 class="font-bold text-base text-zinc-950 tracking-tight">{{ $issue['title'] }}</h3>
                             <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">
                                 {{ $issue['desc'] }}
                             </p>
-                        </div>
-                        <div class="mt-5 pt-3.5 border-t border-zinc-200/60 flex items-center text-[11px] text-zinc-500">
-                            <span class="text-[#BC0202]">Isu #{{ $no }} &bull; Dapil 4 Tanah Sareal</span>
                         </div>
                     </div>
                 @endforeach
@@ -452,19 +476,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
             <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
                 <h2 class="text-2xl sm:text-4xl lg:text-[40px] text-zinc-950 font-bold leading-[1.18] tracking-tight">Enam
-                    <span class="text-[#BC0202]">Fokus</span> Program</h2>
+                    <span class="text-[#BC0202]">Fokus</span> Program
+                </h2>
             </div>
 
             @php
-                $programs = $profileSettings['programs'] ?? [];
-                $programBadges = [
-                    'Kedung Badak, Tanah Sareal',
-                    'Layanan Gratis 24 Jam',
-                    'Keterbukaan Informasi Publik',
-                    'Penurunan Angka Putus Sekolah',
-                    'Pemberdayaan Pemuda Kreatif',
-                    'Kemandirian Ekonomi Warga',
-                ];
+                $programs = !empty($profileSettings['programs']) ? $profileSettings['programs'] : array_map(function ($i) {
+                    return [
+                        'no' => $i,
+                        'title' => '[Program Kerja ' . $i . ']',
+                        'desc' => '[Deskripsi Program Kerja ' . $i . ': Penjelasan inisiatif program pengabdian masyarakat.]',
+                    ];
+                }, range(1, 6));
             @endphp
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
                 @foreach ($programs as $progIdx => $prog)
@@ -478,8 +501,6 @@
                                     class="text-[#BC0202] font-black mr-2">|</span> {{ $prog['title'] }}</h3>
                             <p class="text-xs text-zinc-600 mt-2.5 leading-relaxed">{{ $prog['desc'] }}</p>
                         </div>
-                        <div class="mt-6 pt-4 border-t border-zinc-100 text-[11px] text-[#BC0202] font-medium">
-                            {{ $programBadges[$progIdx % count($programBadges)] }}</div>
                     </div>
                 @endforeach
             </div>
@@ -498,50 +519,126 @@
     <!-- ======================================================== -->
     <section id="dokumentasi-profil" class="w-full bg-[#f4f4f5] py-16 sm:py-20 lg:py-24 border-b border-zinc-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+            @php
+                $profileCollage = [];
+                foreach ([0, 1, 2, 3, 4] as $pIdx) {
+                    if (!empty($profileSettings['collage'][$pIdx]['image'])) {
+                        $profileCollage[] = [
+                            'url' => asset($profileSettings['collage'][$pIdx]['image']),
+                            'title' => $profileSettings['collage'][$pIdx]['label'] ?? ('Dokumentasi Profil ' . ($pIdx + 1)),
+                        ];
+                    }
+                }
+            @endphp
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-5">
                 <div
+                    @if (!empty($profileSettings['collage'][0]['image']))
+                        @click="$dispatch('open-lightbox', { images: {{ json_encode($profileCollage) }}, index: 0 })"
+                    @endif
                     class="lg:col-span-7 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] flex flex-col justify-end">
-                    <img src="{{ asset($profileSettings['collage'][0]['image'] ?? 'assets/banu/testi_dialog.jpg') }}"
-                        alt="{{ $profileSettings['collage'][0]['label'] ?? 'Dialog Aspirasi Warga Kebon Pedes' }}"
-                        class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy" />
+                    @if (!empty($profileSettings['collage'][0]['image']))
+                        <img src="{{ asset($profileSettings['collage'][0]['image']) }}"
+                            alt="{{ $profileSettings['collage'][0]['label'] ?? '[Dokumentasi Profil 1]' }}"
+                            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
+                    @else
+                        <div class="absolute inset-0 w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
+                            <div class="w-14 h-14 rounded-xl bg-zinc-700/50 flex items-center justify-center text-zinc-500">
+                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
                 </div>
 
                 <div
+                    @if (!empty($profileSettings['collage'][1]['image']))
+                        @click="$dispatch('open-lightbox', { images: {{ json_encode($profileCollage) }}, index: 1 })"
+                    @endif
                     class="lg:col-span-5 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[250px] sm:min-h-[300px] lg:min-h-[420px] flex flex-col justify-end">
-                    <img src="{{ asset($profileSettings['collage'][1]['image'] ?? 'assets/banu/hero_banu.jpg') }}"
-                        alt="{{ $profileSettings['collage'][1]['label'] ?? 'Sidang Paripurna & Pengawasan APBD di Parlemen' }}"
-                        class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy" />
+                    @if (!empty($profileSettings['collage'][1]['image']))
+                        <img src="{{ asset($profileSettings['collage'][1]['image']) }}"
+                            alt="{{ $profileSettings['collage'][1]['label'] ?? '[Dokumentasi Profil 2]' }}"
+                            class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
+                    @else
+                        <div class="absolute inset-0 w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
+                            <div class="w-14 h-14 rounded-xl bg-zinc-700/50 flex items-center justify-center text-zinc-500">
+                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
                 </div>
 
                 <div
+                    @if (!empty($profileSettings['collage'][2]['image']))
+                        @click="$dispatch('open-lightbox', { images: {{ json_encode($profileCollage) }}, index: 2 })"
+                    @endif
                     class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-                    <img src="{{ asset($profileSettings['collage'][2]['image'] ?? 'assets/banu/program_ambulance.jpg') }}"
-                        alt="{{ $profileSettings['collage'][2]['label'] ?? 'Operasional Ambulance Siaga 24 Jam' }}"
-                        class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy" />
+                    @if (!empty($profileSettings['collage'][2]['image']))
+                        <img src="{{ asset($profileSettings['collage'][2]['image']) }}"
+                            alt="{{ $profileSettings['collage'][2]['label'] ?? '[Dokumentasi Profil 3]' }}"
+                            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
+                    @else
+                        <div class="absolute inset-0 w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
+                            <div class="w-12 h-12 rounded-xl bg-zinc-700/50 flex items-center justify-center text-zinc-500">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
                 </div>
 
                 <div
+                    @if (!empty($profileSettings['collage'][3]['image']))
+                        @click="$dispatch('open-lightbox', { images: {{ json_encode($profileCollage) }}, index: 3 })"
+                    @endif
                     class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-                    <img src="{{ asset($profileSettings['collage'][3]['image'] ?? 'assets/banu/program_umkm.jpg') }}"
-                        alt="{{ $profileSettings['collage'][3]['label'] ?? 'Pelatihan Digitalisasi UMKM RT/RW' }}"
-                        class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy" />
+                    @if (!empty($profileSettings['collage'][3]['image']))
+                        <img src="{{ asset($profileSettings['collage'][3]['image']) }}"
+                            alt="{{ $profileSettings['collage'][3]['label'] ?? '[Dokumentasi Profil 4]' }}"
+                            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
+                    @else
+                        <div class="absolute inset-0 w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
+                            <div class="w-12 h-12 rounded-xl bg-zinc-700/50 flex items-center justify-center text-zinc-500">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
                 </div>
 
                 <div
+                    @if (!empty($profileSettings['collage'][4]['image']))
+                        @click="$dispatch('open-lightbox', { images: {{ json_encode($profileCollage) }}, index: 4 })"
+                    @endif
                     class="lg:col-span-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm relative group cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
-                    <img src="{{ asset($profileSettings['collage'][4]['image'] ?? 'assets/banu/footer_community.jpg') }}"
-                        alt="{{ $profileSettings['collage'][4]['label'] ?? 'Rembug Guyub Komunitas Warga' }}"
-                        class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent"></div>
+                    @if (!empty($profileSettings['collage'][4]['image']))
+                        <img src="{{ asset($profileSettings['collage'][4]['image']) }}"
+                            alt="{{ $profileSettings['collage'][4]['label'] ?? '[Dokumentasi Profil 5]' }}"
+                            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
+                    @else
+                        <div class="absolute inset-0 w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
+                            <div class="w-12 h-12 rounded-xl bg-zinc-700/50 flex items-center justify-center text-zinc-500">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent"></div>
                 </div>
             </div>
         </div>
@@ -551,14 +648,17 @@
     <!-- 7. KUTIPAN BANU LESMANA BAGASKARA, S.M.   -->
     <!-- ========================================== -->
     @php
-        $quoteData = $profileSettings['quote'] ?? [
-            'text' => 'Kursi di parlemen bukan privilese kekuasaan, melainkan mandat pengabdian rakyat yang harus dipertanggungjawabkan secara terbuka setiap waktu.',
-            'author' => 'Banu Lesmana Bagaskara, S.M.',
-            'role' => 'Anggota DPRD Kota Bogor &bull; Dapil 4 Tanah Sareal',
+        $quoteData = !empty($profileSettings['quote']) ? $profileSettings['quote'] : [
+            'text' =>
+                '[Kutipan Komitmen Pengabdian: Nilai integritas, kerja nyata, dan dedikasi penuh untuk kemaslahatan warga Kota Bogor.]',
+            'author' => '[Nama Anggota Dewan]',
+            'role' => '[Komisi / Fraksi DPRD]',
         ];
-        $quoteText = is_array($quoteData) ? ($quoteData['text'] ?? '') : $quoteData;
-        $quoteAuthor = is_array($quoteData) ? ($quoteData['author'] ?? 'Banu Lesmana Bagaskara, S.M.') : 'Banu Lesmana Bagaskara, S.M.';
-        $quoteRole = is_array($quoteData) ? ($quoteData['role'] ?? '') : '';
+        $quoteText = is_array($quoteData) ? $quoteData['text'] ?? '' : $quoteData;
+        $quoteAuthor = is_array($quoteData)
+            ? $quoteData['author'] ?? '[Nama Anggota Dewan]'
+            : '[Nama Anggota Dewan]';
+        $quoteRole = is_array($quoteData) ? $quoteData['role'] ?? '' : '';
     @endphp
     <section class="w-full bg-[#fafafa] py-16 sm:py-20 border-b border-zinc-200">
         <div class="max-w-4xl mx-auto px-4 sm:px-8 text-center">

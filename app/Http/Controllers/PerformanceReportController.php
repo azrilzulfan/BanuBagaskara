@@ -16,10 +16,13 @@ class PerformanceReportController extends Controller
     {
         $featuredReport = PerformanceReport::published()
             ->featured()
+            ->select(['id', 'title', 'slug', 'excerpt', 'cover_image', 'published_at', 'created_at', 'is_featured', 'view_count'])
             ->latest('published_at')
             ->first();
 
-        $reportsQuery = PerformanceReport::published()->latest('published_at');
+        $reportsQuery = PerformanceReport::published()
+            ->select(['id', 'title', 'slug', 'excerpt', 'cover_image', 'published_at', 'created_at', 'is_featured', 'view_count'])
+            ->latest('published_at');
 
         if ($featuredReport) {
             $reportsQuery->where('id', '!=', $featuredReport->id);
@@ -36,11 +39,13 @@ class PerformanceReportController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $report->increment('view_count');
+        $report->timestamps = false;
+        $report->incrementQuietly('view_count');
 
         $renderedContent = $this->blockEngine->renderToHtml($report->content_blocks);
 
         $relatedReports = PerformanceReport::published()
+            ->select(['id', 'title', 'slug', 'excerpt', 'cover_image', 'published_at', 'created_at'])
             ->where('id', '!=', $report->id)
             ->latest('published_at')
             ->take(3)

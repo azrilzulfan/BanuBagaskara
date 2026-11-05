@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Hasil Kinerja & Laporan Parlemen | Banu Lesmana Bagaskara, S.M.')
-@section('meta_description', 'Laporan resmi hasil kinerja, advokasi kebijakan, dan realisasi 6 Program Pengabdian Banu Lesmana Bagaskara, S.M. (Anggota DPRD Kota Bogor 2024–2029, Dapil 4 Tanah Sareal, PDI Perjuangan).')
+@section('title', 'Laporan Hasil Kinerja Dewan | Banu Lesmana Bagaskara, S.M.')
+@section('meta_description', 'Transparansi pertanggungjawaban publik, pokok-pokok pikiran (Pokir), pengawasan perda, dan advokasi anggaran APBD Kota Bogor.')
 
 @section('content')
   <!-- ========================================== -->
@@ -38,8 +38,10 @@
         <div class="lg:hidden shrink-0 ml-2">
           <button
             @click="mobileMenu = !mobileMenu"
-            aria-label="Buka Menu"
-            class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200"
+            :aria-expanded="mobileMenu ? 'true' : 'false'"
+            aria-controls="mobile-nav-drawer"
+            aria-label="Buka Menu Navigasi"
+            class="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-900 text-xs font-medium px-2.5 sm:px-3.5 py-1.5 shadow-sm transition-colors active:bg-zinc-200 cursor-pointer"
           >
             <svg class="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -106,43 +108,14 @@
 
           <!-- Right: Cover Image -->
           <div class="lg:col-span-5 rounded-xl border border-zinc-200 overflow-hidden shadow-sm aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto min-h-[240px] sm:min-h-[280px] bg-zinc-100">
-            <img src="{{ asset($featuredReport->cover_image ?? 'assets/banu/program_ambulance.jpg') }}" alt="{{ $featuredReport->title }}" class="w-full h-full object-cover" />
-          </div>
-        </div>
-      </div>
-    </section>
-  @else
-    <section class="w-full bg-[#fafafa] py-14 sm:py-16 lg:py-20 border-b border-zinc-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-          <!-- Left: Narrative -->
-          <div class="lg:col-span-7 rounded-xl border border-zinc-200 bg-white p-6 sm:p-8 lg:p-10 shadow-sm flex flex-col justify-between">
-            <div>
-              <div class="flex items-center text-[11px] font-medium text-zinc-500 mb-2.5">
-                <svg class="w-3.5 h-3.5 mr-1.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>20 Januari 2026</span>
+            @if ($featuredReport->cover_image)
+              <img src="{{ asset($featuredReport->cover_image) }}" alt="{{ $featuredReport->title }}" class="w-full h-full object-cover" />
+            @else
+              <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                <span class="text-white font-bold mb-1">banubagaskara.</span>
+                <span class="text-[11px] text-zinc-400">Hasil Kinerja</span>
               </div>
-              <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-950 tracking-tight leading-snug">Ambulance Siaga 24 Jam &amp; Pendampingan Administrasi Pasien BPJS Bebas Biaya</h2>
-              <p class="text-xs sm:text-[14px] text-zinc-600 mt-3.5 leading-relaxed line-clamp-3">
-                Menyikapi keluhan mendesak warga saat mengalami sakit parah di jam-jam genting, Banu Lesmana Bagaskara menyiagakan unit ambulans darurat gratis yang siap beroperasi 24 jam penuh di wilayah Kecamatan Tanah Sareal. Armada ini didukung relawan medis yang turut mengadvokasi perolehan kamar dan jaminan BPJS PBI di RSUD Kota Bogor.
-              </p>
-            </div>
-
-            <div class="mt-7 pt-5 border-t border-zinc-100 flex items-center justify-start">
-              <a href="{{ route('kontak.index') }}#aspirasi" class="inline-flex items-center justify-center rounded-lg bg-[#BC0202] hover:bg-[#830000] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 shadow-sm transition-colors gap-1.5 active:scale-98">
-                <span>Baca Selengkapnya</span>
-                <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </div>
-
-          <!-- Right: Cover Image -->
-          <div class="lg:col-span-5 rounded-xl border border-zinc-200 overflow-hidden shadow-sm aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto min-h-[240px] sm:min-h-[280px] bg-zinc-100">
-            <img src="{{ asset('assets/banu/program_ambulance.jpg') }}" alt="Ambulance Siaga 24 Jam Banu Bagaskara" class="w-full h-full object-cover" />
+            @endif
           </div>
         </div>
       </div>
@@ -166,12 +139,19 @@
             <div>
               <!-- Cover Image -->
               <div class="aspect-[16/10] sm:aspect-[16/9] w-full bg-zinc-100 overflow-hidden relative">
-                <img
-                  src="{{ asset($report->cover_image ?? 'assets/banu/testi_dialog.jpg') }}"
-                  alt="{{ $report->title }}"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
+                @if ($report->cover_image)
+                  <img
+                    src="{{ asset($report->cover_image) }}"
+                    alt="{{ $report->title }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                @else
+                  <div class="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-xs p-4 text-center font-medium">
+                    <span class="text-white font-bold mb-1">banubagaskara.</span>
+                    <span class="text-[11px] text-zinc-400">Hasil Kinerja</span>
+                  </div>
+                @endif
               </div>
 
               <!-- Content: Tanggal, Judul, dan Deskripsi (line-clamp-3) -->
@@ -181,7 +161,7 @@
                   <svg class="w-3.5 h-3.5 mr-1.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span>{{ $report->published_at ? $report->published_at->translatedFormat('d F Y') : '16 Januari 2026' }}</span>
+                  <span>{{ $report->published_at ? $report->published_at->translatedFormat('d F Y') : ($report->created_at ? $report->created_at->translatedFormat('d F Y') : '-') }}</span>
                 </div>
 
                 <h3 class="font-bold text-base sm:text-lg text-zinc-950 leading-snug tracking-tight">{{ $report->title }}</h3>

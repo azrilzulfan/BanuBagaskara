@@ -34,6 +34,8 @@ class PerformanceReport extends Model
             'content_blocks' => 'array',
             'is_featured' => 'boolean',
             'published_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'view_count' => 'integer',
         ];
     }

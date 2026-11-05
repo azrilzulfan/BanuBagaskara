@@ -21,7 +21,6 @@ class Aspiration extends Model
         'sender_name',
         'phone_number',
         'address',
-        'kelurahan',
         'category',
         'subject',
         'description',

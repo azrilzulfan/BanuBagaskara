@@ -8,6 +8,7 @@ use App\Services\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 
@@ -78,6 +79,35 @@ class AuthController extends Controller
         return back()->withErrors([
             'email' => 'Kredensial yang dimasukkan tidak cocok dengan data kami.',
         ])->onlyInput('email');
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'current_password.required' => 'Kata sandi saat ini wajib diisi.',
+            'current_password.current_password' => 'Kata sandi saat ini tidak sesuai.',
+            'password.required' => 'Kata sandi baru wajib diisi.',
+            'password.min' => 'Kata sandi baru minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi kata sandi baru tidak cocok.',
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        $this->activityLog->log(
+            action: 'PASSWORD_CHANGE',
+            description: "Kata sandi administrator ({$user->email}) berhasil diperbarui",
+            userId: $user->id,
+            ip: $request->ip()
+        );
+
+        return back()->with('success', 'Kata sandi berhasil diperbarui.');
     }
 
     public function logout(Request $request): RedirectResponse

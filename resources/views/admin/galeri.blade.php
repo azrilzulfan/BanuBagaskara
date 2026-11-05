@@ -3,54 +3,7 @@
 @section('title', 'Kelola Galeri & Album Foto | Dasbor Admin Banu Lesmana Bagaskara, S.M.')
 
 @php
-  $defaultAlbums = [
-    [
-      'id' => 1,
-      'title' => 'Dialog Reses Masa Sidang II di Kebon Pedes',
-      'date' => '2026-02-28',
-      'dateFormatted' => '28 Februari 2026',
-      'desc' => 'Penyerapan usulan drainase lingkungan, PJU, dan penataan saluran air bersama warga serta pengurus RW 05 Kelurahan Kebon Pedes.',
-      'cover' => asset('assets/banu/testi_dialog.jpg'),
-      'status' => 'Terbit',
-      'photos' => [
-        ['id' => 'p1', 'url' => asset('assets/banu/testi_dialog.jpg'), 'caption' => 'Tatap muka dialog bersama ketua RT, RW, dan tokoh warga Kebon Pedes.'],
-        ['id' => 'p2', 'url' => asset('assets/banu/hero_banu.jpg'), 'caption' => 'Penyampaian komitmen pengawalan Pokir APBD oleh Banu Lesmana Bagaskara.'],
-        ['id' => 'p3', 'url' => asset('assets/banu/footer_community.jpg'), 'caption' => 'Sesi ramah tamah dan foto bersama seluruh perwakilan warga lingkungan.'],
-        ['id' => 'p4', 'url' => asset('assets/banu/banner_serbaguna.jpg'), 'caption' => 'Spanduk komitmen pengawalan aspirasi pembangunan lingkungan.'],
-      ],
-    ],
-    [
-      'id' => 2,
-      'title' => 'Armada Ambulance Siaga 24 Jam & Layanan Pasien',
-      'date' => '2026-02-24',
-      'dateFormatted' => '24 Februari 2026',
-      'desc' => 'Pendampingan tanggap darurat medis dan rujukan warga sakit se-Kecamatan Tanah Sareal menuju RSUD Kota Bogor secara gratis.',
-      'cover' => asset('assets/banu/program_ambulance.jpg'),
-      'status' => 'Terbit',
-      'photos' => [
-        ['id' => 'p21', 'url' => asset('assets/banu/program_ambulance.jpg'), 'caption' => 'Unit operasional Ambulance Siaga 24 Jam bersiaga di Kedung Badak.'],
-        ['id' => 'p22', 'url' => asset('assets/banu/footer_community.jpg'), 'caption' => 'Briefing relawan pendamping kesehatan sebelum evakuasi darurat.'],
-        ['id' => 'p23', 'url' => asset('assets/banu/testi_dialog.jpg'), 'caption' => 'Koordinasi bersama perwakilan keluarga pasien di RSUD Kota Bogor.'],
-        ['id' => 'p24', 'url' => asset('assets/banu/banner_serbaguna.jpg'), 'caption' => 'Layanan siaga ambulance bebas biaya untuk warga Tanah Sareal.'],
-      ],
-    ],
-    [
-      'id' => 3,
-      'title' => 'Fasilitasi NIB Gratis & Pelatihan Foto Produk UMKM',
-      'date' => '2026-02-19',
-      'dateFormatted' => '19 Februari 2026',
-      'desc' => 'Pemberdayaan legalitas usaha dan peningkatan mutu visual promosi digital bagi puluhan pelaku UMKM makanan ringan Tanah Sareal.',
-      'cover' => asset('assets/banu/program_umkm.jpg'),
-      'status' => 'Terbit',
-      'photos' => [
-        ['id' => 'p31', 'url' => asset('assets/banu/program_umkm.jpg'), 'caption' => 'Penyerahan simbolis dokumen NIB resmi kepada pelaku usaha keripik olahan.'],
-        ['id' => 'p32', 'url' => asset('assets/banu/hero_banu.jpg'), 'caption' => 'Banu Bagaskara berdialog mengenai kendala permodalan pedagang keliling.'],
-        ['id' => 'p33', 'url' => asset('assets/banu/banner_serbaguna.jpg'), 'caption' => 'Suasana pendampingan meja per meja pembuatan akun OSS.'],
-      ],
-    ],
-  ];
-
-  $initialAlbums = $albums->isNotEmpty() ? $albums->toArray() : $defaultAlbums;
+  $initialAlbums = $albums->toArray();
 @endphp
 
 @section('content')
@@ -654,7 +607,7 @@
             </div>
 
             <p class="text-[11px] text-zinc-500 leading-normal">
-              Sampul ini akan menjadi foto utama kartu album pada grid Galeri publik. Anda dapat mengunggah berkas di atas atau menekan tombol <strong>"Jadikan Sampul"</strong> pada salah satu foto di sisi kiri.
+              Sampul ini akan menjadi foto utama kartu album pada grid Galeri publik (format JPG, PNG, WebP, maksimal 2 MB). Anda dapat mengunggah berkas di atas atau menekan tombol <strong>"Jadikan Sampul"</strong> pada salah satu foto di sisi kiri.
             </p>
           </div>
         </div>
@@ -820,6 +773,12 @@
         const file = event.target.files[0];
         if (!file) return;
 
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Ukuran file gambar maksimal 2 MB.');
+          event.target.value = '';
+          return;
+        }
+
         this.uploadingCover = true;
         const fd = new FormData();
         fd.append('file', file);
@@ -850,6 +809,12 @@
       uploadPhotoItem(event, photo) {
         const file = event.target.files[0];
         if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Ukuran file gambar maksimal 2 MB.');
+          event.target.value = '';
+          return;
+        }
 
         photo.isUploading = true;
         const fd = new FormData();
@@ -883,10 +848,21 @@
       },
 
       uploadNewPhotos(event) {
-        const files = event.target.files;
-        if (!files || files.length === 0) return;
+        const allFiles = Array.from(event.target.files || []);
+        if (allFiles.length === 0) return;
 
-        Array.from(files).forEach((file, index) => {
+        const oversized = allFiles.filter(f => f.size > 2 * 1024 * 1024);
+        if (oversized.length > 0) {
+          alert('Sebagian foto melebihi batas maksimal 2 MB dan tidak diikutsertakan.');
+        }
+
+        const files = allFiles.filter(f => f.size <= 2 * 1024 * 1024);
+        if (files.length === 0) {
+          event.target.value = '';
+          return;
+        }
+
+        files.forEach((file, index) => {
           const newPhoto = {
             id: 'p_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 4),
             url: '',

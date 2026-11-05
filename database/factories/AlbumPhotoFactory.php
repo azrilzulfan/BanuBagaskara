@@ -20,7 +20,7 @@ class AlbumPhotoFactory extends Factory
     {
         return [
             'album_id' => Album::factory(),
-            'image_path' => 'assets/banu/hero_banu.jpg',
+            'image_path' => 'uploads/sample_photo.jpg',
             'caption' => fake()->sentence(),
             'sort_order' => 0,
         ];

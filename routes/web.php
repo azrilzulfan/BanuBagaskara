@@ -93,5 +93,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // 6. Modul Pengaturan Halaman Website
     Route::get('/pengaturan', [AdminSettingController::class, 'index'])->name('pengaturan.index');
     Route::post('/pengaturan', [AdminSettingController::class, 'update'])->name('pengaturan.update');
-    Route::post('/upload', [AdminSettingController::class, 'upload'])->name('upload');
+    Route::post('/upload', [AdminSettingController::class, 'upload'])
+        ->middleware('throttle:30,1')
+        ->name('upload');
+
+    // 7. Ganti Password Administrator
+    Route::put('/password', [AdminAuthController::class, 'updatePassword'])->name('password.update');
 });
